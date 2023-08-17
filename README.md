@@ -1,7 +1,7 @@
 
 <h1 align="center">
   <br>
-  <a href="https://github.com/SilkePilon/YouAgent/"><img src="https://raw.githubusercontent.com/SilkePilon/YouAgent/main/public/youchat_gradient.svg" alt="YouAgent" width="200"></a>
+  <a href="https://github.com/SilkePilon/OpenDeliveryBot/"><img src="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/logo.png?raw=true" alt="YouAgent" width="200"></a>
   <br>
   <br>
   Open Delivery Bot
