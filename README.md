@@ -59,5 +59,5 @@ SOON!
 
 
 ## Credits
-<a size="-20" href="https://www.textstudio.com/">Text effect</a>
+<a href="https://github.com/PrismarineJS/mineflayer" target="_blank">MineFlayer</a>
 ---
