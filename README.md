@@ -59,5 +59,5 @@ SOON!
 
 
 ## Credits
-<a href="https://www.textstudio.com/">Text effect</a>
+<a width="10" href="https://www.textstudio.com/">Text effect</a>
 ---
