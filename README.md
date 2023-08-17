@@ -144,5 +144,5 @@ In addition to YouAgent, we also have an active [Discord server](https://discord
 
 
 ## Credits
-
+<a href="https://www.textstudio.com/">Text effect</a>
 ---
