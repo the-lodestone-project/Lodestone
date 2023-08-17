@@ -4,11 +4,11 @@
   <a href="https://github.com/SilkePilon/OpenDeliveryBot/"><img src="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/logo.png?raw=true" alt="YouAgent" width="500"></a>
   <br>
   <br>
-  Open Delivery Bot
+  Open Delivery Bot 📦
   <br>
 </h1>
 
-<h4 align="center">🤖 Deliver anything, anywere! powered by <a href="https://github.com/PrismarineJS/mineflayer" target="_blank">MineFlayer</a>.</h4>
+<h4 align="center">🤖📦 Deliver anything, anywere! powered by <a href="https://github.com/PrismarineJS/mineflayer" target="_blank">MineFlayer</a>.</h4>
 
 <p align="center">
     <img alt="Node version" src="https://img.shields.io/static/v1?label=node&message=%20%3E=16.0.0&logo=node.js&color=2334D058" />
@@ -29,11 +29,9 @@
 <!-- ![screenshot](https://raw.githubusercontent.com/SilkePilon/youdotcom/main/assets/images/YouDotCom.jpg) -->
 
 ## About
-YouAgent is an innovative AI tool that allows you to assemble, configure, and deploy autonomous AI agents using YouChat. With YouAgent, you can create and customize your own AI agent, and give it a unique name that suits its purpose. You can then set a goal for your agent to achieve, and watch as it uses its intelligent algorithms to execute tasks and learn from the results.
+Welcome to the Open Delivery Bot project! This open-source initiative empowers users to deploy a self-hosted delivery bot, offering an array of advanced functionalities. Our command-line interface (CLI) or remote web GUI allows effortless control and management, ensuring a seamless experience.
 
-Whether you're looking to automate a process, improve efficiency, or simply explore the capabilities of AI, YouAgent offers an easy and intuitive way to do so. YouAgent gives you full control over your AI agent, allowing you to tailor it to your specific needs.
-
-Whether you're a developer, a business owner, or just someone curious about the possibilities of AI, YouAgent is the perfect tool to help you get started. With its intuitive interface, powerful features, and endless customization options, YouAgent makes it easy to create, deploy, and manage your own autonomous AI agent. So why wait? Start exploring the possibilities of AI with YouAgent today!
+Open Delivery Bot shines with its dynamic features, including pathfinding and optimized elytra flight, accelerating your delivery processes for utmost efficiency. Say goodbye to manual intervention and embrace automation! 📦
 
 
 ## Getting Started
