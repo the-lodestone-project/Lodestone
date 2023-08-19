@@ -65,7 +65,7 @@ def handle_login(*args):
     x.write(str(bot.players))
   
   with open("cords.log", "w") as x:
-    x.write(f"{datetime.now()}  |  X:{str(bot.entity.position.x)}, Y:{str(bot.entity.position.y)}, Z:{str(bot.entity.position.z)}")
+    x.write(f"{datetime.now()}  |  {config['Host']}:{config['Port']}  |  X:{str(bot.entity.position.x)}, Y:{str(bot.entity.position.y)}, Z:{str(bot.entity.position.z)}")
   
   # Disable digging if needed
   movements.canDig = False
