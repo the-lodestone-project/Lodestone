@@ -44,7 +44,7 @@ Open Delivery Bot shines with its dynamic features, including pathfinding and op
 
 Here are step-by-step instructions on how to install and run the python script:
 
-#### (1) Install Node.js 🟢 (2 simple steps)
+### (1) Install Node.js 🟢 (2 simple steps)
 
 1. Download and install Node.js 18 from https://nodejs.org/en/
 2. Verify installation:
@@ -53,7 +53,7 @@ Here are step-by-step instructions on how to install and run the python script:
 node -v
 ```
 
-#### (2) Install Python 🐍 (2 simple steps)
+### (2) Install Python 🐍 (2 simple steps)
 
 1. Download and install Python 3 (if not already installed) from https://www.python.org/downloads/
 2. Verify installation:
@@ -62,7 +62,7 @@ node -v
 python3 --version
 ```
 
-#### (3) Install pip ⏬ (2 simple steps)
+### (3) Install pip ⏬ (2 simple steps)
 
 1. Install pip3 (if not already installed):
 
@@ -84,7 +84,7 @@ py -m ensurepip --default-pip
 pip3 --version
 ```
 
-#### (4) Clone 💻 (2 simple steps)
+### (4) Clone 💻 (2 simple steps)
 
 1. Clone this repository 🍴
 
@@ -98,7 +98,7 @@ git clone https://github.com/SilkePilon/OpenDeliveryBot.git
 cd OpenDeliveryBot  
 ```
 
-#### (5) Install packages 📦 (1 simple step)
+### (5) Install packages 📦 (1 simple step)
 
 1. Use pip to install needed packages
 
@@ -107,7 +107,7 @@ pip install -r requirements.txt
 ```
 
 
-#### (6) Config.json 📄 (1 step)
+### (6) Config.json 📄 (1 step)
 
 > [!IMPORTANT]
 > Not changing these settings will result in the bot not working. 🛑
@@ -161,7 +161,7 @@ This is how the file looks like in its default state:
 
 </details>
 
-#### (6) Run the bot 🤖 (1 simple step)
+### (6) Run the bot 🤖 (1 simple step)
 
 1. Run the bot
 
