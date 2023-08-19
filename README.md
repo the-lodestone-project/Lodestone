@@ -106,7 +106,6 @@ cd OpenDeliveryBot
 pip install -r requirements.txt
 ```
 
-
 ### (6) Config.json 📄 (1 step)
 
 > [!IMPORTANT]
@@ -126,7 +125,7 @@ The settings you NEED to edit are:
 * `Host`: The IP address or hostname of the Minecraft server. 🖥
 * `Port`: The port number the Minecraft server is listening on. Default is 25565. ⚡
 * `Auth`: The authentication method your account requires (mojang/microsoft/cracked). Default is "microsoft". 🔐
-* `Version`: Minecraft version to use when connecting to a server (false is auto). Default is false. 🕹
+* `Version`: Minecraft version to use when connecting to a server. Default is auto. 🕹
 * `CheckTimeoutInterval`: How often in milliseconds the bot checks if it is still logged into the server. Default is 600000 (10 minutes). ⏱
 * `ViewerPort`: The local port to run the viewer server on so you can visually see what the bot is doing. Default is 8000. 👀
 * `Goto`: The x, y, z coordinates for the bot to navigate to. Default is "100 ~ 100" (x=100, y doesn't matter, z=100). 🗺
@@ -192,6 +191,7 @@ Enjoy automated deliveries! 🎉
 ---
 
 ## MineFlayer 🚀
+
 Mineflayer is a complex library that allows you to control Minecraft accounts through a powerful, stable, and high-level JavaScript API
 
 ## Discord

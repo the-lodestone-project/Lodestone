@@ -28,7 +28,7 @@ CLIENT_USERNAME = config['ClientUsername']
 
 
 # Create version
-if config['Version'] == "false":
+if config['Version'] == "auto":
   version = False
 else:
   version = config['Version']

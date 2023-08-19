@@ -4,7 +4,7 @@
     "Host": "127.0.0.1",
     "Port": 25565,
     "Auth": "microsoft",
-    "Version": "false",
+    "Version": "auto",
     "CheckTimeoutInterval": 600000,
     "ViewerPort": 8000,
     "Goto": "100 ~ 100",
