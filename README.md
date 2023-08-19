@@ -102,7 +102,7 @@ cd OpenDeliveryBot
 
 3. Configure the config.json
 
-### Config.json INPORTANT!
+## Config.json
 
 > [!IMPORTANT]  
 > Not changing these settings will result in the bot not working.
@@ -159,7 +159,7 @@ This is how the file looks like in its default state:
 </details>
 
 
-4. Run the bot
+## Run the bot
 
 ```
 python3 main.py
