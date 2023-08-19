@@ -15,6 +15,7 @@ goals = require('mineflayer-pathfinder').goals
 mineflayerViewer = require('prismarine-viewer').mineflayer
 inventoryViewer = require('mineflayer-web-inventory')
 elytrafly = require("mineflayer-elytrafly-commonjs")
+taskManager = require("mineflayer-task-manager").taskManager
 Vec3 = require("vec3").Vec3
 
 
@@ -48,7 +49,8 @@ bot = mineflayer.createBot({
 # Load plugins
 bot.loadPlugin(pathfinder.pathfinder) 
 bot.loadPlugin(elytrafly.elytrafly)
-print('Started mineflayer')
+bot.loadPlugin(taskManager)
+print('Started Open Delivery Bot')
   
 # Login handler  
 @On(bot, 'login')
@@ -74,10 +76,12 @@ def handle_login(*args):
   
   # Main login logic
   if DEV == True:
-    GetItems(config['InitItemsName'], config['InitItemsCount'])
-    GoToLocation(config['goto'])
-    DepositItems("")
-    Respawn()
+    bot.taskManager.Add("Get Items From Chest", GetItems(config['InitItemsName'], config['InitItemsCount']), 500)
+    bot.taskManager.Add("Go To Specified Location", GoToLocation(config['goto']), 500)
+    bot.taskManager.Add("Deposit Items To Nearby Chest", DepositItems(""), 500)
+    bot.taskManager.Add("Self-destruct And Respawn", Respawn(), 500)
+    
+    print(", ".join([e.name for e in bot.taskManager.GetWholeQueue()]))
   
 
 
