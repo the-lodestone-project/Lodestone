@@ -173,7 +173,7 @@ Enjoy automated deliveries! 🎉
 
 ### 🚀 GitHub Codespaces
 
-SOON!
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/SilkePilon/OpenDeliveryBot)
 
 ---
 
