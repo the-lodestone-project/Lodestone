@@ -177,9 +177,8 @@ SOON!
 
 ---
 
-## How To Use
-
-SOON! 🕐
+## MineFlayer 🚀
+Mineflayer is a complex library that allows you to control Minecraft accounts through a powerful, stable, and high-level JavaScript API
 
 ## Discord
 
