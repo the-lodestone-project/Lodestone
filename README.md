@@ -104,16 +104,16 @@ cd OpenDeliveryBot
 
 ### Config.json INPORTANT!
 
-
-<details open>
-<summary>How to change to config file</summary>
-<br>
-
 > [!IMPORTANT]  
 > Not changing these settings will result in the bot not working.
 
 > [!WARNING]  
 > Do not share this file to anyone as it may contain your Minecraft login details.
+
+<details open>
+<summary>How to change to config file</summary>
+<br>
+
 
 The settings you NEED to edit are:
 
