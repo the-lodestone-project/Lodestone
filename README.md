@@ -112,19 +112,19 @@ The settings you may want to edit are:
 
   * Username: The Minecraft Email the bot will log into (use a name and no password for a cracked account).
   * `Password`: The password for your account (if not using cracked).
-  * Host: The IP address or hostname of the Minecraft server.
-  * Port: The port number the Minecraft server is listening on. Default is 25565.
-  * Auth: The authentication method your account requires (mojang/microsoft/cracked). Default is "microsoft".
-  * Version: Minecraft version to use when connecting to a server (false is auto). Default is false.
-  * CheckTimeoutInterval: How often in milliseconds the bot checks if it is still logged into the server. Default is 600000 (10 minutes).
-  * ViewerPort: The local port to run the viewer server on so you can visually see what the bot is doing. Default is 8000.
-  * Goto: The x, y, z coordinates for the bot to navigate to. Default is "100 ~ 100" (x=100, y doesn't matter, z=100).
-  * ChestRange: How close a chest must be to the bot for the bot to pathfind to  it. Default is 100 blocks.
-  * InitChestType: The type of chest for the bot to get items from. Default is "Chest".
-  * InitChestCords: The coordinates of the initial chest. Default is "100 100 100".
-  * InitItemsName: The name of the item(s) to get from the initial chest. Default is "SchulkerBox".
-  * InitItemsCount: The number of items to place in the initial chest. Default is 1.
-  * ClientUsername: The username for the client the delivery is made to. Default is "OpenDeliveryBot".
+  * `Host`: The IP address or hostname of the Minecraft server.
+  * `Port`: The port number the Minecraft server is listening on. Default is 25565.
+  * `Auth`: The authentication method your account requires (mojang/microsoft/cracked). Default is "microsoft".
+  * `Version`: Minecraft version to use when connecting to a server (false is auto). Default is false.
+  * `CheckTimeoutInterval`: How often in milliseconds the bot checks if it is still logged into the server. Default is 600000 (10 minutes).
+  * `ViewerPort`: The local port to run the viewer server on so you can visually see what the bot is doing. Default is 8000.
+  * `Goto`: The x, y, z coordinates for the bot to navigate to. Default is "100 ~ 100" (x=100, y doesn't matter, z=100).
+  * `ChestRange`: How close a chest must be to the bot for the bot to pathfind to it. Default is 100 blocks.
+  * `InitChestType`: The type of chest for the bot to get items from. Default is "Chest".
+  * `InitChestCords`: The coordinates of the initial chest. Default is "100 100 100".
+  * `InitItemsName`: The name of the item(s) to get from the initial chest. Default is "SchulkerBox".
+  * `InitItemsCount`: The number of items to place in the initial chest. Default is 1.
+  * `ClientUsername`: The username for the client the delivery is made to. Default is "OpenDeliveryBot".
 
 </details>
 
