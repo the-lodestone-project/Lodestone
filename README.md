@@ -109,7 +109,7 @@ cd OpenDeliveryBot
 <summary>How to change to config file</summary>
 <br>
 
-> [!WARNING]  
+> [!IMPORTANT]  
 > Not setting these setting will result in the bot not working.
 
 > [!WARNING]  
