@@ -110,7 +110,7 @@ cd OpenDeliveryBot
 <br>
 
 > [!IMPORTANT]  
-> Not setting these setting will result in the bot not working.
+> Not changing these settings will result in the bot not working.
 
 > [!WARNING]  
 > Do not share this file to anyone as it may contain your Minecraft login details.
@@ -132,6 +132,29 @@ The settings you NEED to edit are:
   * `InitItemsName`: The name of the item(s) to get from the initial chest. Default is "SchulkerBox".
   * `InitItemsCount`: The number of items to place in the initial chest. Default is 1.
   * `ClientUsername`: The username for the client the delivery is made to. Default is "OpenDeliveryBot".
+  
+
+This is how the file looks like in its default state:
+
+ ```json
+ {
+    "Username": "OpenDeliveryBot",
+    "Password": "",
+    "Host": "127.0.0.1",
+    "Port": 25565,
+    "Auth": "microsoft",
+    "Version": "false",
+    "CheckTimeoutInterval": 600000,
+    "ViewerPort": 8000,
+    "Goto": "100 ~ 100",
+    "ChestRage": 100,
+    "InitChestType": "Chest",
+    "InitChestCords": "100 100 100",
+    "InitItemsName": "SchulkerBox",
+    "InitItemsCount": 1,
+    "ClientUsername": "OpenDeliveryBot"
+}
+```
 
 </details>
 
