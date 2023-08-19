@@ -138,7 +138,7 @@ The settings you NEED to edit are:
 
 
 > [!NOTE]
-> Setting ``InitChestCords`` to `["100", "100", "100"]` will make the bot look for chest with the specified type in a 100 block radius. This can be helpful if the chest is moving a lot. Make sure to use a trapped chest as it's easier to find.
+> Setting ``InitChestCords`` to `["0", "0", "0"]` will make the bot look for chest with the specified type in a 100 block radius. This can be helpful if the chest is moving a lot. Make sure to use a trapped chest as it's easier to find.
 
 This is how the file looks like in its default state:
 
