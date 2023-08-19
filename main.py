@@ -20,8 +20,8 @@ HOST = "2b2t.org"
 bot = mineflayer.createBot({
     'host': HOST,
     'port': 25565,
-    'username': 'silke2007minecraft@gmail.com',
-    'password': 'Landrover01',
+    'username': '*********',
+    'password': '*****************',
     'auth': 'microsoft',
     'hideErrors': True,
     'version': False,
