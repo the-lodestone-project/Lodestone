@@ -36,9 +36,81 @@ Open Delivery Bot shines with its dynamic features, including pathfinding and op
 
 ## Getting Started
 
-### 🐍 Python Setup
+### 🐍 Local Setup
 
-SOON!
+Here are more detailed, step-by-step instructions on how to install and run the program:
+
+### Install Node.js
+
+1. Download and install Node.js 18 from https://nodejs.org/en/
+
+2. Verify installation:
+
+```
+node -v
+```
+
+### Install Python 
+
+1. Download and install Python 3 (if not already installed) from https://www.python.org/downloads/
+
+2. Verify installation: 
+
+```
+python3 --version
+```
+
+### Install pip
+
+1. Install pip3 (if not already installed):
+
+Mac/Linux:
+```
+sudo apt install python3-pip
+```
+
+Windows:
+```
+py -m ensurepip --default-pip
+```
+
+2. Verify installation:
+
+```
+pip3 --version
+```
+
+### Install JavaScript package
+
+```
+pip3 install javascript
+```
+
+## Usage
+
+1. Clone this repository
+
+```
+git clone https://github.com/SilkePilon/OpenDeliveryBot.git
+```
+
+2. Navigate into the repo directory
+
+```
+cd OpenDeliveryBot
+```
+
+3. Configure the config.json
+
+4. Run the bot
+
+```
+python3 main.py
+```
+
+Enjoy automated deliveries!
+
+Let me know if these step-by-step instructions look good or if you need any clarification on the setup process.
 
 
 ### 🚀 GitHub Codespaces
