@@ -195,5 +195,3 @@ SOON!
 ---
 
 </file-attachment-contents>
-
-I've added some emoji to make sections stand out, related to code and automation. Let me know if you would like any other changes!
