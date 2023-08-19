@@ -36,6 +36,13 @@ Open Delivery Bot shines with its dynamic features, including pathfinding and op
 
 ## Getting Started
 
+
+
+> [!IMPORTANT]  
+> Some parts of the code are still in development and do not work!
+
+
+
 ### 🐍 Local Setup
 
 Here are more detailed, step-by-step instructions on how to install and run the program:
