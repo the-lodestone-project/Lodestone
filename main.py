@@ -25,7 +25,7 @@ with open('config.json', 'r') as f:
 # Constants
 RANGE_GOAL = -1  
 CLIENT_USERNAME = config['ClientUsername']
-
+DEV = True
 
 # Create version
 if config['Version'] == "auto":
@@ -73,10 +73,92 @@ def handle_login(*args):
   bot.pathfinder.setMovements(movements)
   
   # Main login logic
-  # LookForChest("")   
+  if DEV == True:
+    GetItems(config['InitItemsName'], config['InitItemsCount'])
+    GoToLocation(config['goto'])
+    DepositItems("")
+    Respawn()
+  
+
+
+
+
+
+# Function to find and open the init chest
+def GetItems(items, count):
+  
+  if config['InitChestCords'] == ["0", "0", "0"]:
+    
+
+    foundChest = False
+    
+    while not foundChest:
+        
+      # Find nearby chest
+      
+      chestToOpen = bot.findBlock({
+          'matching': [mcData.blocksByName[name].id for name in [f'{str(config["InitChestType"]).lower()}']],
+          'maxDistance': 100,
+      })
+      
+      if not chestToOpen and foundChest == False:
+        bot.chat('no chest found')
+        continue
+        
+      # Go to chest location  
+      if chestToOpen.position.x:
+        x = chestToOpen.position.x
+        y = chestToOpen.position.y  
+        z = chestToOpen.position.z
+
+        bot.chat(f'/tell {CLIENT_USERNAME} [OPEN DELIVERY BOT] Found a nearby chest to deliver: [{str(x)}, {str(y)}, {str(z)}]')
+        locaton = bot.pathfinder.goto(pathfinder.goals.GoalNear(x, y, z, 1), timeout=60)
+        
+        try:
+          chest = bot.openContainer(chestToOpen)  
+        except Exception:    
+          bot.chat(f'/tell {CLIENT_USERNAME} [OPEN DELIVERY BOT] Please place a new chest in my location.')
+          continue
+            
+        print(chest.containerItems())
+        time.sleep(10)
+        chest.close()
+        bot.chat(f'/tell {CLIENT_USERNAME} [OPEN DELIVERY BOT] Items have been successfully delivered at: [{str(x)}, {str(y)}, {str(z)}] on [{datetime.now()}]')
+        foundChest = True
+        break
+  else:
+    x = config['InitChestCords'][0]
+    y = config['InitChestCords'][1]
+    z = config['InitChestCords'][2]
+    locaton = bot.pathfinder.goto(pathfinder.goals.GoalNear(x, y, z, 1), timeout=60)
+
+
+
+
+
+
+# Function to go to cordinates
+def GoToLocation(cordinates):
+    x = cordinates[0]
+    y = cordinates[1]
+    z = cordinates[2]
+    bot.chat(f'/tell {CLIENT_USERNAME} [OPEN DELIVERY BOT] Going to: [{str(x)}, {str(y)}, {str(z)}]')
+    locaton = bot.pathfinder.goto(pathfinder.goals.GoalNear(x, y, z, 1), timeout=60)
+    
+
+
+
+
+
+
+
+
+
+
+
 
 # Function to find and open chest  
-def LookForChest(items):
+def DepositItems(items):
 
   foundChest = False
   
@@ -114,6 +196,34 @@ def LookForChest(items):
       foundChest = True
       break
       
+
+# Function to find lava and selfdiscructs
+def Respawn():
+
+  foundLava = False
+  
+  while not foundLava:
+      
+    # Find nearby lava
+    LavaToFind = bot.findBlock({
+        'matching': [mcData.blocksByName[name].id for name in ['lava']], 
+        'maxDistance': 200,
+    })
+    
+    if not LavaToFind and foundLava == False:
+      bot.chat('no chest found')
+      continue
+      
+    # Go to lava location  
+    if LavaToFind.position.x:
+      x = LavaToFind.position.x
+      y = LavaToFind.position.y  
+      z = LavaToFind.position.z
+      locaton = bot.pathfinder.goto(pathfinder.goals.GoalNear(x, y, z, 1), timeout=60)
+      break
+
+
+
 # Handler for bot end  
 @On(bot, 'end')
 def handle_end(*args):

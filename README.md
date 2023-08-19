@@ -128,7 +128,7 @@ The settings you NEED to edit are:
 * `Version`: Minecraft version to use when connecting to a server. Default is auto. 🕹
 * `CheckTimeoutInterval`: How often in milliseconds the bot checks if it is still logged into the server. Default is 600000 (10 minutes). ⏱
 * `ViewerPort`: The local port to run the viewer server on so you can visually see what the bot is doing. Default is 8000. 👀
-* `Goto`: The x, y, z coordinates for the bot to navigate to. Default is "100 ~ 100" (x=100, y doesn't matter, z=100). 🗺
+* `Goto`: The x, y, z coordinates for the bot to navigate to. Default is "100 100 100" (x=100, y=100, z=100). 🗺
 * `ChestRange`: How close a chest must be to the bot for the bot to pathfind to it. Default is 100 blocks. 📦
 * `InitChestType`: The type of chest for the bot to get items from. Default is "Chest". 🗄
 * `InitChestCords`: The coordinates of the initial chest. Default is "100 100 100". 📍
@@ -140,18 +140,18 @@ This is how the file looks like in its default state:
 
 ```json
 {
-    "Username": "OpenDeliveryBot", 
-    "Password": "",
+    "Username": "OpenDeliveryBot",
+    "Password": "<PASSWORD>",
     "Host": "127.0.0.1",
     "Port": 25565,
     "Auth": "microsoft",
-    "Version": "false",
+    "Version": "auto",
     "CheckTimeoutInterval": 600000,
     "ViewerPort": 8000,
-    "Goto": "100 ~ 100",
+    "Goto": ["100", "100", "100"],
     "ChestRage": 100,
-    "InitChestType": "Chest",
-    "InitChestCords": "100 100 100",
+    "InitChestType": "chest",
+    "InitChestCords": ["100", "100", "100"],
     "InitItemsName": "SchulkerBox",
     "InitItemsCount": 1,
     "ClientUsername": "OpenDeliveryBot"
