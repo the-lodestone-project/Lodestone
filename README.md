@@ -108,6 +108,13 @@ cd OpenDeliveryBot
 <details open>
 <summary>How to change to config file</summary>
 <br>
+
+> [!WARNING]  
+> Not setting these setting will result in the bot not working.
+
+> [!WARNING]  
+> Do not share this file to anyone as it may contain your Minecraft login details.
+
 The settings you NEED to edit are:
 
   * `Username`: The Minecraft Email the bot will log into (use a name and no password for a cracked account).
