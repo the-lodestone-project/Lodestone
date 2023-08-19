@@ -1,0 +1,17 @@
+{
+    "Username": "OpenDeliveryBot",
+    "Password": "<PASSWORD>",
+    "Host": "127.0.0.1",
+    "Port": 25565,
+    "Auth": "microsoft",
+    "Version": "false",
+    "CheckTimeoutInterval": 600000,
+    "ViewerPort": 8000,
+    "Goto": "100 ~ 100",
+    "ChestRage": 100,
+    "InitChestType": "Chest",
+    "InitChestCords": "100 100 100",
+    "InitItemsName": "SchulkerBox",
+    "InitItemsCount": 1,
+    "ClientUsername": "OpenDeliveryBot"
+}

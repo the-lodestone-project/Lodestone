@@ -1,8 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from javascript import require, On
+
+# Import necessary modules
+from javascript import require, On  
 import time
+import json
 from datetime import datetime
+import matplotlib.pyplot as plt
+
+# Initialize mineflayer bot and plugins
 mineflayer = require('mineflayer')
 pathfinder = require('mineflayer-pathfinder')
 goals = require('mineflayer-pathfinder').goals
@@ -10,94 +16,93 @@ mineflayerViewer = require('prismarine-viewer').mineflayer
 inventoryViewer = require('mineflayer-web-inventory')
 elytrafly = require("mineflayer-elytrafly-commonjs")
 Vec3 = require("vec3").Vec3
-import matplotlib.pyplot as plt
 
 
-RANGE_GOAL = -1
-CLIENT_USERNAME = "Douwestrijder01"
-HOST = "2b2t.org"
+# Load bot config from JSON file
+with open('config.json', 'r') as f:
+    config = json.load(f)
 
+# Constants
+RANGE_GOAL = -1  
+CLIENT_USERNAME = config['ClientUsername']
+
+# Create bot instance 
 bot = mineflayer.createBot({
-    'host': HOST,
-    'port': 25565,
-    'username': 'silke2007minecraft@gmail.com',
-    'password': 'Landrover01',
-    'auth': 'microsoft',
-    'hideErrors': True,
-    'version': False,
-    'checkTimeoutInterval': 60 * 100000
-    })
+  'host': config['Host'],
+  'port': config['Port'],
+  'username': config['Username'],
+  'password': config['Password'],
+  'auth': config['Auth'],
+  'hideErrors': True,
+  'version': config['Version'],
+  'checkTimeoutInterval': config['CheckTimeoutInterval'],
+})
 
-bot.loadPlugin(pathfinder.pathfinder)
+# Load plugins
+bot.loadPlugin(pathfinder.pathfinder) 
 bot.loadPlugin(elytrafly.elytrafly)
 print('Started mineflayer')
-
-
-    
-
-
+  
+# Login handler  
 @On(bot, 'login')
-def handle(*args):
-    print(f'joined {HOST}')
-    print(bot.entity.position)
-    mineflayerViewer(bot, { "port": 80 })
-    inventoryViewer(bot)
-    mcData = require('minecraft-data')(bot.version)
-    movements = pathfinder.Movements(bot, mcData)
-    print(bot.players)
-    #If you want to Deactivate sth
-    movements.canDig = False
+def handle_login(*args):
+  print(f'joined {config["Host"]}:{config["Port"]}')
+  print(bot.entity.position)
+  mineflayerViewer(bot, { "port": config['ViewerPort'] })
+  inventoryViewer(bot)
+  global mcData
+  mcData = require('minecraft-data')(bot.version)
+  movements = pathfinder.Movements(bot, mcData)
+  print(bot.players)
+  
+  # Disable digging if needed
+  movements.canDig = False
 
-    bot.pathfinder.setMovements(movements)
-    # bot.elytrafly.elytraFlyTo(Vec3(bot.entity.position.x + 100, 0, bot.entity.position.z))
+  bot.pathfinder.setMovements(movements)
+  
+  # Main login logic
+  LookForChest("")   
+
+# Function to find and open chest  
+def LookForChest(items):
+
+  foundChest = False
+  
+  while not foundChest:
+      
+    # Find nearby chest
+    chestToOpen = bot.findBlock({
+        'matching': [mcData.blocksByName[name].id for name in ['chest']], 
+        'maxDistance': config['ChestRage'],
+    })
     
-    def LookForChest(range, items):
-        foundChest = False
+    if not chestToOpen and foundChest == False:
+      bot.chat('no chest found')
+      continue
+      
+    # Go to chest location  
+    if chestToOpen.position.x:
+      x = chestToOpen.position.x
+      y = chestToOpen.position.y  
+      z = chestToOpen.position.z
 
-        while not foundChest:
-            
-                chestToOpen = bot.findBlock({
-                    'matching': [mcData.blocksByName[name].id for name in ['chest']],
-                    'maxDistance': range
-                })
-                
-                if not chestToOpen and foundChest == False:
-                    bot.chat('no chest found')
-                    continue
-                if chestToOpen.position.x:
-                    x = chestToOpen.position.x
-                    y = chestToOpen.position.y
-                    z = chestToOpen.position.z
-
-                    bot.chat(f'/tell {CLIENT_USERNAME} [OPEN DELIVERY BOT] Found a nearby chest to deliver: [{str(x)}, {str(y)}, {str(z)}]')
-                    locaton = bot.pathfinder.goto(pathfinder.goals.GoalNear(x, y, z, 1), timeout=60)
-                    
-                    try:
-                        chest = bot.openContainer(chestToOpen)
-                    except Exception:
-                        
-                        bot.chat(f'/tell {CLIENT_USERNAME} [OPEN DELIVERY BOT] Please place a new chest in my location.')
-                        continue
-                        
-                    print(chest.containerItems())
-                    time.sleep(10)
-                    chest.close()
-                    bot.chat(f'/tell {CLIENT_USERNAME} [OPEN DELIVERY BOT] Items have been successfully delivered at: [{str(x)}, {str(y)}, {str(z)}] on [{datetime.now()}]')
-                    foundChest = True
-                    break
-
-            # except Exception as e:
-            #     print("no chests found!", e)
-            #     pass
-            
-            
-            
-    
-    while True:
-        distance = input("range: ")
-        LookForChest(distance, "")
-    
-
+      bot.chat(f'/tell {CLIENT_USERNAME} [OPEN DELIVERY BOT] Found a nearby chest to deliver: [{str(x)}, {str(y)}, {str(z)}]')
+      locaton = bot.pathfinder.goto(pathfinder.goals.GoalNear(x, y, z, 1), timeout=60)
+      
+      try:
+        chest = bot.openContainer(chestToOpen)  
+      except Exception:    
+        bot.chat(f'/tell {CLIENT_USERNAME} [OPEN DELIVERY BOT] Please place a new chest in my location.')
+        continue
+          
+      print(chest.containerItems())
+      time.sleep(10)
+      chest.close()
+      bot.chat(f'/tell {CLIENT_USERNAME} [OPEN DELIVERY BOT] Items have been successfully delivered at: [{str(x)}, {str(y)}, {str(z)}] on [{datetime.now()}]')
+      foundChest = True
+      break
+      
+# Handler for bot end  
 @On(bot, 'end')
-def handle(*args):
-    print('Bot ended!', args)
+def handle_end(*args):
+  print('Bot ended!', args)
