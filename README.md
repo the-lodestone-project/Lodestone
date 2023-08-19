@@ -110,7 +110,7 @@ cd OpenDeliveryBot
 <br>
 The settings you may want to edit are:
 
-  * Username: The Minecraft Email the bot will log into (use a name and no password for a cracked account).
+  * `Username`: The Minecraft Email the bot will log into (use a name and no password for a cracked account).
   * `Password`: The password for your account (if not using cracked).
   * `Host`: The IP address or hostname of the Minecraft server.
   * `Port`: The port number the Minecraft server is listening on. Default is 25565.
