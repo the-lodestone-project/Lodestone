@@ -163,6 +163,9 @@ This is how the file looks like in its default state:
 
 ### (6) Run the bot 🤖 (1 simple step)
 
+> [!IMPORTANT]
+> If the console gets spammed with random data, try changing the version from false to a version you know is supported by the server.
+
 1. Run the bot
 
 ```
@@ -172,6 +175,17 @@ python3 main.py
 Enjoy automated deliveries! 🎉
 
 ### 🚀 GitHub Codespaces
+
+> [!IMPORTANT]
+> If the console gets spammed with random data, try changing the version from false to a version you know is supported by the server.
+
+1. Copy this code to you clipboard and run it once the terminal is available
+
+```
+./codespaces.sh
+```
+
+2. Open GitHub CodeSpaces below
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/SilkePilon/OpenDeliveryBot)
 
