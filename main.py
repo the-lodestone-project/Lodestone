@@ -26,6 +26,13 @@ with open('config.json', 'r') as f:
 RANGE_GOAL = -1  
 CLIENT_USERNAME = config['ClientUsername']
 
+
+# Create version
+if config['Version'] == "false":
+  version = False
+else:
+  version = config['Version']
+
 # Create bot instance 
 bot = mineflayer.createBot({
   'host': config['Host'],
@@ -34,7 +41,7 @@ bot = mineflayer.createBot({
   'password': config['Password'],
   'auth': config['Auth'],
   'hideErrors': True,
-  'version': config['Version'],
+  'version': version,
   'checkTimeoutInterval': config['CheckTimeoutInterval'],
 })
 
@@ -53,7 +60,12 @@ def handle_login(*args):
   global mcData
   mcData = require('minecraft-data')(bot.version)
   movements = pathfinder.Movements(bot, mcData)
-  print(bot.players)
+  
+  with open("playes.log", "w") as x:
+    x.write(str(bot.players))
+  
+  with open("cords.log", "w") as x:
+    x.write(f"{datetime.now()}  |  X:{str(bot.entity.position.x)}, Y:{str(bot.entity.position.y)}, Z:{str(bot.entity.position.z)}")
   
   # Disable digging if needed
   movements.canDig = False
@@ -61,7 +73,7 @@ def handle_login(*args):
   bot.pathfinder.setMovements(movements)
   
   # Main login logic
-  LookForChest("")   
+  # LookForChest("")   
 
 # Function to find and open chest  
 def LookForChest(items):
