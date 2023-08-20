@@ -194,6 +194,14 @@ Enjoy automated deliveries! 🎉
 
 ---
 
+
+## Roadmap
+
+- [x] Add config.json file
+- [ ] Change to use as Pip package for better use
+
+
+
 ## MineFlayer 🚀
 
 Mineflayer is a complex library that allows you to control Minecraft accounts through a powerful, stable, and high-level JavaScript API
