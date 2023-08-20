@@ -199,6 +199,7 @@ Enjoy automated deliveries! 🎉
 
 - [x] Add config.json file
 - [ ] Change to use as Pip package for better use
+- [ ] Add Discord integration to remote control the bot in a channel 
 
 
 
