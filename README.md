@@ -198,6 +198,7 @@ Enjoy automated deliveries! 🎉
 ## Roadmap
 
 - [x] Add config.json file
+- [ ] Add [click](https://github.com/pallets/click)
 - [ ] Change to use as Pip package for better use
 - [ ] Add Discord integration to remote control the bot in a channel 
 
