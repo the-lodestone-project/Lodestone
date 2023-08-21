@@ -5,18 +5,21 @@
 from javascript import require, On  
 import time
 import json
+from tqdm import tqdm
 from datetime import datetime
 import matplotlib.pyplot as plt
 
 # Initialize mineflayer bot and plugins
-mineflayer = require('mineflayer')
-pathfinder = require('mineflayer-pathfinder')
-goals = require('mineflayer-pathfinder').goals
-mineflayerViewer = require('prismarine-viewer').mineflayer
-elytrafly = require("mineflayer-elytrafly-commonjs")
-autoVersionForge = require('minecraft-protocol-forge').autoVersionForge
-taskManager = require("mineflayer-task-manager").taskManager
-Vec3 = require("vec3").Vec3
+print("installing javascript libaries...")
+for i in tqdm(range(8)):
+  mineflayer = require('mineflayer')
+  pathfinder = require('mineflayer-pathfinder')
+  goals = require('mineflayer-pathfinder').goals
+  mineflayerViewer = require('prismarine-viewer').mineflayer
+  elytrafly = require("mineflayer-elytrafly-commonjs")
+  autoVersionForge = require('minecraft-protocol-forge').autoVersionForge
+  taskManager = require("mineflayer-task-manager").taskManager
+  Vec3 = require("vec3").Vec3
 
 
 # Load bot config from JSON file
