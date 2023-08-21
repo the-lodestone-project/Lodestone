@@ -13,8 +13,8 @@ mineflayer = require('mineflayer')
 pathfinder = require('mineflayer-pathfinder')
 goals = require('mineflayer-pathfinder').goals
 mineflayerViewer = require('prismarine-viewer').mineflayer
-inventoryViewer = require('mineflayer-web-inventory')
 elytrafly = require("mineflayer-elytrafly-commonjs")
+autoVersionForge = require('minecraft-protocol-forge').autoVersionForge
 taskManager = require("mineflayer-task-manager").taskManager
 Vec3 = require("vec3").Vec3
 
@@ -26,7 +26,7 @@ with open('config.json', 'r') as f:
 # Constants
 RANGE_GOAL = -1  
 CLIENT_USERNAME = config['ClientUsername']
-DEV = True
+DEV = False
 
 # Create version
 if config['Version'] == "auto":
@@ -46,6 +46,8 @@ bot = mineflayer.createBot({
   'checkTimeoutInterval': config['CheckTimeoutInterval'],
 })
 
+autoVersionForge(bot)
+
 # Load plugins
 bot.loadPlugin(pathfinder.pathfinder) 
 bot.loadPlugin(elytrafly.elytrafly)
@@ -58,7 +60,6 @@ def handle_login(*args):
   print(f'joined {config["Host"]}:{config["Port"]}')
   print(bot.entity.position)
   mineflayerViewer(bot, { "port": config['ViewerPort'] })
-  inventoryViewer(bot)
   global mcData
   mcData = require('minecraft-data')(bot.version)
   movements = pathfinder.Movements(bot, mcData)
