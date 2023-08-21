@@ -63,7 +63,7 @@ clear()
 
 if os.path.isfile("config.json") == False:
   with open('config.json', 'w') as g:
-    g.write({
+    g.write('''{
     "Username": "OpenDeliveryBot",
     "Password": "<PASSWORD>",
     "Host": "127.0.0.1",
@@ -79,7 +79,7 @@ if os.path.isfile("config.json") == False:
     "InitItemsName": "SchulkerBox",
     "InitItemsCount": 1,
     "ClientUsername": "OpenDeliveryBot"
-})
+}''')
 
 
 # Load bot config from JSON file
