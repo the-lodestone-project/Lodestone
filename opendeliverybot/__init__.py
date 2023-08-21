@@ -60,6 +60,28 @@ pbar.update(1)
 time.sleep(2)
 pbar.close()
 clear()
+
+if os.path.isfile("config.json") == False:
+  with open('config.json', 'w') as g:
+    g.write({
+    "Username": "OpenDeliveryBot",
+    "Password": "<PASSWORD>",
+    "Host": "127.0.0.1",
+    "Port": 25565,
+    "Auth": "microsoft",
+    "Version": "auto",
+    "CheckTimeoutInterval": 600000,
+    "ViewerPort": 8000,
+    "Goto": ["100", "100", "100"],
+    "ChestRage": 100,
+    "InitChestType": "chest",
+    "InitChestCords": ["100", "100", "100"],
+    "InitItemsName": "SchulkerBox",
+    "InitItemsCount": 1,
+    "ClientUsername": "OpenDeliveryBot"
+})
+
+
 # Load bot config from JSON file
 with open('config.json', 'r') as f:
     config = json.load(f)
