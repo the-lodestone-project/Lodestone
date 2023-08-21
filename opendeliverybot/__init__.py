@@ -4,30 +4,62 @@
 # Import necessary modules
 from javascript import require, On  
 import time
+import contextlib
+import io
+import sys
 import json
+import os
 from tqdm import tqdm
 from datetime import datetime
 import matplotlib.pyplot as plt
 
+
+def clear():
+  if os.name == 'nt':
+    _ = os.system('cls')
+  else:
+    _ = os.system('clear')
+clear()
+
+@contextlib.contextmanager
+def nostdout():
+    save_stdout = sys.stdout
+    sys.stdout = io.BytesIO()
+    yield
+    sys.stdout = save_stdout
+
+
+
 # Initialize mineflayer bot and plugins
 print("installing javascript libaries...")
-pbar = tqdm(total=100)
-mineflayer = require('mineflayer')
-pbar.update(10)
-pathfinder = require('mineflayer-pathfinder')
-pbar.update(10)
-goals = require('mineflayer-pathfinder').goals
-pbar.update(10)
-mineflayerViewer = require('prismarine-viewer').mineflayer
-pbar.update(10)
-elytrafly = require("mineflayer-elytrafly-commonjs")
-pbar.update(10)
-taskManager = require("mineflayer-task-manager").taskManager
-pbar.update(10)
-Vec3 = require("vec3").Vec3
-pbar.update(30)
+pbar = tqdm(total=8)
+with nostdout():
+  mcData = require('minecraft-data')
+pbar.update(1)
+with nostdout():
+  mineflayer = require('mineflayer')
+pbar.update(1)
+with nostdout():
+  pathfinder = require('mineflayer-pathfinder')
+pbar.update(1)
+with nostdout():
+  goals = require('mineflayer-pathfinder').goals
+pbar.update(1)
+with nostdout():
+  mineflayerViewer = require('prismarine-viewer').mineflayer
+pbar.update(1)
+with nostdout():
+  elytrafly = require("mineflayer-elytrafly-commonjs")
+pbar.update(1)
+with nostdout():
+  taskManager = require("mineflayer-task-manager").taskManager
+pbar.update(1)
+with nostdout():
+  Vec3 = require("vec3").Vec3
+pbar.update(1)
 time.sleep(2)
 pbar.close()
+clear()
 # Load bot config from JSON file
 with open('config.json', 'r') as f:
     config = json.load(f)
