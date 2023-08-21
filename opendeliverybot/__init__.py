@@ -17,7 +17,6 @@ for i in tqdm(range(8)):
   goals = require('mineflayer-pathfinder').goals
   mineflayerViewer = require('prismarine-viewer').mineflayer
   elytrafly = require("mineflayer-elytrafly-commonjs")
-  autoVersionForge = require('minecraft-protocol-forge').autoVersionForge
   taskManager = require("mineflayer-task-manager").taskManager
   Vec3 = require("vec3").Vec3
 
@@ -48,8 +47,6 @@ bot = mineflayer.createBot({
   'version': version,
   'checkTimeoutInterval': config['CheckTimeoutInterval'],
 })
-
-autoVersionForge(bot)
 
 # Load plugins
 bot.loadPlugin(pathfinder.pathfinder) 
