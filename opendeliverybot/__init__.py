@@ -31,7 +31,7 @@ def nostdout():
 
 
 # Initialize mineflayer bot and plugins
-pbar = tqdm(total=8)
+pbar = tqdm(total=6)
 pbar.set_description("installing javascript libaries", refresh=True)
 with nostdout():
   mcData = require('minecraft-data')
@@ -47,12 +47,6 @@ with nostdout():
 pbar.update(1)
 with nostdout():
   mineflayerViewer = require('prismarine-viewer').mineflayer
-pbar.update(1)
-with nostdout():
-  elytrafly = require("mineflayer-elytrafly-commonjs")
-pbar.update(1)
-with nostdout():
-  taskManager = require("mineflayer-task-manager").taskManager
 pbar.update(1)
 with nostdout():
   Vec3 = require("vec3").Vec3
@@ -111,9 +105,11 @@ def load_animation(text):
         res =''             
         for j in range(ls_len):
             res = res + load_str_list[j]
-              
+        
+        
         # displaying the resultant string
-        sys.stdout.write("\r"+res + animation[anicount])
+        text = str("\r"+res + animation[anicount]).center(20)
+        sys.stdout.write(text)
         sys.stdout.flush()
   
         # Assigning loading string
@@ -127,10 +123,8 @@ def load_animation(text):
       
     # for windows OS
     clear()
-    
+
 load_animation("starting open delivery bot... ")
-
-
 
 @click.command()
 @click.option("--username", help="Username for login.")
@@ -147,8 +141,8 @@ load_animation("starting open delivery bot... ")
 @click.option("--init_chest_cords", default=["100", "100", "100"], multiple=True, help="Coordinates to base chest.", prompt=True)  
 @click.option("--init_items_name", default="SchulkerBox", help="Name of items to get from the base chest.", prompt=True)
 @click.option("--init_items_count", default=1, help="Number of items to get from the base chest.",prompt=True)
-@click.option("--client_username", default="OpenDeliveryBot", help="Username to deliver to.", prompt=True)
-def main(username, password, host, port, auth, version, check_timeout, viewer_port, goto, chest_range, init_chest_type, init_chest_cords, init_items_name, init_items_count, client_username):
+@click.option("--recipient_username", default="OpenDeliveryBot", help="Username to deliver to.", prompt=True)
+def main(username, password, host, port, auth, version, check_timeout, viewer_port, goto, chest_range, init_chest_type, init_chest_cords, init_items_name, init_items_count, recipient_username):
 
   DEV = False
   # Create version
@@ -168,9 +162,8 @@ def main(username, password, host, port, auth, version, check_timeout, viewer_po
   })
 
   # Load plugins
-  bot.loadPlugin(pathfinder.pathfinder) 
-  bot.loadPlugin(elytrafly.elytrafly)
-  bot.loadPlugin(taskManager)
+  bot.loadPlugin(pathfinder.pathfinder)
+  
   print('Started Open Delivery Bot')
     
   # Login handler  
@@ -196,10 +189,10 @@ def main(username, password, host, port, auth, version, check_timeout, viewer_po
     
     # Main login logic
     if DEV == True:
-      bot.taskManager.Add("Get Items From Chest", GetItems(init_items_name, init_items_count), 500)
-      bot.taskManager.Add("Go To Specified Location", GoToLocation(goto), 500)
-      bot.taskManager.Add("Deposit Items To Nearby Chest", DepositItems(""), 500)
-      bot.taskManager.Add("Self-destruct And Respawn", Respawn(), 500)
+      GetItems(init_items_name, init_items_count)
+      GoToLocation(goto)
+      DepositItems("")
+      Respawn()
       
       print(", ".join([e.name for e in bot.taskManager.GetWholeQueue()]))
     
@@ -235,20 +228,20 @@ def main(username, password, host, port, auth, version, check_timeout, viewer_po
           y = chestToOpen.position.y  
           z = chestToOpen.position.z
 
-          bot.chat(f'/tell {client_username} [OPEN DELIVERY BOT] Found a nearby chest to deliver: [{str(x)}, {str(y)}, {str(z)}]')
+          bot.chat(f'/tell {recipient_username} [OPEN DELIVERY BOT] Found a nearby chest to deliver: [{str(x)}, {str(y)}, {str(z)}]')
           locaton = bot.pathfinder.goto(pathfinder.goals.GoalNear(x, y, z, 1), timeout=60)
           
           try:
             chest = bot.openContainer(chestToOpen)  
           except Exception:    
-            bot.chat(f'/tell {client_username} [OPEN DELIVERY BOT] Please place a new chest in my location.')
+            bot.chat(f'/tell {recipient_username} [OPEN DELIVERY BOT] Please place a new chest in my location.')
             continue
               
           print(chest.containerItems())
           item = next((item for item in chest.slots if item and item.name == f'{init_items_name}'), None)
           time.sleep(10)
           chest.close()
-          bot.chat(f'/tell {client_username} [OPEN DELIVERY BOT] Items have been successfully delivered at: [{str(x)}, {str(y)}, {str(z)}] on [{datetime.now()}]')
+          bot.chat(f'/tell {recipient_username} [OPEN DELIVERY BOT] Items have been successfully delivered at: [{str(x)}, {str(y)}, {str(z)}] on [{datetime.now()}]')
           foundChest = True
           break
     else:
@@ -267,7 +260,7 @@ def main(username, password, host, port, auth, version, check_timeout, viewer_po
       x = cordinates[0]
       y = cordinates[1]
       z = cordinates[2]
-      bot.chat(f'/tell {client_username} [OPEN DELIVERY BOT] Going to: [{str(x)}, {str(y)}, {str(z)}]')
+      bot.chat(f'/tell {recipient_username} [OPEN DELIVERY BOT] Going to: [{str(x)}, {str(y)}, {str(z)}]')
       locaton = bot.pathfinder.goto(pathfinder.goals.GoalNear(x, y, z, 1), timeout=60)
       
 
@@ -305,19 +298,19 @@ def main(username, password, host, port, auth, version, check_timeout, viewer_po
         y = chestToOpen.position.y  
         z = chestToOpen.position.z
 
-        bot.chat(f'/tell {client_username} [OPEN DELIVERY BOT] Found a nearby chest to deliver: [{str(x)}, {str(y)}, {str(z)}]')
+        bot.chat(f'/tell {recipient_username} [OPEN DELIVERY BOT] Found a nearby chest to deliver: [{str(x)}, {str(y)}, {str(z)}]')
         locaton = bot.pathfinder.goto(pathfinder.goals.GoalNear(x, y, z, 1), timeout=60)
         
         try:
           chest = bot.openContainer(chestToOpen)  
         except Exception:    
-          bot.chat(f'/tell {client_username} [OPEN DELIVERY BOT] Please place a new chest in my location.')
+          bot.chat(f'/tell {recipient_username} [OPEN DELIVERY BOT] Please place a new chest in my location.')
           continue
             
         print(chest.containerItems())
         time.sleep(10)
         chest.close()
-        bot.chat(f'/tell {client_username} [OPEN DELIVERY BOT] Items have been successfully delivered at: [{str(x)}, {str(y)}, {str(z)}] on [{datetime.now()}]')
+        bot.chat(f'/tell {recipient_username} [OPEN DELIVERY BOT] Items have been successfully delivered at: [{str(x)}, {str(y)}, {str(z)}] on [{datetime.now()}]')
         foundChest = True
         break
         
