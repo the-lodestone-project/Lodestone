@@ -130,9 +130,6 @@ def load_animation(text):
     
 load_animation("starting open delivery bot... ")
 
-# Load bot config from JSON file
-with open('config.json', 'r') as f:
-    config = json.load(f)
 
 
 @click.command()
@@ -155,10 +152,8 @@ def main(username, password, host, port, auth, version, check_timeout, viewer_po
 
   DEV = False
   # Create version
-  if config['Version'] == "auto":
+  if version == "auto":
     version = False
-  else:
-    version = config['Version']
 
   # Create bot instance 
   bot = mineflayer.createBot({
@@ -250,6 +245,7 @@ def main(username, password, host, port, auth, version, check_timeout, viewer_po
             continue
               
           print(chest.containerItems())
+          item = next((item for item in chest.slots if item and item.name == f'{init_items_name}'), None)
           time.sleep(10)
           chest.close()
           bot.chat(f'/tell {client_username} [OPEN DELIVERY BOT] Items have been successfully delivered at: [{str(x)}, {str(y)}, {str(z)}] on [{datetime.now()}]')
