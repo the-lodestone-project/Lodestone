@@ -11,16 +11,23 @@ import matplotlib.pyplot as plt
 
 # Initialize mineflayer bot and plugins
 print("installing javascript libaries...")
-for i in tqdm(range(8)):
-  mineflayer = require('mineflayer')
-  pathfinder = require('mineflayer-pathfinder')
-  goals = require('mineflayer-pathfinder').goals
-  mineflayerViewer = require('prismarine-viewer').mineflayer
-  elytrafly = require("mineflayer-elytrafly-commonjs")
-  taskManager = require("mineflayer-task-manager").taskManager
-  Vec3 = require("vec3").Vec3
-
-
+pbar = tqdm(total=100)
+mineflayer = require('mineflayer')
+pbar.update(10)
+pathfinder = require('mineflayer-pathfinder')
+pbar.update(10)
+goals = require('mineflayer-pathfinder').goals
+pbar.update(10)
+mineflayerViewer = require('prismarine-viewer').mineflayer
+pbar.update(10)
+elytrafly = require("mineflayer-elytrafly-commonjs")
+pbar.update(10)
+taskManager = require("mineflayer-task-manager").taskManager
+pbar.update(10)
+Vec3 = require("vec3").Vec3
+pbar.update(30)
+time.sleep(2)
+pbar.close()
 # Load bot config from JSON file
 with open('config.json', 'r') as f:
     config = json.load(f)
