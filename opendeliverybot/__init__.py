@@ -61,9 +61,8 @@ time.sleep(2)
 pbar.close()
 clear()
 
-if os.path.isfile("config.json") == False:
-  with open('config.json', 'w') as g:
-    g.write('''{
+
+config_defualt = {
     "Username": "OpenDeliveryBot",
     "Password": "<PASSWORD>",
     "Host": "127.0.0.1",
@@ -79,7 +78,15 @@ if os.path.isfile("config.json") == False:
     "InitItemsName": "SchulkerBox",
     "InitItemsCount": 1,
     "ClientUsername": "OpenDeliveryBot"
-}''')
+}
+
+
+config_defualt = json.dumps(config_defualt, indent=4)
+
+
+if os.path.isfile("config.json") == False:
+  with open('config.json', 'w') as g:
+    g.write(config_defualt)
 
 
 # Load bot config from JSON file
