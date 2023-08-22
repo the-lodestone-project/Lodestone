@@ -45,7 +45,7 @@ Open Delivery Bot shines with its dynamic features, including pathfinding and op
 Here are step-by-step instructions on how to install and run the python script:
 
 
-### (1) pip check ⏬ (2 simple steps)
+### (1) pip check ⏬
 
 1. Install pip3 (if not already installed):
 
@@ -61,7 +61,7 @@ Windows:
 py -m ensurepip --default-pip
 ```
 
-### (4) Pip install 💻 (1 simple steps)
+### (4) Install package 💻
 
 To install the package use the following command:
 
@@ -69,7 +69,7 @@ To install the package use the following command:
 pip install -U opendeliverybot
 ```
 
-### (5) Run! 💻 (1 simple steps)
+### (5) Run! 💻
 
 To run the bot simply use the following command:
 
@@ -77,7 +77,7 @@ To run the bot simply use the following command:
 python -m opendeliverybot
 ```
 
-### (6) Arguments & Config 📄 (1 step)
+### (6) Arguments & Config 📄
 
 > [!IMPORTANT]
 > Not changing some of these settings will result in the bot not working. 🛑
