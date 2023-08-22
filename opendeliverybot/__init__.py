@@ -12,7 +12,9 @@ import json
 import os
 from tqdm import tqdm
 from datetime import datetime
-
+import subprocess
+import requests
+import pkg_resources
 
 def clear():
   if os.name == 'nt':
@@ -20,6 +22,46 @@ def clear():
   else:
     _ = os.system('clear')
 clear()
+
+
+
+
+
+def nodeCheck():
+  global node_version
+  result = subprocess.run(["node", "--version"], 
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            text=True)
+  node_version = result.stdout.strip()
+  # Remove leading 'v'
+  node_version = node_version[1:] if node_version.startswith('v') else node_version
+  # Remove periods
+  node_version = node_version.replace('.', '')
+  if int(node_version[:2]) >= 18:
+    print(f"Detected node version {node_version[:2]} witch is supported!")
+  else:
+    print(f"Detected node version {node_version[:2]} witch is NOT supported!\nThis may cause problems. Please update to node 18 or above!")
+    time.sleep(7)
+  
+nodeCheck()
+
+
+
+def updateCheck():
+    package = 'opendeliverybot'  # replace with the package you want to check
+    response = requests.get(f'https://pypi.org/pypi/{package}/json')
+    global latest_version
+    global current_version
+    latest_version = response.json()['info']['version']
+    current_version = pkg_resources.get_distribution(package).version
+    if current_version != latest_version:
+      print("You are not using the latest version!\nConsider updating with:\npip install -U opendeliverybot")
+      time.sleep(7)
+  
+updateCheck()
+
+
 
 @contextlib.contextmanager
 def nostdout():
@@ -124,7 +166,7 @@ def load_animation(text):
     # for windows OS
     clear()
 
-load_animation("starting open delivery bot... ")
+load_animation(f"starting open delivery bot... ")
 
 @click.command()
 @click.option("--username", help="Username for login.")
@@ -163,9 +205,9 @@ def main(username, password, host, port, auth, version, check_timeout, viewer_po
 
   # Load plugins
   bot.loadPlugin(pathfinder.pathfinder)
-  
-  print('Started Open Delivery Bot')
-    
+  clear()
+  print(f'Started Open Delivery Bot\nNode version: {node_version[:2]}\nCurrent version: {current_version}\nLatest version: {latest_version}\n\n')
+  time.sleep(1)
   # Login handler  
   @On(bot, 'login')
   def handle_login(*args):
