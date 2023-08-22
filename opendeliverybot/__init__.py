@@ -73,7 +73,7 @@ def nostdout():
 
 
 # Initialize mineflayer bot and plugins
-pbar = tqdm(total=6)
+pbar = tqdm(total=7)
 pbar.set_description("installing javascript libaries", refresh=True)
 with nostdout():
   mcData = require('minecraft-data')
@@ -92,6 +92,9 @@ with nostdout():
 pbar.update(1)
 with nostdout():
   Vec3 = require("vec3").Vec3
+pbar.update(1)
+with nostdout():
+  armorManager = require("mineflayer-armor-manager")
 pbar.update(1)
 time.sleep(2)
 pbar.close()
@@ -184,7 +187,10 @@ load_animation(f"starting open delivery bot... ")
 @click.option("--init_items_name", default="SchulkerBox", help="Name of items to get from the base chest.", prompt=True)
 @click.option("--init_items_count", default=1, help="Number of items to get from the base chest.",prompt=True)
 @click.option("--recipient_username", default="OpenDeliveryBot", help="Username to deliver to.", prompt=True)
-def main(username, password, host, port, auth, version, check_timeout, viewer_port, goto, chest_range, init_chest_type, init_chest_cords, init_items_name, init_items_count, recipient_username):
+@click.option("--quit_on_low_health", default=True, help="Disconect the bot if the bot is on low health")
+@click.option("--low_health_threashold", default=10, help="How low the health must be for the bot to quit")
+@click.option("--armor_equip", default=True, help="If the bot needs to equip available armor.")
+def main(username, password, host, port, auth, version, check_timeout, viewer_port, goto, chest_range, init_chest_type, init_chest_cords, init_items_name, init_items_count, recipient_username, quit_on_low_health, low_health_threashold, armor_equip):
 
   DEV = False
   # Create version
@@ -207,6 +213,7 @@ def main(username, password, host, port, auth, version, check_timeout, viewer_po
   bot.loadPlugin(pathfinder.pathfinder)
   clear()
   print(f'Started Open Delivery Bot\nNode version: {node_version[:2]}\nCurrent version: {current_version}\nLatest version: {latest_version}\n\n')
+  
   time.sleep(1)
   # Login handler  
   @On(bot, 'login')
@@ -217,6 +224,23 @@ def main(username, password, host, port, auth, version, check_timeout, viewer_po
     global mcData
     mcData = require('minecraft-data')(bot.version)
     movements = pathfinder.Movements(bot, mcData)
+    
+    
+    if quit_on_low_health == True:
+        @On(bot, "health")
+        def health(this):
+            global botHealth
+            if bot.health >= botHealth:
+                botHealth = bot.health
+                return
+            
+            botHealth = bot.health
+            if botHealth < low_health_threashold:
+                bot.quit()
+
+    if armor_equip == True:
+        bot.armorManager.equipAll()
+    
     
     with open("playes.log", "w") as x:
       x.write(str(bot.players))

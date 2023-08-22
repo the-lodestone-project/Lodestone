@@ -106,6 +106,9 @@ The command line arguments available are:
 * `--init_items_name`: The name of the item(s) to get from the initial chest. Default is "SchulkerBox". 🎒
 * `--init_items_count`: The number of items to place in the initial chest. Default is 1. 🔢
 * `--recipient_username`: The username for the client the delivery is made to. Default is "OpenDeliveryBot". 👤
+* `--quit_on_low_health`: Disconect the bot if the bot is on low health. Default is "True". 👤
+* `--low_health_threashold`: How low the health must be for the bot to quit. Default is "10". 👤
+* `--armor_equip`: If the bot needs to equip all available armor. Default is "True". 👤
 
 
 > [!NOTE]
