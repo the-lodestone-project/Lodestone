@@ -15,6 +15,8 @@ from datetime import datetime
 import subprocess
 import requests
 import pkg_resources
+import structlog
+from threading import Thread
 
 def clear():
   if os.name == 'nt':
@@ -24,6 +26,8 @@ def clear():
 clear()
 
 
+
+logger = structlog.get_logger()
 
 
 
@@ -39,9 +43,9 @@ def nodeCheck():
   # Remove periods
   node_version = node_version.replace('.', '')
   if int(node_version[:2]) >= 18:
-    print(f"Detected node version {node_version[:2]} witch is supported!")
+    logger.info(f"Detected node version {node_version[:2]} witch is supported!")
   else:
-    print(f"Detected node version {node_version[:2]} witch is NOT supported!\nThis may cause problems. Please update to node 18 or above!")
+    logger.warning(f"Detected node version {node_version[:2]} witch is NOT supported!\nThis may cause problems. Please update to node 18 or above!")
     time.sleep(7)
   
 nodeCheck()
@@ -56,7 +60,7 @@ def updateCheck():
     latest_version = response.json()['info']['version']
     current_version = pkg_resources.get_distribution(package).version
     if current_version != latest_version:
-      print("You are not using the latest version!\nConsider updating with:\npip install -U opendeliverybot")
+      logger.warning("You are not using the latest version!\nConsider updating with:\npip install -U opendeliverybot")
       time.sleep(7)
   
 updateCheck()
@@ -176,7 +180,7 @@ load_animation(f"starting open delivery bot... ")
 @click.option("--password", help="Password for login.")  
 @click.option("--host", prompt=True, help="Hostname or IP address of server.")
 @click.option("--port", default=25565, help="Port number of server.")
-@click.option("--auth", default="microsoft", help="Authentication method.",prompt=True)
+@click.option("--auth", default="microsoft", help="Authentication method.")
 @click.option("--version", default="auto", help="Game version.",prompt=True)
 @click.option("--check_timeout", default=600000, help="Timeout interval for checks.")
 @click.option("--viewer_port", default=8000, help="Port for viewer.")
@@ -213,34 +217,40 @@ def main(username, password, host, port, auth, version, check_timeout, viewer_po
   bot.loadPlugin(pathfinder.pathfinder)
   bot.loadPlugin(armorManager)
   clear()
-  print(f'Started Open Delivery Bot\nNode version: {node_version[:2]}\nCurrent version: {current_version}\nLatest version: {latest_version}\n\n')
-  botHealth = 20
-  time.sleep(1)
-  # Login handler  
+  # Login handler 
   @On(bot, 'login')
   def handle_login(*args):
-    print(f'joined {host}:{port}')
-    print(bot.entity.position)
     mineflayerViewer(bot, { "port": viewer_port })
+    clear()
+    logger.info(f'\n\nStarted Open Delivery Bot\nNode version: {node_version[:2]}\nCurrent version: {current_version}\nLatest version: {latest_version}\n\n')
+    time.sleep(1)
+    logger.info(f'Logged in as: {bot.username}')
+    logger.info(f'Joined {host}:{port}')
+    logger.info(f'Cordinates: {str(float(bot.entity.position.x))}, {str(float(bot.entity.position.y))}, {str(float(bot.entity.position.z))}')
+    logger.info(f'Live webview is running at: http://localhost:{viewer_port}/')
     global mcData
     mcData = require('minecraft-data')(bot.version)
     movements = pathfinder.Movements(bot, mcData)
     
     
-    if quit_on_low_health == True:
-        @On(bot, "health")
-        def health(this):
-            global botHealth
-            if bot.health >= botHealth:
-                botHealth = bot.health
-                return
+    # if quit_on_low_health == True:
+    #     @On(bot, "health")
+    #     def health(this):
+    #         global botHealth
+    #         botHealth = 20
+    #         if bot.health >= botHealth:
+    #             botHealth = bot.health
+    #             return
             
-            botHealth = bot.health
-            if botHealth < low_health_threashold:
-                bot.quit()
+    #         botHealth = bot.health
+    #         if botHealth < low_health_threashold:
+    #             bot.quit()
 
-    if armor_equip == True:
-        bot.armorManager.equipAll()
+    # if armor_equip == True:
+    #   try:
+    #     bot.armorManager.equipAll()
+    #   except Exception as e:
+    #     pass
     
     
     with open("playes.log", "w") as x:
@@ -412,7 +422,7 @@ def main(username, password, host, port, auth, version, check_timeout, viewer_po
   # Handler for bot end  
   @On(bot, 'end')
   def handle_end(*args):
-    print('Bot ended!', args)
+    logger.info('Bot ended!', args)
 
 
 #run main

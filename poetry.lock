@@ -108,6 +108,23 @@ pygments = ">=2.13.0,<3.0.0"
 jupyter = ["ipywidgets (>=7.5.1,<9)"]
 
 [[package]]
+name = "structlog"
+version = "23.1.0"
+description = "Structured Logging for Python"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "structlog-23.1.0-py3-none-any.whl", hash = "sha256:79b9e68e48b54e373441e130fa447944e6f87a05b35de23138e475c05d0f7e0e"},
+    {file = "structlog-23.1.0.tar.gz", hash = "sha256:270d681dd7d163c11ba500bc914b2472d2b50a8ef00faa999ded5ff83a2f906b"},
+]
+
+[package.extras]
+dev = ["structlog[docs,tests,typing]"]
+docs = ["furo", "myst-parser", "sphinx", "sphinx-notfound-page", "sphinxcontrib-mermaid", "twisted"]
+tests = ["coverage[toml]", "freezegun (>=0.2.8)", "pretend", "pytest (>=6.0)", "pytest-asyncio (>=0.17)", "simplejson"]
+typing = ["mypy", "rich", "twisted"]
+
+[[package]]
 name = "tqdm"
 version = "4.66.1"
 description = "Fast, Extensible Progress Meter"
@@ -130,4 +147,4 @@ telegram = ["requests"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "9259a055e5459573fe620190f2e5b43c36526694cab7fef788d7171829ef37ff"
+content-hash = "6b2c1b383b7544ef9ceb2b29e56fb3615f306972dcdcd020effa580c2f6b1efa"
