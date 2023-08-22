@@ -214,7 +214,7 @@ def main(username, password, host, port, auth, version, check_timeout, viewer_po
   bot.loadPlugin(armorManager)
   clear()
   print(f'Started Open Delivery Bot\nNode version: {node_version[:2]}\nCurrent version: {current_version}\nLatest version: {latest_version}\n\n')
-  
+  botHealth = 20
   time.sleep(1)
   # Login handler  
   @On(bot, 'login')
