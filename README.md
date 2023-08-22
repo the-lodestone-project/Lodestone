@@ -44,25 +44,8 @@ Open Delivery Bot shines with its dynamic features, including pathfinding and op
 
 Here are step-by-step instructions on how to install and run the python script:
 
-### (1) Install Node.js 🟢 (2 simple steps)
 
-1. Download and install Node.js 18 from https://nodejs.org/en/
-2. Verify installation:
-
-```
-node -v
-```
-
-### (2) Install Python 🐍 (2 simple steps)
-
-1. Download and install Python 3 (if not already installed) from https://www.python.org/downloads/
-2. Verify installation:
-
-```
-python3 --version
-```
-
-### (3) Install pip ⏬ (2 simple steps)
+### (1) pip check ⏬ (2 simple steps)
 
 1. Install pip3 (if not already installed):
 
@@ -78,15 +61,9 @@ Windows:
 py -m ensurepip --default-pip
 ```
 
-2. Verify installation:
-
-```
-pip3 --version
-```
-
 ### (4) Pip install 💻 (1 simple steps)
 
-To install the pip package use the following command:
+To install the package use the following command:
 
 ```bash
 pip install -U opendeliverybot
@@ -94,7 +71,7 @@ pip install -U opendeliverybot
 
 ### (5) Run! 💻 (1 simple steps)
 
-To run the bot use the following command:
+To run the bot simply use the following command:
 
 ```bash
 python -m opendeliverybot
@@ -112,7 +89,7 @@ python -m opendeliverybot
 <summary>How to use the arguments</summary>
 <br>
 
-The settings you NEED to edit are:
+The command line arguments available are:
 
 * `--username`: The Minecraft Email the bot will log into (use a name and no password for a cracked account). 📧
 * `--password`: The password for your account (if not using cracked). 🔑
@@ -158,10 +135,10 @@ python -m opendeliverybot
 ## Roadmap
 
 - [x] Add config.json file
-- [ ] Add [click](https://github.com/pallets/click)
-- [ ] Change to use as Pip package for better use
+- [x] Add [click](https://github.com/pallets/click)
+- [x] Change to use as Pip package for better use
 - [ ] Add Discord integration to remote control the bot in a channel 
-
+- [ ] Add plugin support
 
 
 ## MineFlayer 🚀
