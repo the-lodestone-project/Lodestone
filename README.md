@@ -84,108 +84,68 @@ py -m ensurepip --default-pip
 pip3 --version
 ```
 
-### (4) Clone 💻 (2 simple steps)
+### (4) Pip install 💻 (1 simple steps)
 
-1. Clone this repository 🍴
+To install the pip package use the following command:
 
-```
-git clone https://github.com/SilkePilon/OpenDeliveryBot.git
-```
-
-2. Navigate into the repo directory 📂
-
-```
-cd OpenDeliveryBot  
+```bash
+pip install -U opendeliverybot
 ```
 
-### (5) Install packages 📦 (1 simple step)
+### (5) Run! 💻 (1 simple steps)
 
-1. Use pip to install needed packages
+To run the bot use the following command:
 
+```bash
+python -m opendeliverybot
 ```
-pip install -r requirements.txt
-```
 
-### (6) Config.json 📄 (1 step)
+### (6) Arguments & Config 📄 (1 step)
 
 > [!IMPORTANT]
-> Not changing these settings will result in the bot not working. 🛑
+> Not changing some of these settings will result in the bot not working. 🛑
 
 > [!WARNING]
-> Do not share this file to anyone as it may contain your Minecraft login details. 🔒
+> Do not share your Minecraft info to anyone. 🔒
 
 <details open>
-<summary>How to change to config file</summary>
+<summary>How to use the arguments</summary>
 <br>
 
 The settings you NEED to edit are:
 
-* `Username`: The Minecraft Email the bot will log into (use a name and no password for a cracked account). 📧
-* `Password`: The password for your account (if not using cracked). 🔑
-* `Host`: The IP address or hostname of the Minecraft server. 🖥
-* `Port`: The port number the Minecraft server is listening on. Default is 25565. ⚡
-* `Auth`: The authentication method your account requires (mojang/microsoft/cracked). Default is "microsoft". 🔐
-* `Version`: Minecraft version to use when connecting to a server. Default is auto. 🕹
-* `CheckTimeoutInterval`: How often in milliseconds the bot checks if it is still logged into the server. Default is 600000 (10 minutes). ⏱
-* `ViewerPort`: The local port to run the viewer server on so you can visually see what the bot is doing. Default is 8000. 👀
-* `Goto`: The x, y, z coordinates for the bot to navigate to. Default is ["100", "100", "100"] (x=100, y=100, z=100). 🗺
-* `ChestRange`: How close a chest must be to the bot for the bot to pathfind to it. Default is 100 blocks. 📦
-* `InitChestType`: The type of chest for the bot to get items from. Default is "Chest". 🗄
-* `InitChestCords`: The coordinates of the initial chest. Default is ["100", "100", "100"] (x=100, y=100, z=100). 📍
-* `InitItemsName`: The name of the item(s) to get from the initial chest. Default is "SchulkerBox". 🎒
-* `InitItemsCount`: The number of items to place in the initial chest. Default is 1. 🔢
-* `ClientUsername`: The username for the client the delivery is made to. Default is "OpenDeliveryBot". 👤
+* `--username`: The Minecraft Email the bot will log into (use a name and no password for a cracked account). 📧
+* `--password`: The password for your account (if not using cracked). 🔑
+* `--host`: The IP address or hostname of the Minecraft server. 🖥
+* `--port`: The port number the Minecraft server is listening on. Default is 25565. ⚡
+* `--auth`: The authentication method your account requires (mojang/microsoft/cracked). Default is "microsoft". 🔐
+* `--version`: Minecraft version to use when connecting to a server. Default is auto. 🕹
+* `--check_timeout`: How often in milliseconds the bot checks if it is still logged into the server. Default is 600000 (10 minutes). ⏱
+* `--viewer_port`: The local port to run the viewer server on so you can visually see what the bot is doing. Default is 8000. 👀
+* `--goto`: The x, y, z coordinates for the bot to navigate to. Default is ["100", "100", "100"] (x=100, y=100, z=100). 🗺
+* `--chest_range`: How close a chest must be to the bot for the bot to pathfind to it. Default is 100 blocks. 📦
+* `--init_chest_type`: The type of chest for the bot to get items from. Default is "Chest". 🗄
+* `--init_chest_cords`: The coordinates of the initial chest. Default is ["100", "100", "100"] (x=100, y=100, z=100). 📍
+* `--init_items_name`: The name of the item(s) to get from the initial chest. Default is "SchulkerBox". 🎒
+* `--init_items_count`: The number of items to place in the initial chest. Default is 1. 🔢
+* `--recipient_username`: The username for the client the delivery is made to. Default is "OpenDeliveryBot". 👤
 
 
 > [!NOTE]
-> Setting ``InitChestCords`` to `["0", "0", "0"]` will make the bot look for chest with the specified type in a 100 block radius. This can be helpful if the chest is moving a lot. Make sure to use a trapped chest as it's easier to find.
-
-This is how the file looks like in its default state:
-
-```json
-{
-    "Username": "OpenDeliveryBot",
-    "Password": "<PASSWORD>",
-    "Host": "127.0.0.1",
-    "Port": 25565,
-    "Auth": "microsoft",
-    "Version": "auto",
-    "CheckTimeoutInterval": 600000,
-    "ViewerPort": 8000,
-    "Goto": ["100", "100", "100"],
-    "ChestRage": 100,
-    "InitChestType": "chest",
-    "InitChestCords": ["100", "100", "100"],
-    "InitItemsName": "SchulkerBox",
-    "InitItemsCount": 1,
-    "ClientUsername": "OpenDeliveryBot"
-}
-```
+> Setting ``init_chest_cords`` to `["0", "0", "0"]` will make the bot look for chest with the specified type in a 100 block radius. This can be helpful if the chest is moving a lot. Make sure to use a trapped chest as it's easier to find.
 
 </details>
 
-### (6) Run the bot 🤖 (1 simple step)
 
-> [!IMPORTANT]
-> If the console gets spammed with random data, try changing the version from false to a version you know is supported by the server.
-
-1. Run the bot
-
-```
-python3 main.py
-```
-
-Enjoy automated deliveries! 🎉
-
-### 🚀 GitHub Codespaces
+### 🚀 GitHub Codespaces (run the bot in the cloud)
 
 > [!IMPORTANT]
 > If the console gets spammed with random data, try changing the version from false to a version you know is supported by the server.
 
 1. Copy this code to you clipboard and run it once the terminal is available
 
-```
-./codespaces.sh
+```bash
+python -m opendeliverybot
 ```
 
 2. Open GitHub CodeSpaces below
