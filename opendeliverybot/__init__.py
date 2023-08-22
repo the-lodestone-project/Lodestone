@@ -211,6 +211,7 @@ def main(username, password, host, port, auth, version, check_timeout, viewer_po
 
   # Load plugins
   bot.loadPlugin(pathfinder.pathfinder)
+  bot.loadPlugin(armorManager)
   clear()
   print(f'Started Open Delivery Bot\nNode version: {node_version[:2]}\nCurrent version: {current_version}\nLatest version: {latest_version}\n\n')
   
