@@ -1,0 +1,22 @@
+{
+    "server_ip": "127.0.0.1",
+    "server_port": "25565",
+    "bot_name": "Open1",
+    "password": "",
+    "auth": "Cracked",
+    "version": "1.18",
+    "check_timeout_interval": 600000,
+    "quit_on_low_health": false,
+    "low_health_threshold": 10,
+    "viewer_ip": "127.0.0.1",
+    "viewer_port": "1000",
+    "chest_type": "chest",
+    "chest_coords": [
+        "-62",
+        "71",
+        "47"
+    ],
+    "items_name": "ShulkerBox",
+    "items_count": 1,
+    "chest_range": "10"
+}
