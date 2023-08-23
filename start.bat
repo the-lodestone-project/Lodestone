@@ -1,1 +1,1 @@
-streamlit run bot_controller.py
+streamlit run opendliverbot\bot_controller.py
