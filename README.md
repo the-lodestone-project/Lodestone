@@ -20,4 +20,8 @@
 
 ## WIP
 
+Screenshots:
+[Dashboard](https://imgur.com/a/Hceiwhp)
+[Settings](https://imgur.com/a/9p1YbtE)
+
 </file-attachment-contents>
