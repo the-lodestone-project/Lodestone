@@ -18,6 +18,6 @@
   <a href="soon!"><img src="https://img.shields.io/badge/Discord-5865F2?logo=discord&logoColor=white" alt="Hungarian"></a>
 </p>
 
-##WIP
+## WIP
 
 </file-attachment-contents>
