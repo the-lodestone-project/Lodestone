@@ -1,1 +1,1 @@
-streamlit run src\webmode.py
+streamlit run src\__initweb__.py
