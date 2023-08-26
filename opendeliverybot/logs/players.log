@@ -1,0 +1,63 @@
+{
+  [94mOpen1[39m: {
+    [94musername[39m: [32m'Open1'[39m,
+    [94mping[39m: [33m0[39m,
+    [94muuid[39m: [32m'7b140e1e-4c0d-355a-80d7-b8b1560b3b7f'[39m,
+    [94mdisplayName[39m: ChatMessage {
+      [94mjson[39m: [95m[Object][39m,
+      [94mtext[39m: [32m''[39m,
+      [94mextra[39m: [95m[Array][39m,
+      [94mbold[39m: [90mundefined[39m,
+      [94mitalic[39m: [90mundefined[39m,
+      [94munderlined[39m: [90mundefined[39m,
+      [94mstrikethrough[39m: [90mundefined[39m,
+      [94mobfuscated[39m: [90mundefined[39m,
+      [94mcolor[39m: [90mundefined[39m
+    },
+    [94mskinData[39m: [90mundefined[39m,
+    [94mprofileKeys[39m: [1mnull[22m,
+    [94mentity[39m: Entity {
+      [94m_events[39m: [Object: null prototype] {},
+      [94m_eventsCount[39m: [33m0[39m,
+      [94m_maxListeners[39m: [90mundefined[39m,
+      [94mid[39m: [33m2290[39m,
+      [94mposition[39m: [95m[Vec3][39m,
+      [94mvelocity[39m: [95m[Vec3][39m,
+      [94myaw[39m: [33m3.141592653589793[39m,
+      [94mpitch[39m: [33m0[39m,
+      [94monGround[39m: [33mfalse[39m,
+      [94mheight[39m: [33m1.62[39m,
+      [94mwidth[39m: [33m0[39m,
+      [94meffects[39m: {},
+      [94mequipment[39m: [95m[Array][39m,
+      [94mheldItem[39m: [1mnull[22m,
+      [94misValid[39m: [33mtrue[39m,
+      [94mmetadata[39m: [],
+      [94musername[39m: [32m'Open1'[39m,
+      [94mtype[39m: [32m'player'[39m,
+      [94mname[39m: [32m'player'[39m,
+      [94mtimeSinceOnGround[39m: [33m0[39m,
+      [[34mSymbol(kCapture)[39m]: [33mfalse[39m
+    },
+    [94mgamemode[39m: [33m0[39m
+  },
+  [94mLevike[39m: {
+    [94musername[39m: [32m'Levike'[39m,
+    [94mping[39m: [33m0[39m,
+    [94muuid[39m: [32m'6d1e03d0-03d3-33a2-a13c-3be39342d066'[39m,
+    [94mdisplayName[39m: ChatMessage {
+      [94mjson[39m: [95m[Object][39m,
+      [94mtext[39m: [32m''[39m,
+      [94mextra[39m: [95m[Array][39m,
+      [94mbold[39m: [90mundefined[39m,
+      [94mitalic[39m: [90mundefined[39m,
+      [94munderlined[39m: [90mundefined[39m,
+      [94mstrikethrough[39m: [90mundefined[39m,
+      [94mobfuscated[39m: [90mundefined[39m,
+      [94mcolor[39m: [90mundefined[39m
+    },
+    [94mskinData[39m: [90mundefined[39m,
+    [94mprofileKeys[39m: [1mnull[22m,
+    [94mentity[39m: [90mundefined[39m
+  }
+}
