@@ -1,1 +1,5 @@
 opendeliverybot
+streamlit
+streamlit-extras
+streamlit-on-Hover-tabs
+streamlit-toggle-switch
