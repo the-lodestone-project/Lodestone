@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "opendeliverybot"
+version = "0.2.0"
+description = "🤖📦 Deliver anything, anywere! powered by MineFlayer."
+authors = ["Silke pilon <silkepilon2009@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+javascript = "^1!1.0.3"
+click = "^8.1.7"
+rich = "^13.5.2"
+tqdm = "^4.66.1"
+streamlit = "^1.26.0"
+streamlit-extras = "^0.3.0"
+streamlit-on-hover-tabs = "^1.0.1"
+streamlit-toggle-switch = "^1.0.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
