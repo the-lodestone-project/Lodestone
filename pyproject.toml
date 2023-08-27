@@ -1,10 +1,11 @@
 [tool.poetry]
 name = "opendeliverybot"
-version = "0.2.4"
+version = "0.2.5"
 description = "🤖📦 Deliver anything, anywere! powered by MineFlayer."
 authors = ["Silke pilon <silkepilon2009@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+include = ["*.py", "opendeliverybot/*"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
