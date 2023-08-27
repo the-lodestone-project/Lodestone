@@ -17,7 +17,7 @@ def run(console, gui):
     if gui != "":
         os.system("streamlit run web_ui.py")
     
-    if console == None and gui == None:
+    if console == "" and gui == "":
         if is_linux or is_mac:
             if os.environ.get('DISPLAY','') == '':
                 print('No GUI on Linux/Mac, running console UI')  
