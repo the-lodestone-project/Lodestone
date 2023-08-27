@@ -12,9 +12,9 @@ def run(console, gui):
     is_windows = os.environ.get('windir')
     
     
-    if console != None:
+    if console != "":
         consoleui()
-    if gui != None:
+    if gui != "":
         os.system("streamlit run web_ui.py")
     
     if console == None and gui == None:
