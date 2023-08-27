@@ -15,19 +15,20 @@ import requests
 import json
 import asyncio
 from bot import makeBot
-
+import os
+import sys
 st.set_page_config(
     page_title="Bot controller",
     page_icon="🕹",
     layout="centered",
     initial_sidebar_state="auto",
 )
-
-with open('data\data.json', 'r') as f:
+script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
+with open(f'{script_directory}/data\data.json', 'r') as f:
     data = json.load(f)
         
 def webmode():
-    st.markdown("<style>" + open("frontend\styles.css").read() + "</style>", unsafe_allow_html=True)
+    st.markdown("<style>" + open(f"{script_directory}/frontend\styles.css").read() + "</style>", unsafe_allow_html=True)
 
     with st.sidebar:
         tabs = on_hover_tabs(
@@ -121,7 +122,7 @@ def webmode():
             chest_type = selectbox("Select the chest type", ["chest", "trapped_chest"], no_selection_label=f"Selected: {data['chest_type']}")
                         
             def save_changes():
-                with open('data\data.json', 'r') as file:
+                with open(f'{script_directory}/data\data.json', 'r') as file:
                     data = json.load(file)
                 
                 data['server_ip'] = server_ip

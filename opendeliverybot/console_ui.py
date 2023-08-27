@@ -28,7 +28,7 @@ def consoleui():
 
 
   logger = structlog.get_logger()
-
+  script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
 
 
   def nodeCheck():
@@ -253,10 +253,10 @@ def consoleui():
       #     pass
       
       
-      with open("playes.log", "w") as x:
+      with open(f"{script_directory}/playes.log", "w") as x:
         x.write(str(bot.players))
       
-      with open("cords.log", "a") as x:
+      with open(f"{script_directory}/cords.log", "a") as x:
         x.write(f"{datetime.now()}  |  {host}:{port}  |  X:{str(bot.entity.position.x)}, Y:{str(bot.entity.position.y)}, Z:{str(bot.entity.position.z)}")
       
       # Disable digging if needed
