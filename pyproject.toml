@@ -1,11 +1,17 @@
 [tool.poetry]
 name = "opendeliverybot"
-version = "0.2.6"
+version = "0.2.7"
 description = "🤖📦 Deliver anything, anywere! powered by MineFlayer."
 authors = ["Silke pilon <silkepilon2009@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-include = ["*.py", "opendeliverybot/*"]
+
+[tool.poetry.packages]
+mypackage = [
+  {include = "opendeliverybot/**/*.py"},
+  {include = "opendeliverybot/**/*.css"}, 
+  {include = "opendeliverybot/**/*.json"}
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
