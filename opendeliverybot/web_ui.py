@@ -43,7 +43,7 @@ def webmode():
                     "text-transform": "uppercase",
                 },
                 "tabOptionsStyle": {
-                    ":hover :hover": {"color": "red", "cursor": "pointer"}
+                    ":hover :hover": {"color": "white", "cursor": "pointer"}
                 },
                 "iconStyle": {
                     "position": "fixed",
