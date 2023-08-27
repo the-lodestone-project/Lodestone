@@ -15,7 +15,7 @@ def run(console, gui):
     if console != "":
         consoleui()
     if gui != "":
-        os.system("streamlit run web_ui.py")
+        os.system(f"streamlit run {os.getcwd()}/web_ui.py")
     
     if console == "" and gui == "":
         if is_linux or is_mac:
@@ -24,11 +24,11 @@ def run(console, gui):
                 consoleui()
             else:
                 print('Linux/Mac GUI found, running Streamlit')
-                os.system("streamlit run web_ui.py")
+                os.system(f"streamlit run {os.getcwd()}/web_ui.py")
 
         elif is_windows:
             print('Windows found, running Streamlit')
-            os.system("streamlit run web_ui.py") 
+            os.system(f"streamlit run {os.getcwd()}/web_ui.py") 
 
         else:
             print('Unknown platform, defaulting to console UI')
