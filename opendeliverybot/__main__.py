@@ -1,6 +1,6 @@
 import os
 import sys
-from console_ui import consoleui
+from .console_ui import consoleui
 import click
 
 @click.command()
