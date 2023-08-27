@@ -27,3 +27,5 @@ node_modules/*
 package-lock.json
 package.json
 config.json.json
+opendeliverybot/__pycache__/*
+dist/*
