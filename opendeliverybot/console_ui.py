@@ -1,13 +1,37 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-def consoleui():
+import click
+@click.command()
+@click.option("--username", help="Username for login.")
+@click.option("--password", help="Password for login.")  
+@click.option("--host", prompt=True, help="Hostname or IP address of server.")
+@click.option("--port", default=25565, help="Port number of server.")
+@click.option("--auth", default="microsoft", help="Authentication method.")
+@click.option("--version", default="auto", help="Game version.",prompt=True)
+@click.option("--check_timeout", default=600000, help="Timeout interval for checks.")
+@click.option("--viewer_port", default=8000, help="Port for viewer.")
+@click.option("--goto", default=["100", "100", "100"],  help="Coordinates to go to.", prompt=True)
+@click.option("--chest_range", default=100, help="Range to search for chests.")
+@click.option("--init_chest_type", default="chest", help="Type of chest to look for when starting.")
+@click.option("--init_chest_cords", default=["100", "100", "100"],  help="Coordinates to base chest.")  
+
+
+# needs an fix with prompt=True
+@click.option("--init_items_name", default="SchulkerBox", help="Name of items to get from the base chest.")
+@click.option("--init_items_count", default=1, help="Number of items to get from the base chest.")
+#
+
+@click.option("--recipient_username", default="OpenDeliveryBot", help="Username to deliver to.", prompt=True)
+@click.option("--quit_on_low_health", default=True, help="Disconect the bot if the bot is on low health")
+@click.option("--low_health_threashold", default=10, help="How low the health must be for the bot to quit")
+@click.option("--armor_equip", default=True, help="If the bot needs to equip available armor.")
+def console(username, password, host, port, auth, version, check_timeout, viewer_port, goto, chest_range, init_chest_type, init_chest_cords, init_items_name, init_items_count, recipient_username, quit_on_low_health, low_health_threashold, armor_equip):
   # Import necessary modules
   from javascript import require, On  
   import time
   import contextlib
   import io
   import sys
-  import click
   import json
   import os
   from tqdm import tqdm
@@ -175,26 +199,8 @@ def consoleui():
 
   load_animation(f"starting open delivery bot... ")
 
-  @click.command()
-  @click.option("--username", help="Username for login.")
-  @click.option("--password", help="Password for login.")  
-  @click.option("--host", prompt=True, help="Hostname or IP address of server.")
-  @click.option("--port", default=25565, help="Port number of server.")
-  @click.option("--auth", default="microsoft", help="Authentication method.")
-  @click.option("--version", default="auto", help="Game version.",prompt=True)
-  @click.option("--check_timeout", default=600000, help="Timeout interval for checks.")
-  @click.option("--viewer_port", default=8000, help="Port for viewer.")
-  @click.option("--goto", default=["100", "100", "100"], multiple=True, help="Coordinates to go to.", prompt=True)
-  @click.option("--chest_range", default=100, help="Range to search for chests.")
-  @click.option("--init_chest_type", default="chest", help="Type of chest to look for when starting.")
-  @click.option("--init_chest_cords", default=["100", "100", "100"], multiple=True, help="Coordinates to base chest.", prompt=True)  
-  @click.option("--init_items_name", default="SchulkerBox", help="Name of items to get from the base chest.", prompt=True)
-  @click.option("--init_items_count", default=1, help="Number of items to get from the base chest.",prompt=True)
-  @click.option("--recipient_username", default="OpenDeliveryBot", help="Username to deliver to.", prompt=True)
-  @click.option("--quit_on_low_health", default=True, help="Disconect the bot if the bot is on low health")
-  @click.option("--low_health_threashold", default=10, help="How low the health must be for the bot to quit")
-  @click.option("--armor_equip", default=True, help="If the bot needs to equip available armor.")
-  def main(username, password, host, port, auth, version, check_timeout, viewer_port, goto, chest_range, init_chest_type, init_chest_cords, init_items_name, init_items_count, recipient_username, quit_on_low_health, low_health_threashold, armor_equip):
+
+  def main():
 
     DEV = False
     # Create version
@@ -427,3 +433,5 @@ def consoleui():
 
   #run main
   main()
+if __name__ == '__main__':
+  console()

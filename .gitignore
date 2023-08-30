@@ -29,3 +29,7 @@ package.json
 config.json.json
 opendeliverybot/__pycache__/*
 dist/*
+opendeliverybot/logs/players.log
+help.txt
+opendeliverybot/test.py
+opendeliverybot/logs/*

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "opendeliverybot"
-version = "0.2.15"
+version = "0.2.16"
 description = "🤖📦 Deliver anything, anywere! powered by MineFlayer."
 authors = ["Silke pilon <silkepilon2009@gmail.com>"]
 license = "MIT"
@@ -23,7 +23,7 @@ streamlit = "^1.26.0"
 streamlit-extras = "^0.3.0"
 streamlit-on-hover-tabs = "^1.0.1"
 streamlit-toggle-switch = "^1.0.2"
-
+streamlit_ttyd = { git = "https://github.com/NeveIsa/streamlit_ttyd.git", branch = "master" }
 
 [build-system]
 requires = ["poetry-core"]

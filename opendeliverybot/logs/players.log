@@ -1,1 +1,68 @@
-
+{
+  [94mcloverypath[39m: {
+    [94musername[39m: [32m'cloverypath'[39m,
+    [94mping[39m: [33m0[39m,
+    [94muuid[39m: [32m'4a3f57d1-9585-4f1f-92b6-dc3e98498d5a'[39m,
+    [94mdisplayName[39m: ChatMessage {
+      [94mjson[39m: [95m[Object][39m,
+      [94mwarn[39m: [95m[Function][39m,
+      [94mtext[39m: [32m'§a[H]§7 cloverypath'[39m,
+      [94mbold[39m: [90mundefined[39m,
+      [94mitalic[39m: [90mundefined[39m,
+      [94munderlined[39m: [90mundefined[39m,
+      [94mstrikethrough[39m: [90mundefined[39m,
+      [94mobfuscated[39m: [90mundefined[39m,
+      [94mcolor[39m: [90mundefined[39m
+    },
+    [94mskinData[39m: {
+      [94murl[39m: [32m'http://textures.minecraft.net/texture/1910de915d85c7ac5607bf99a7ab9cc67779857ea58c7f4563e148226abb6562'[39m,
+      [94mmodel[39m: [32m'slim'[39m
+    },
+    [94mprofileKeys[39m: [1mnull[22m,
+    [94mentity[39m: [90mundefined[39m
+  },
+  [94mCustomCapes[39m: {
+    [94musername[39m: [32m'CustomCapes'[39m,
+    [94mping[39m: [33m0[39m,
+    [94muuid[39m: [32m'c48ec6a5-df14-45e8-9295-4c27785f03ed'[39m,
+    [94mdisplayName[39m: ChatMessage {
+      [94mjson[39m: [95m[Object][39m,
+      [94mwarn[39m: [95m[Function][39m,
+      [94mtext[39m: [32m'§a[H]§7 CustomCapes'[39m,
+      [94mbold[39m: [90mundefined[39m,
+      [94mitalic[39m: [90mundefined[39m,
+      [94munderlined[39m: [90mundefined[39m,
+      [94mstrikethrough[39m: [90mundefined[39m,
+      [94mobfuscated[39m: [90mundefined[39m,
+      [94mcolor[39m: [90mundefined[39m
+    },
+    [94mskinData[39m: {
+      [94murl[39m: [32m'http://textures.minecraft.net/texture/5fddf34630a32cacc72938cc25f263e0aa14eeac4e3e93419101ab4d0527979'[39m,
+      [94mmodel[39m: [32m'slim'[39m
+    },
+    [94mprofileKeys[39m: [1mnull[22m,
+    [94mentity[39m: Entity {
+      [94m_events[39m: [Object: null prototype] {},
+      [94m_eventsCount[39m: [33m0[39m,
+      [94m_maxListeners[39m: [90mundefined[39m,
+      [94mid[39m: [33m13236[39m,
+      [94mposition[39m: [95m[Vec3][39m,
+      [94mvelocity[39m: [95m[Vec3][39m,
+      [94myaw[39m: [33m6.274851477180402[39m,
+      [94mpitch[39m: [33m-0.039279562128824[39m,
+      [94monGround[39m: [33mfalse[39m,
+      [94mheight[39m: [33m1.62[39m,
+      [94mwidth[39m: [33m0[39m,
+      [94meffects[39m: {},
+      [94mequipment[39m: [95m[Array][39m,
+      [94mheldItem[39m: [95m[Item][39m,
+      [94misValid[39m: [33mtrue[39m,
+      [94mmetadata[39m: [],
+      [94musername[39m: [32m'CustomCapes'[39m,
+      [94mtype[39m: [32m'player'[39m,
+      [94mname[39m: [32m'player'[39m,
+      [[34mSymbol(kCapture)[39m]: [33mfalse[39m
+    },
+    [94mgamemode[39m: [33m0[39m
+  }
+}

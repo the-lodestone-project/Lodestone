@@ -5,18 +5,40 @@ import streamlit_toggle as tog
 from streamlit_extras.add_vertical_space import add_vertical_space
 from streamlit_extras.stateful_button import button
 from streamlit_extras.no_default_selectbox import selectbox
+import streamlit.components.v1 as components
 from streamlit_extras.grid import grid
 from javascript import require, On
 import pandas as pd
+from streamlit_ttyd import terminal
 import numpy as np
+from contextlib import redirect_stdout
+import shlex
+from streamlit.runtime.scriptrunner import get_script_run_ctx
+from contextlib import contextmanager
+from io import StringIO
+import time
 import math
+import subprocess
 import datetime
 import requests
 import json
+import console_ui
 import asyncio
-from bot import makeBot
+import contextlib
+from functools import wraps
+from io import StringIO
+# from bot import makeBot
+from streamlit.runtime.scriptrunner import add_script_run_ctx
 import os
 import sys
+
+
+import bot_test
+
+
+
+
+
 st.set_page_config(
     page_title="Bot controller",
     page_icon="🕹",
@@ -26,8 +48,35 @@ st.set_page_config(
 script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
 with open(f'{script_directory}/data\data.json', 'r') as f:
     data = json.load(f)
-        
+
 def webmode():
+    def capture_output(func):
+        """Capture output from running a function and write using streamlit."""
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            # Redirect output to string buffers
+            stdout, stderr = StringIO(), StringIO()
+            try:
+                with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                    return func(*args, **kwargs)
+            except Exception as err:
+                st.write(f"Failure while executing: {err}")
+            finally:
+                if _stdout := stdout.getvalue():
+                    st.write("Execution stdout:")
+                    st.code(_stdout)
+                if _stderr := stderr.getvalue():
+                    st.write("Execution stderr:")
+                    st.code(_stderr)
+
+        return wrapper
+    stprint = capture_output(print)
+    
+    
+    
+    
+    
     st.markdown("<style>" + open(f"{script_directory}/frontend\styles.css").read() + "</style>", unsafe_allow_html=True)
 
     with st.sidebar:
@@ -61,7 +110,7 @@ def webmode():
         )
 
     if tabs == "Dashboard":
-        st.title("Bot controller")
+        st.title("Open Delivery Bot")
             
         col1, col2, col3, col4, col5 = st.columns([2, 2, 2, 2, 2])
 
@@ -86,8 +135,7 @@ def webmode():
             #     except requests.exceptions.RequestException:
             #         return False
                 
-            def openViewer():
-                render = st.markdown('<iframe width="700rem" height="400rem" src="http://127.0.0.1:1000" frameborder="0" scrolling="auto" allowfullscreen id="render"></iframe>', unsafe_allow_html=True)
+            
 
             # if isViewerRunning:
             #     start_dropoff_bot = st.button("Deliver item", disabled=True)
@@ -98,15 +146,38 @@ def webmode():
             # if isViewerRunning:
             #     prismarineViewer_button = st.button("Open bot view", key="viewer_button", on_click=openViewer)
             # else:
-            prismarineViewer_button = st.button("Open bot view", key="viewer_button", on_click=openViewer)
+            # prismarineViewer_button = st.button("Open bot view", key="viewer_button", on_click=openViewer)
             if start_dropoff_bot:
                 try:
-                    makeBot(x_coord, y_coord, z_coord, data)
+                    with open(f'{script_directory}/data\data.json', 'r') as file:
+                        settings = json.load(file)
+                        
+                   
+                    bot = bot_test.MinecraftBot(settings, streamlit=st)
+                    
+                    bot.start()
+                    
+                    
                     
                     st.toast("Bot started!", icon="✅")
-
+                    st.button("Stop bot", on_click=bot.stop)
                 except ValueError:
                     st.toast("Please enter a valid float number", icon="🚨")
+        if start_dropoff_bot:
+            Inv = st.empty()
+            cord = st.empty()
+            time.sleep(5)
+            if bot.logedin == True:
+                st.components.v1.iframe("http://127.0.0.1:1000", width=700, height=400, scrolling=False)
+                while True:
+                    Inv.text("Inventory: " + str(bot.inventory()))
+                    cord.text("Coordinates: " + str(bot.coordinates()))
+                
+                    # screen.markdown('<iframe width="700rem" height="400rem" src="http://127.0.0.1:1000" frameborder="0" scrolling="auto" allowfullscreen id="render"></iframe>', unsafe_allow_html=True)
+                    time.sleep(5)
+            
+            
+            # render = st.markdown('<iframe width="700rem" height="400rem" src="http://127.0.0.1:1000" frameborder="0" scrolling="auto" allowfullscreen id="render"></iframe><br><br><br><br><br><br><br><br><br><br><br><br><br><br>', unsafe_allow_html=True)
             
         
     if tabs == "Settings":
@@ -136,8 +207,9 @@ def webmode():
                 data['viewer_port'] = viewer_port
                 data['chest_type'] = chest_type
                 data['chest_range'] = chest_range
+                data['version'] = version
                 
-                with open('data\data.json', 'w') as file:
+                with open(f'{script_directory}/data\data.json', 'w') as file:
                     json.dump(data, file, indent=4)
 
 
@@ -145,7 +217,8 @@ def webmode():
             server_port = st.text_input(label="Server port", placeholder="25565", value=data["server_port"])
             viewer_port = st.text_input(label="Viewer port", placeholder="2000", value=data["viewer_port"])
             
-            auth = selectbox("Select an authentication method", ["Microsoft", "Cracked"], no_selection_label=f"Selected: {data['auth']}")
+            auth = selectbox("Select an authentication method", ["microsoft", "cracked"], no_selection_label=f"Selected: {data['auth']}")
+            version = selectbox("Select an Minecraft version", ["auto", "1.19", "1.18", "1.17", "1.16", "1.15", "1.14", "1.13", "1.12"], no_selection_label=f"Selected: {data['version']}")
             chest_range = st.text_input(label="Chest range", placeholder="100", value=data["chest_range"])
 
         st.markdown("""---""")

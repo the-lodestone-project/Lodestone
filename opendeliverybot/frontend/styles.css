@@ -4,6 +4,11 @@ section[data-testid='stSidebar'] {
     
 }
 
+section[data-testid='iframe'] {
+    border-radius: 10px;
+}
+
+
 @media(hover:hover) and (min-width: 600px) and (max-width: 769px){
 
     header[data-testid="stHeader"] {
