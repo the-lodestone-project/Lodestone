@@ -22,7 +22,7 @@ def run(console, args):
                 os.system(f"python {script_directory}/console_ui.py {' '.join(args)}")
             else:
                 print('Using GUI')
-                os.system(f"streamlit run {script_directory}/web_ui.py")
+                os.system(f"python -m streamlit run {script_directory}/web_ui.py")
         elif is_windows:
             print('Using GUI')
             os.system(f"streamlit run {script_directory}/web_ui.py")

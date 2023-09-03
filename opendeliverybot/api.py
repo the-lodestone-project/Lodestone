@@ -37,7 +37,7 @@ class BotResponse(BaseModel):
     status: str
     
 class Config(BaseModel):
-   # config fields
+   pass
 
 @app.post("/config")
 async def update_config(config: Config):
