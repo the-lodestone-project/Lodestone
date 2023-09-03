@@ -11,6 +11,17 @@ import sys
 
 
 global api_bot
+
+filestruc = "/"
+
+if os.name == 'nt':
+    filestruc = "\\"
+else:
+    filestruc = "/"
+
+
+
+
 class MinecraftBot:
     
     def __init__(self, config: dict, streamlit = False):
@@ -171,7 +182,7 @@ class MinecraftBot:
         self.mineflayerViewer(self.bot, {"port": self.config['viewer_port']})
     
     def __log_players(self):
-        with open(f"{self.script_directory}/logs\players.log", "w") as x:
+        with open(f"{self.script_directory}{filestruc}logs{filestruc}players.log", "w") as x:
             x.write(f'{str(self.bot.players)}\n')
             
     def __item_By_Name(self, items, name):
@@ -195,7 +206,7 @@ class MinecraftBot:
 
         row = [now, server_info, start_x, start_y, start_z, self.config['x_coord'], self.config['y_coord'], self.config['z_coord'], distance, delivered_item]
 
-        with open(f'{self.script_directory}/logs\\analytics.csv', 'a', newline='') as file:
+        with open(f'{self.script_directory}{filestruc}logs{filestruc}analytics.csv', 'a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(row)
 

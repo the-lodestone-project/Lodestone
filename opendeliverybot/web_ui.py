@@ -35,7 +35,12 @@ import sys
 import opendeliverybot.bot as bot
 
 
+filestruc = "/"
 
+if os.name == 'nt':
+    filestruc = "\\"
+else:
+    filestruc = "/"
 
 
 st.set_page_config(
@@ -45,7 +50,7 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
-with open(f'{script_directory}/data\data.json', 'r') as f:
+with open(f'{script_directory}{filestruc}data{filestruc}data.json', 'r') as f:
     data = json.load(f)
 
 def webmode():
@@ -76,7 +81,7 @@ def webmode():
     
     
     
-    st.markdown("<style>" + open(f"{script_directory}/frontend\styles.css").read() + "</style>", unsafe_allow_html=True)
+    st.markdown("<style>" + open(f"{script_directory}{filestruc}frontend{filestruc}styles.css").read() + "</style>", unsafe_allow_html=True)
 
     with st.sidebar:
         tabs = on_hover_tabs(
@@ -148,7 +153,7 @@ def webmode():
             # prismarineViewer_button = st.button("Open bot view", key="viewer_button", on_click=openViewer)
             if start_dropoff_bot:
                 try:
-                    with open(f'{script_directory}/data\data.json', 'r') as file:
+                    with open(f'{script_directory}{filestruc}data{filestruc}data.json', 'r') as file:
                         settings = json.load(file)
                         
                    
@@ -192,7 +197,7 @@ def webmode():
             chest_type = selectbox("Select the chest type", ["chest", "trapped_chest"], no_selection_label=f"Selected: {data['chest_type']}")
                         
             def save_changes():
-                with open(f'{script_directory}/data\data.json', 'r') as file:
+                with open(f'{script_directory}{filestruc}data{filestruc}data.json', 'r') as file:
                     data = json.load(file)
                 
                 data['server_ip'] = server_ip
@@ -208,7 +213,7 @@ def webmode():
                 data['chest_range'] = chest_range
                 data['version'] = version
                 
-                with open(f'{script_directory}/data\data.json', 'w') as file:
+                with open(f'{script_directory}{filestruc}data{filestruc}data.json', 'w') as file:
                     json.dump(data, file, indent=4)
 
 
