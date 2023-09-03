@@ -32,7 +32,7 @@ import os
 import sys
 
 
-import opendeliverybot.bot as bot
+import opendeliverybot.bot as OpenDeliveryBot
 
 
 filestruc = "/"
@@ -157,7 +157,7 @@ def webmode():
                         settings = json.load(file)
                         
                    
-                    bot = bot.MinecraftBot(settings, streamlit=st)
+                    bot = OpenDeliveryBot.MinecraftBot(settings, streamlit=st)
                     
                     bot.start()
                     
