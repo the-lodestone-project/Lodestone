@@ -9,7 +9,6 @@ import streamlit.components.v1 as components
 from streamlit_extras.grid import grid
 from javascript import require, On
 import pandas as pd
-from streamlit_ttyd import terminal
 import numpy as np
 from contextlib import redirect_stdout
 import shlex
@@ -33,7 +32,7 @@ import os
 import sys
 
 
-import bot_test
+import opendeliverybot.bot as bot
 
 
 
@@ -153,7 +152,7 @@ def webmode():
                         settings = json.load(file)
                         
                    
-                    bot = bot_test.MinecraftBot(settings, streamlit=st)
+                    bot = bot.MinecraftBot(settings, streamlit=st)
                     
                     bot.start()
                     
