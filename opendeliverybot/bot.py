@@ -189,7 +189,8 @@ class MinecraftBot:
         self.__steamlit("Viewer started on port %s" % self.config['viewer_port'])
     
     def __log_players(self):
-        with open(f"{self.script_directory}{filestruc}logs{filestruc}players.log", "w+") as x:
+        os.makedirs(os.path.dirname(f"{self.script_directory}{filestruc}logs{filestruc}players.log"), exist_ok=True)
+        with open(f"{self.script_directory}{filestruc}logs{filestruc}players.log", "w") as x:
             x.write(f'{str(self.bot.players)}\n')
             
     def __item_By_Name(self, items, name):
@@ -212,8 +213,8 @@ class MinecraftBot:
         distance = math.sqrt((self.config['x_coord'] - start_x)**2 + (self.config['z_coord'] - start_z)**2)
 
         row = [now, server_info, start_x, start_y, start_z, self.config['x_coord'], self.config['y_coord'], self.config['z_coord'], distance, delivered_item]
-
-        with open(f'{self.script_directory}{filestruc}logs{filestruc}analytics.csv', 'a+', newline='') as file:
+        os.makedirs(os.path.dirname(f'{self.script_directory}{filestruc}logs{filestruc}analytics.csv'), exist_ok=True)
+        with open(f'{self.script_directory}{filestruc}logs{filestruc}analytics.csv', 'a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(row)
 
