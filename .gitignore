@@ -33,3 +33,4 @@ opendeliverybot/logs/players.log
 help.txt
 opendeliverybot/test.py
 opendeliverybot/logs/*
+opendeliverybot/api.py

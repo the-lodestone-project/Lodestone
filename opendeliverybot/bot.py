@@ -24,7 +24,7 @@ else:
 
 class MinecraftBot:
     
-    def __init__(self, config: dict, streamlit = False):
+    def __init__(self, config: dict, streamlit = False, useReturn = False):
         """Main bot run loop"""
         self.st = streamlit
         self.mineflayer = require('mineflayer')
@@ -33,15 +33,29 @@ class MinecraftBot:
         self.mineflayerViewer = require('prismarine-viewer').mineflayer
         self.Vec3 = require("vec3").Vec3
         self.armorManager = require("mineflayer-armor-manager")
-        self.tpsPlugin = require('mineflayer-tps')(self.mineflayer)
         self.autoeat = require('mineflayer-auto-eat').plugin
         self.repl = require('repl')
         self.config = config
         self.logedin = False
+        self.useReturn = useReturn
         self.logger = structlog.get_logger()
         self.script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
         self.bot = self.__create_bot()
         api_bot = self.bot
+        
+    def __steamlit(self, message, icon="🤖"):
+        if self.useReturn == True:
+            self.logger.info(f"{message}")
+        elif self.st != False:
+            self.st.toast(f"{message}", icon=icon)
+        else:
+            self.logger.info(f"{message}")
+    
+    def __steamlit_error(self, err, **kwargs):
+        if self.st != False:
+            self.st.toast(f"{err}", icon="🚨")
+        else:
+            self.logger.info(f"{err}")
 
     def __create_bot(self):
         self.__steamlit(f"Joined {self.config['server_ip']}")
@@ -58,6 +72,9 @@ class MinecraftBot:
             'version': self.version,
             'hideErrors': True,
         })
+        
+        
+    
 
     def start(self):
         @On(self.bot, "login")
@@ -92,17 +109,7 @@ class MinecraftBot:
         self.windows = require('prismarine-windows')(self.bot.version)
         self.Item = require('prismarine-item')(self.bot.version)
 
-    def __steamlit(self, message, icon="🤖"):
-        if self.st != False:
-            self.st.toast(f"{message}", icon=icon)
-        else:
-            self.logger.info(f"{message}")
-    
-    def __steamlit_error(self, err, **kwargs):
-        if self.st != False:
-            self.st.toast(f"{err}", icon="🚨")
-        else:
-            self.logger.info(f"{err}")
+
     
     
     def __setup_events(self):
@@ -129,13 +136,13 @@ class MinecraftBot:
         @On(self.bot, "death")
         def death(*args):
             self.bot.end()
-            self.bot.viewer.close()
+            
             self.__steamlit("Bot died... stopping bot!")
         
         @On(self.bot, "kicked")
         def kicked(this, reason, *a):
             self.bot.end()
-            self.bot.viewer.close()
+            
             self.__steamlit("Kicked from server... stopping bot!")
             
         @On(self.bot, "autoeat_started")
@@ -180,9 +187,10 @@ class MinecraftBot:
 
     def __start_viewer(self):
         self.mineflayerViewer(self.bot, {"port": self.config['viewer_port']})
+        self.__steamlit("Viewer started on port %s" % self.config['viewer_port'])
     
     def __log_players(self):
-        with open(f"{self.script_directory}{filestruc}logs{filestruc}players.log", "w") as x:
+        with open(f"{self.script_directory}{filestruc}logs{filestruc}players.log", "w+") as x:
             x.write(f'{str(self.bot.players)}\n')
             
     def __item_By_Name(self, items, name):
@@ -206,7 +214,7 @@ class MinecraftBot:
 
         row = [now, server_info, start_x, start_y, start_z, self.config['x_coord'], self.config['y_coord'], self.config['z_coord'], distance, delivered_item]
 
-        with open(f'{self.script_directory}{filestruc}logs{filestruc}analytics.csv', 'a', newline='') as file:
+        with open(f'{self.script_directory}{filestruc}logs{filestruc}analytics.csv', 'a+', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(row)
 

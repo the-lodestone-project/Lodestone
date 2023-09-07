@@ -1,64 +1,51 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
-from datetime import datetime
-import bot
-
+import uvicorn
+from bot import MinecraftBot
+import json
+from fastapi.responses import JSONResponse
 app = FastAPI()
 
-global_config = {
-    "server_ip": "",
-    "server_port": "25565",
-    "bot_name": "",
-    "password": "",
-    "auth": "microsoft",
-    "version": "auto",
-    "check_timeout_interval": 20,
-    "armor_manager": True,
-    "viewer_ip": "127.0.0.1",
-    "viewer_port": "1000",
-    "chest_type": None,
-    "chest_coords": [
-        "-62",
-        "72",
-        "47"
-    ],
-    "items_name": "ShulkerBox",
-    "items_count": 1,
-    "chest_range": "10",
-    "quit_on_low_health": False,
-    "low_health_threshold": 10
+config = {
+  "server_ip": "menu.mc-complex.com", 
+  "server_port": 25565,
+  "bot_name": "silke2007minecraft@gmail.com",
+  "password": "",  
+  "auth": "microsoft",
+  "version": "1.12",
+  "viewer_port": 1000,
+  "chest_coords": [10, 64, -8],
+  "chest_range": 64,
+  "chest_type": "chest",
+  "items_name": "cobblestone",
+  "items_count": 64,
+  "x_coord": 0,
+  "y_coord": 70, 
+  "z_coord": 0
 }
 
+player = MinecraftBot(config, useReturn=True)
 
-bot = bot.MinecraftBot(global_config)
+@app.get("/start")
+async def startup():
+    player.start()
+    return JSONResponse(content={"message": "Bot started"})
 
-class BotResponse(BaseModel):
-    time: datetime
-    status: str
-    
-class Config(BaseModel):
-   pass
-
-@app.post("/config")
-async def update_config(config: Config):
-    global_config.update(config.model_dump())
-    return BotResponse(time=datetime.now(), status="success")
-
-
-@app.post("/start")
-async def start_bot():
-    bot.start()
-    return BotResponse(time=datetime.now(), status="started")
-
-@app.post("/stop")
-async def stop_bot():
-    bot.stop()
-    return BotResponse(time=datetime.now(), status="stopped")
-
-@app.get("/inventory", response_model=BotResponse) 
+@app.get("/inventory")
 async def get_inventory():
-    return BotResponse(time=datetime.now(), status=bot.inventory())
+    return JSONResponse(content={"inventory": player.inventory()})
 
-@app.get("/coordinates", response_model=BotResponse)
+@app.get("/coordinates") 
 async def get_coordinates():
-    return BotResponse(time=datetime.now(), status=bot.coordinates())
+    return JSONResponse(content={"coordinates": player.coordinates()})
+
+@app.get("/username")
+async def get_username():
+    return JSONResponse(content={"username": player.bot.username})
+
+@app.get("/stop")
+async def stop_bot():
+    player.stop()
+    return JSONResponse(content={"message": "Bot stopped"})
+
+if __name__ == "__main__":
+    uvicorn.run(app)
