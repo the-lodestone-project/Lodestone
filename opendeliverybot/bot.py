@@ -307,7 +307,7 @@ class MinecraftBot:
     
     def coordinates(self):
         if self.logedin == True:
-            return f"{self.bot.entity.position.x}, {self.bot.entity.position.y}, {self.bot.entity.position.z}"
+            return f"{int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}"
     
     def stop(self):
         self.bot.end()
