@@ -100,7 +100,6 @@ class MinecraftBot:
         self.mcData = require('minecraft-data')(self.bot.version)
         self.bot.loadPlugin(self.pathfinder.pathfinder)
         self.bot.loadPlugin(self.armorManager)
-        self.bot.loadPlugin(self.tpsPlugin)
         self.bot.loadPlugin(self.autoeat)
         self.movements = self.pathfinder.Movements(self.bot, self.mcData)
         self.movements.canDig = False
