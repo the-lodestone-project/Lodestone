@@ -8,7 +8,7 @@ import csv
 import structlog
 import os
 import sys
-
+from datetime import date
 
 global api_bot
 
@@ -23,13 +23,28 @@ else:
 
 
 class MinecraftBot:
-    def __init__(self, config: dict, streamLit = False, useReturn = False, discordWebhook = None):
+    def __init__(self, config: dict, streamLit = False, useReturn = False, discordWebhook = None, useDiscordForms = False):
         """Main bot run loop"""
+        global logger
+        self.logger = structlog.get_logger()
+        logger = self.logger
         if discordWebhook != None:
             from discord import SyncWebhook
+            from discord import Embed
+            self.Embed = Embed
+            self.useDiscordForms = useDiscordForms
             self.webhook = SyncWebhook.from_url(f"{discordWebhook}")
-            
-            self.webhook.send("Sucsesfully Connected To The Webhook!")
+            embedVar = Embed(title="Sucsesfully Connected To The Webhook!", description="**Great news! The bot has successfully connected to this channel's webhook. From now on, it will send all the logs and valuable data right here, keeping you informed about everything happening on the server.**\n\n **Links:**\n* [**GitHub**](https://github.com/SilkePilon/OpenDeliveryBot)\n* [**Report Bugs**](https://github.com/SilkePilon/OpenDeliveryBot/issues)\n* [**Web Interface**](https://github.com/SilkePilon/OpenDeliveryBot-react)", color=0x3498db)
+            embedVar.timestamp = datetime.datetime.utcnow()
+            embedVar.set_footer(text='\u200b',icon_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true")
+            if useDiscordForms == True:
+                today = date.today()
+                self.webhook.send(content=f"{today}", thread_name=f"{today}", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embedVar)
+            else:
+                try:
+                    self.webhook.send(content="", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embedVar)
+                except:
+                    self.logger.error(f"Detected that you are using a Forms channel but 'useDiscordForms' is set to False. Please change 'useDiscordForms' to True or provide a webhook url for a text channel.")
         self.st = streamLit
         self.discordWebhook = discordWebhook
         self.mineflayer = require('mineflayer')
@@ -44,9 +59,7 @@ class MinecraftBot:
         self.logedin = False
         self.useReturn = useReturn
         
-        global logger
-        self.logger = structlog.get_logger()
-        logger = self.logger
+    
         self.script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
         self.bot = self.__create_bot()
         self.msa_data = False
@@ -54,21 +67,41 @@ class MinecraftBot:
         global api_bot
         api_bot = self.bot
         
-    def __steamlit(self, message, icon="🤖"):
+    def __loging(self, message, icon="🤖", error=False, info=False, warning=False, chat=False, imageUrl:str=""):
+        
         if self.useReturn == True:
             self.logger.info(f"{message}")
         elif self.discordWebhook != None:
-            self.webhook.send(content=f"{message}", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", tts=False, ephemeral=False)
+            color = 0x3498db
+            if error == True:
+                color = 0x992d22
+            if info == True:
+                color = 0x3498db
+            if warning == True:
+                color = 0xe67e22
+            if chat == True:
+                color = 0x2ecc71
+            embed = self.Embed(title="", description=f"**{message}**", color=color)
+            embed.timestamp = datetime.datetime.utcnow()
+            if imageUrl != "":
+                embed.set_thumbnail(url=imageUrl)
+            try:
+                embed.set_footer(text=f'{self.bot.username}',icon_url=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
+            except:
+                embed.set_footer(text='\u200b',icon_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true")
+            if self.useDiscordForms == True:
+                today = date.today()
+                self.webhook.send(content=f"{today}", thread=f"{today}", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embed)
+            else:
+                try:
+                    self.webhook.send(content=f"", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embed)
+                except:
+                    self.logger.error(f"Detected that you are using a Forms channel but 'useDiscordForms' is set to False. Please change 'useDiscordForms' to True or provide a webhook url for a text channel.")
         elif self.st != False:
             self.st.toast(f"{message}", icon=icon)
-        else:
-            self.logger.info(f"{message}")
+        
+        self.logger.info(f"{message}")
     
-    def __steamlit_error(self, err, **kwargs):
-        if self.st != False:
-            self.st.toast(f"{err}", icon="🚨")
-        else:
-            self.logger.info(f"{err}")
             
     def __msa(self, *msa):
         self.msa_data = msa[0]
@@ -82,7 +115,7 @@ class MinecraftBot:
     
 
     def __create_bot(self):
-        self.__steamlit(f"Joined {self.config['server_ip']}")
+        self.__loging(f"Connecting to {self.config['server_ip']}", info=True, imageUrl=f"https://eu.mc-api.net/v3/server/favicon/{self.config['server_ip']}")
         if self.config['version'] == "auto":
             self.version = False
         else:
@@ -104,14 +137,16 @@ class MinecraftBot:
     
 
     def start(self):
-        @On(self.bot, "login")
-        def on_login(*args):
+        # @On(self.bot, "login")
+        # def on_login(*args):
+        
             # r = self.repl.start('> ')
             # r.context.bot = self.bot
+            self.__loging(f'Logged in as {self.bot.username}', info=True, imageUrl=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
             self.logedin = True
             self.__start_viewer()
             self.__setup_events()
-            self.__steamlit(f'Cordinates: {self.bot.entity.position.x}, {self.bot.entity.position.y}, {self.bot.entity.position.z}')
+            self.__loging(f'Cordinates: {int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}', info=True)
             self.__load_plugins()
             # self.__auto_totem()
             self.__equip_armor()
@@ -155,7 +190,7 @@ class MinecraftBot:
                 p = block.position.offset(0, 1, 0)
                 self.bot.pathfinder.goto(self.pathfinder.goals.GoalNear(p.x, p.y, p.z, 1), timeout=60)
             except:
-                self.__steamlit(f"Cant get to goal")
+                self.__loging(f"Cant get to goal", error=True)
         
         
         
@@ -163,25 +198,25 @@ class MinecraftBot:
         def death(*args):
             self.bot.end()
             
-            self.__steamlit("Bot died... stopping bot!")
+            self.__loging("Bot died... stopping bot!", warning=True)
         
         @On(self.bot, "kicked")
         def kicked(this, reason, *a):
             self.bot.end()
             
-            self.__steamlit("Kicked from server... stopping bot!")
+            self.__loging("Kicked from server... stopping bot!", warning=True)
             
         @On(self.bot, "autoeat_started")
         def autoeat_started(item, offhand, *a):
-            self.__steamlit(f"Eating {item['name']} in {'offhand' if offhand else 'hand'}")
+            self.__loging(f"Eating {item['name']} in {'offhand' if offhand else 'hand'}", info=True)
             
         @On(self.bot, "autoeat_finished")
         def autoeat_finished(item, offhand):
-            self.__steamlit(f"Finished eating {item['name']} in {'offhand' if offhand else 'hand'}")
+            self.__loging(f"Finished eating {item['name']} in {'offhand' if offhand else 'hand'}", info=True)
             
         @On(self.bot, "error")
         def error(_, error):
-            self.__steamlit_error(error)
+            self.__loging(error, error=True)
         
         @On(self.bot, "end")
         def create_new_bot(*a):
@@ -190,7 +225,7 @@ class MinecraftBot:
         @On(self.bot, 'chat')
         def handleMsg(this, sender, message, *args):
             if sender and (sender != self.bot.username):
-                self.__steamlit(f"{sender}: {message}", icon="💬")
+                self.__loging(f"💬 {sender}: {message}", chat=True)
             
 
     def __equip_armor(self):
@@ -213,7 +248,7 @@ class MinecraftBot:
 
     def __start_viewer(self):
         self.mineflayerViewer(self.bot, {"port": self.config['viewer_port']})
-        self.__steamlit("Viewer started on port %s" % self.config['viewer_port'])
+        self.__loging("Viewer started on port %s" % self.config['viewer_port'], info=True)
     
     def __log_players(self):
         os.makedirs(os.path.dirname(f"{self.script_directory}{filestruc}logs{filestruc}players.log"), exist_ok=True)
@@ -295,7 +330,7 @@ class MinecraftBot:
             })
         
             if not chestToOpen and foundChest == False:
-                self.__steamlit("No delivery chest found")
+                self.__loging("No delivery chest found", error=True)
                 break
                 
             if chestToOpen.position.x:
@@ -338,5 +373,5 @@ class MinecraftBot:
     
     def stop(self):
         self.bot.end()
-        self.__steamlit("Stopped bot!")
+        self.__loging("Stopped bot!", warning=True)
         

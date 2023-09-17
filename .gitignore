@@ -34,3 +34,4 @@ help.txt
 opendeliverybot/test.py
 opendeliverybot/logs/*
 opendeliverybot/api.py
+opendeliverybot/logs/*.log
