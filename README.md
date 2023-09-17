@@ -44,7 +44,6 @@ Open Delivery Bot shines with its dynamic features, including pathfinding and op
 
 Here are step-by-step instructions on how to install and run the python script:
 
-
 ### (1) pip check ⏬
 
 1. Install pip3 (if not already installed):
@@ -110,12 +109,10 @@ The command line arguments available are:
 * `--low_health_threashold`: How low the health must be for the bot to quit. Default is "10". 👤
 * `--armor_equip`: If the bot needs to equip all available armor. Default is "True". 👤
 
-
 > [!NOTE]
 > Setting ``init_chest_cords`` to `["0", "0", "0"]` will make the bot look for chest with the specified type in a 100 block radius. This can be helpful if the chest is moving a lot. Make sure to use a trapped chest as it's easier to find.
 
 </details>
-
 
 ### 🚀 GitHub Codespaces (run the bot in the cloud)
 
@@ -134,15 +131,14 @@ python -m opendeliverybot
 
 ---
 
-
 ## Roadmap
 
-- [x] Add config.json file
-- [x] Add [click](https://github.com/pallets/click)
-- [x] Change to use as Pip package for better use
-- [ ] Add Discord integration to remote control the bot in a channel 
-- [ ] Add plugin support
-
+- [X] Add config.json file
+- [X] Add [click](https://github.com/pallets/click)
+- [X] Change to use as Pip package for better use
+- [X] Add Discord integration
+- [ ] Add Lava Caster (request by @givenbakerad on Discord)
+- [ ] Add Custom code runner (a way for users to test their own bot code in a nice and simple way)
 
 ## MineFlayer 🚀
 
@@ -150,7 +146,7 @@ Mineflayer is a complex library that allows you to control Minecraft accounts th
 
 ## Discord
 
-SOON!
+https://discord.gg/z8yRexNc3U
 
 ## Credits
 

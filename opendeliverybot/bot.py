@@ -55,6 +55,7 @@ class MinecraftBot:
         self.armorManager = require("mineflayer-armor-manager")
         self.autoeat = require('mineflayer-auto-eat').plugin
         self.repl = require('repl')
+        os.system(f'{sys.argv[0]} -m javascript update')
         self.config = config
         self.logedin = False
         self.useReturn = useReturn

@@ -23,7 +23,7 @@
       _events: [Object: null prototype] {},
       _eventsCount: 0,
       _maxListeners: undefined,
-      id: 18697,
+      id: 19988,
       position: [Vec3],
       velocity: [Vec3],
       yaw: 1.5707963267948966,
