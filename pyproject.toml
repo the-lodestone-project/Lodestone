@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "opendeliverybot"
-version = "0.2.25"
+version = "0.3.0"
 description = "🤖📦 Deliver anything, anywere! powered by MineFlayer."
 authors = ["Silke pilon <silkepilon2009@gmail.com>"]
 license = "MIT"
@@ -27,6 +27,7 @@ fastapi = "^0.103.1"
 pydantic = "^2.3.0"
 structlog = "^23.1.0"
 uvicorn = "^0.23.2"
+discord-py = "^2.3.2"
 
 [build-system]
 requires = ["poetry-core"]

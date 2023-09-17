@@ -23,9 +23,15 @@ else:
 
 
 class MinecraftBot:
-    def __init__(self, config: dict, streamlit = False, useReturn = False):
+    def __init__(self, config: dict, streamLit = False, useReturn = False, discordWebhook = None):
         """Main bot run loop"""
-        self.st = streamlit
+        if discordWebhook != None:
+            from discord import SyncWebhook
+            self.webhook = SyncWebhook.from_url(f"{discordWebhook}")
+            
+            self.webhook.send("Sucsesfully Connected To The Webhook!")
+        self.st = streamLit
+        self.discordWebhook = discordWebhook
         self.mineflayer = require('mineflayer')
         self.pathfinder = require('mineflayer-pathfinder')
         self.goals = require('mineflayer-pathfinder').goals
@@ -51,6 +57,8 @@ class MinecraftBot:
     def __steamlit(self, message, icon="🤖"):
         if self.useReturn == True:
             self.logger.info(f"{message}")
+        elif self.discordWebhook != None:
+            self.webhook.send(content=f"{message}", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", tts=False, ephemeral=False)
         elif self.st != False:
             self.st.toast(f"{message}", icon=icon)
         else:
