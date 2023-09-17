@@ -23,7 +23,6 @@ else:
 
 
 class MinecraftBot:
-    
     def __init__(self, config: dict, streamlit = False, useReturn = False):
         """Main bot run loop"""
         self.st = streamlit
@@ -38,9 +37,15 @@ class MinecraftBot:
         self.config = config
         self.logedin = False
         self.useReturn = useReturn
+        
+        global logger
         self.logger = structlog.get_logger()
+        logger = self.logger
         self.script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
         self.bot = self.__create_bot()
+        self.msa_data = False
+        
+        global api_bot
         api_bot = self.bot
         
     def __steamlit(self, message, icon="🤖"):
@@ -56,6 +61,17 @@ class MinecraftBot:
             self.st.toast(f"{err}", icon="🚨")
         else:
             self.logger.info(f"{err}")
+            
+    def __msa(self, *msa):
+        self.msa_data = msa[0]
+        self.logger.info(f"{msa[0]['user_code']} MSA Code")
+        
+    
+    
+        
+            
+            
+    
 
     def __create_bot(self):
         self.__steamlit(f"Joined {self.config['server_ip']}")
@@ -71,9 +87,12 @@ class MinecraftBot:
             'auth': self.config['auth'],
             'version': self.version,
             'hideErrors': True,
+            'onMsaCode': self.__msa
         })
-        
-        
+    
+    
+    
+    
     
 
     def start(self):
