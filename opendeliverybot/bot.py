@@ -362,7 +362,7 @@ class MinecraftBot:
             
         self.__add_values_to_csv(self.config, self.bot)
         
-        
+    # Needs to be changed to {"item": item_count}
     def inventory(self):
         inv = []
         if self.bot and self.bot.inventory:
@@ -377,8 +377,9 @@ class MinecraftBot:
             return f"{int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}"
         
     def custom_code(self, code:str=""):
+        """Run Custom Code on the bot"""
         if self.logedin == True:
-            self.__loging("Running custom code on the bot is not reconmended!")
+            self.__loging("Running custom code on the bot is not reconmended!", warning=True)
             bot = self.bot
             response = eval(code)(bot)
             return response
