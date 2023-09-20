@@ -1,4 +1,3 @@
-# import streamlit as st
 from javascript import require, On
 import datetime
 import asyncio
@@ -9,6 +8,10 @@ import structlog
 import os
 import sys
 from datetime import date
+from tinydb import TinyDB
+playerDatabase = TinyDB("playerDatabase.json")
+# new_item = {"name": "Book", "quantity": 5}
+# playerDatabase.insert(new_item) 
 
 global api_bot
 
@@ -55,6 +58,7 @@ class MinecraftBot:
         self.armorManager = require("mineflayer-armor-manager")
         self.autoeat = require('mineflayer-auto-eat').plugin
         self.repl = require('repl')
+        self.statemachine = require("mineflayer-statemachine")
         os.system(f'{sys.argv[0]} -m javascript update')
         self.config = config
         self.logedin = False
@@ -371,6 +375,13 @@ class MinecraftBot:
     def coordinates(self):
         if self.logedin == True:
             return f"{int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}"
+        
+    def custom_code(self, code:str=""):
+        if self.logedin == True:
+            self.__loging("Running custom code on the bot is not reconmended!")
+            bot = self.bot
+            response = eval(code)(bot)
+            return response
     
     def stop(self):
         self.bot.end()

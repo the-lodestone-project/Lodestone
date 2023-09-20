@@ -28,6 +28,7 @@ pydantic = "^2.3.0"
 structlog = "^23.1.0"
 uvicorn = "^0.23.2"
 discord-py = "^2.3.2"
+tinydb = "^4.8.0"
 
 [build-system]
 requires = ["poetry-core"]
