@@ -1,6 +1,7 @@
 import os
 import sys
 import click
+from opendeliverybot.api import api
 
 @click.command(context_settings={"ignore_unknown_options": True})
 @click.option("--console", default=False, is_flag=True, help="Force the app to use the console")
@@ -22,10 +23,12 @@ def run(console, args):
                 os.system(f"python {script_directory}/console_ui.py {' '.join(args)}")
             else:
                 print('Using GUI')
-                print('Web ui is still in developmet and is not working atm, rerun the command again with --console')
+                # print('Web ui is still in developmet and is not working atm, rerun the command again with --console')
+                api()
         elif is_windows:
             print('Using GUI')
-            print('Web ui is still in developmet and is not working atm, rerun the command again with --console')
+            # print('Web ui is still in developmet and is not working atm, rerun the command again with --console')
+            api()
         else:
             print('Unknown platform, using console UI')
             os.system(f"python {script_directory}/console_ui.py {' '.join(args)}")

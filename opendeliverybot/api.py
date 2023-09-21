@@ -1,51 +1,76 @@
 from fastapi import FastAPI
 import uvicorn
 from bot import MinecraftBot
+from opendeliverybot.bot import MinecraftBot
+import time
+from javascript import require
 import json
 from fastapi.responses import JSONResponse
 app = FastAPI()
+global config
+global account
 
-config = {
-  "server_ip": "menu.mc-complex.com", 
-  "server_port": 25565,
-  "bot_name": "silke2007minecraft@gmail.com",
-  "password": "",  
-  "auth": "microsoft",
-  "version": "1.12",
-  "viewer_port": 1000,
-  "chest_coords": [10, 64, -8],
-  "chest_range": 64,
-  "chest_type": "chest",
-  "items_name": "cobblestone",
-  "items_count": 64,
-  "x_coord": 0,
-  "y_coord": 70, 
-  "z_coord": 0
-}
+def api():
+    @app.get("/api/v1/login")
+    async def startup():
+        config = {
+        "server_ip": "menu.mc-complex.com", 
+        "server_port": 25565,
+        "bot_name": "silke2007minecraft@gmail.com",
+        "password": "",  
+        "auth": "microsoft",
+        "version": "1.12",
+        "viewer_port": 1000,
+        "chest_coords": [10, 64, -8],
+        "chest_range": 64,
+        "chest_type": "chest",
+        "items_name": "cobblestone",
+        "items_count": 64,
+        "x_coord": 0,
+        "y_coord": 70, 
+        "z_coord": 0
+        }
 
-player = MinecraftBot(config, useReturn=True)
+        account = MinecraftBot(config)
+        return JSONResponse(content={"message": "Bot started"})
 
-@app.get("/start")
-async def startup():
-    player.start()
-    return JSONResponse(content={"message": "Bot started"})
 
-@app.get("/inventory")
-async def get_inventory():
-    return JSONResponse(content={"inventory": player.inventory()})
+    @app.get("/api/v1/get_msa")
+    async def startup(email:str = ""):
+        config = {
+        "server_ip": "menu.mc-complex.com", 
+        "server_port": 25565,
+        "bot_name": "silke2007minecraft@gmail.com",
+        "password": "",  
+        "auth": "microsoft",
+        "version": "1.12",
+        "viewer_port": 1000,
+        "chest_coords": [10, 64, -8],
+        "chest_range": 64,
+        "chest_type": "chest",
+        "items_name": "cobblestone",
+        "items_count": 64,
+        "x_coord": 0,
+        "y_coord": 70, 
+        "z_coord": 0
+        }
 
-@app.get("/coordinates") 
-async def get_coordinates():
-    return JSONResponse(content={"coordinates": player.coordinates()})
+        account = MinecraftBot(config)
+        msa_status = False
+        loops = 0
+        time.sleep(6)
+        if account.bot.username != None:
+            JSONResponse(content={"msa": "Already logged in!"})
+            msa_status = True
+        while msa_status == False:
+            if loops >= 30:
+                return JSONResponse(content={"msa": f"Max tries exceeded!"})
+            try:
+                if account.msa_data['user_code'] != False:
+                    return JSONResponse(content={"msa": f"{account.msa_data['user_code']}"})
+            except:
+                continue
 
-@app.get("/username")
-async def get_username():
-    return JSONResponse(content={"username": player.bot.username})
 
-@app.get("/stop")
-async def stop_bot():
-    player.stop()
-    return JSONResponse(content={"message": "Bot stopped"})
-
-if __name__ == "__main__":
+    
     uvicorn.run(app)

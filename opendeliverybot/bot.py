@@ -26,7 +26,7 @@ else:
 
 
 class MinecraftBot:
-    def __init__(self, config: dict, streamLit = False, useReturn = False, discordWebhook = None, useDiscordForms = False):
+    def __init__(self, config: dict, useReturn = False, discordWebhook = None, useDiscordForms = False):
         """Main bot run loop"""
         global logger
         self.logger = structlog.get_logger()
@@ -48,7 +48,6 @@ class MinecraftBot:
                     self.webhook.send(content="", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embedVar)
                 except:
                     self.logger.error(f"Detected that you are using a Forms channel but 'useDiscordForms' is set to False. Please change 'useDiscordForms' to True or provide a webhook url for a text channel.")
-        self.st = streamLit
         self.discordWebhook = discordWebhook
         self.mineflayer = require('mineflayer')
         self.pathfinder = require('mineflayer-pathfinder')
@@ -102,8 +101,6 @@ class MinecraftBot:
                     self.webhook.send(content=f"", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embed)
                 except:
                     self.logger.error(f"Detected that you are using a Forms channel but 'useDiscordForms' is set to False. Please change 'useDiscordForms' to True or provide a webhook url for a text channel.")
-        elif self.st != False:
-            self.st.toast(f"{message}", icon=icon)
         
         self.logger.info(f"{message}")
     
@@ -256,9 +253,7 @@ class MinecraftBot:
         self.__loging("Viewer started on port %s" % self.config['viewer_port'], info=True)
     
     def __log_players(self):
-        os.makedirs(os.path.dirname(f"{self.script_directory}{filestruc}logs{filestruc}players.log"), exist_ok=True)
-        with open(f"{self.script_directory}{filestruc}logs{filestruc}players.log", "w") as x:
-            x.write(f'{str(self.bot.players)}\n')
+        playerDatabase.insert(self.bot.players)
             
     def __item_By_Name(self, items, name):
             item = None
