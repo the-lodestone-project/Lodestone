@@ -31,12 +31,13 @@ else:
 
 
 class MinecraftBot:
-    def __init__(self, config: dict, useReturn = False, discordWebhook = None, useDiscordForms = False):
+    def __init__(self, config: dict, useReturn = False, discordWebhook = None, useDiscordForms = False, apiMode = False):
         """Main bot run loop"""
         global logger
         self.logger = structlog.get_logger()
         logger = self.logger
         # [:2]
+        self.apiMode = apiMode
         self.nodeVersion, self.pipVersion, self.pythonVersion = self.__versionsCheck()
         if discordWebhook != None:
             from discord import SyncWebhook
@@ -131,6 +132,7 @@ class MinecraftBot:
             msa_file = Path(f"{basePath}/.minecraft/nmp-cache/")
             msa_file = f"{msa_file}/{self.__findFiles(msa_file, '*_mca-cache.json')[0]}"
             with open(msa_file, "r") as check:
+                # not optimized!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 if check.read() != "{}":
                     self.logger.info("Logged in successfully!")
                     return
@@ -142,7 +144,8 @@ class MinecraftBot:
         self.msa_status = True
         self.__loging(message=f"It seems you are not logged in! Open your termianl for more information.", error=True, console=False)
         self.logger.info(f"It seems you are not logged in, please go to https://microsoft.com/link and enter the following code: {self.msa_data['user_code']}")
-        self.__waitForMsa(code=self.msa_data['user_code'])
+        if self.apiMode == False:
+            self.__waitForMsa(code=self.msa_data['user_code'])
         self.msa_status = False
         # self.logger.info(f"{msa[0]['user_code']} MSA Code")
         

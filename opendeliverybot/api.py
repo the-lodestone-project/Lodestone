@@ -74,29 +74,17 @@ def api():
         }
         global msa
         msa = MinecraftBot(config)
-        msa_status = False
-        loops = 0
-        try:
-            
-            while msa_status == False:
-                
-                if loops >= 10:
-                    
-                    return JSONResponse(content={"msa": f"Max tries exceeded!"})
-                if msa.bot.username:
-                    msa.stop()
-                    JSONResponse(content={"msa": "Already logged in!"})
-                    msa_status = True
-                try:
-                    if msa.msa_data['user_code'] != False:
-                        return JSONResponse(content={"msa": f"{msa.msa_data['user_code']}"})
-                except:
-                    continue
-                loops += 1
-        except:
+        maxLoops = 0
+        while msa.msa_status == False:
+            if maxLoops >= 20:
+                return JSONResponse(content={'user_code': "Already signed in"})
+            time.sleep(1)
+            maxLoops += 1
+        if msa.msa_status == True:
             msa.stop()
-            return JSONResponse(content={"msa": f"Error"})
+            return JSONResponse(content=msa.msa_data)
+        
 
 
-    
     uvicorn.run(app, log_level="critical", port=5000)
+    # uvicorn.run(app, port=5000)
