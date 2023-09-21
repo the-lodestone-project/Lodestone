@@ -140,7 +140,7 @@ class MinecraftBot:
     def __msa(self, *msa):
         self.msa_data = msa[0]
         self.msa_status = True
-        self.__loging(message=f"It seems you are not logged in, please go to https://microsoft.com/link and enter the following code: {self.msa_data['user_code']}")
+        self.logger.info(f"It seems you are not logged in, please go to https://microsoft.com/link and enter the following code: {self.msa_data['user_code']}")
         self.__waitForMsa(code=self.msa_data['user_code'])
         self.msa_status = False
         # self.logger.info(f"{msa[0]['user_code']} MSA Code")
