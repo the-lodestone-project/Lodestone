@@ -7,8 +7,11 @@ import csv
 import structlog
 import os
 import sys
+import time
+import re
 from datetime import date
 from tinydb import TinyDB
+import subprocess
 playerDatabase = TinyDB("playerDatabase.json")
 # new_item = {"name": "Book", "quantity": 5}
 # playerDatabase.insert(new_item) 
@@ -31,13 +34,15 @@ class MinecraftBot:
         global logger
         self.logger = structlog.get_logger()
         logger = self.logger
+        # [:2]
+        self.nodeVersion, self.pipVersion, self.pythonVersion = self.__versionsCheck()
         if discordWebhook != None:
             from discord import SyncWebhook
             from discord import Embed
             self.Embed = Embed
             self.useDiscordForms = useDiscordForms
             self.webhook = SyncWebhook.from_url(f"{discordWebhook}")
-            embedVar = Embed(title="Sucsesfully Connected To The Webhook!", description="**Great news! The bot has successfully connected to this channel's webhook. From now on, it will send all the logs and valuable data right here, keeping you informed about everything happening on the server.**\n\n **Links:**\n* [**GitHub**](https://github.com/SilkePilon/OpenDeliveryBot)\n* [**Report Bugs**](https://github.com/SilkePilon/OpenDeliveryBot/issues)\n* [**Web Interface**](https://github.com/SilkePilon/OpenDeliveryBot-react)", color=0x3498db)
+            embedVar = Embed(title="Sucsesfully Connected To The Webhook!", description=f"**Great news! The bot has successfully connected to this channel's webhook. From now on, it will send all the logs and valuable data right here, keeping you informed about everything happening on the server.**\n\n **Versions:**\n* [**Node**](https://nodejs.org/)**:      {self.nodeVersion[:2]}**\n* [**Pip**](https://pypi.org/project/pip/)**:          {self.pipVersion}**\n* [**Python**](https://www.python.org/)**:  {self.pythonVersion}**\n\n **Links:**\n* [**GitHub**](https://github.com/SilkePilon/OpenDeliveryBot)\n* [**Report Bugs**](https://github.com/SilkePilon/OpenDeliveryBot/issues)\n* [**Web Interface**](https://github.com/SilkePilon/OpenDeliveryBot-react)", color=0x3498db)
             embedVar.timestamp = datetime.datetime.utcnow()
             embedVar.set_footer(text='\u200b',icon_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true")
             if useDiscordForms == True:
@@ -70,6 +75,11 @@ class MinecraftBot:
         
         global api_bot
         api_bot = self.bot
+        
+    
+    
+    
+    
         
     def __loging(self, message, icon="🤖", error=False, info=False, warning=False, chat=False, imageUrl:str=""):
         
@@ -112,7 +122,39 @@ class MinecraftBot:
     
     
         
+    def __versionsCheck(self):
+        # Node
+        result = subprocess.run(["node", "--version"], 
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                text=True)
+        node_version = result.stdout.strip()
+        # Remove leading 'v'
+        node_version = node_version[1:] if node_version.startswith('v') else node_version
+        # Remove periods
+        node_version = node_version.replace('.', '')
+        if int(node_version[:2]) >= 18:
+            self.logger.info(f"Detected Node version {node_version[:2]} witch is supported!")
+        else:
+            self.logger.warning(f"Detected node version {node_version[:2]} witch is NOT supported!\nThis may cause problems. Please update to node 18 or above!")
+            time.sleep(7)
             
+            
+        # Pip
+        result = subprocess.run(["pip", "--version"], 
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                text=True)
+        pip_version = result.stdout.strip()
+        # Remove
+        match = re.search(r'pip (\d+(?:\.\d+)*).*python (\d+(?:\.\d+)*)', pip_version)
+        if match:
+            pip_version = match.group(1)
+            python_version = match.group(2)
+        self.logger.info(f"Detected Pip version {pip_version} witch is supported!")
+        self.logger.info(f"Detected Python version {python_version} witch is supported!")
+        return node_version, pip_version, python_version
+        
             
     
 
@@ -253,7 +295,8 @@ class MinecraftBot:
         self.__loging("Viewer started on port %s" % self.config['viewer_port'], info=True)
     
     def __log_players(self):
-        playerDatabase.insert(self.bot.players)
+        print(type(self.bot.players))
+        # playerDatabase.insert_multiple(dict(self.bot.players))
             
     def __item_By_Name(self, items, name):
             item = None

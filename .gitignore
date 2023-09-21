@@ -35,3 +35,4 @@ opendeliverybot/test.py
 opendeliverybot/logs/*
 opendeliverybot/api.py
 opendeliverybot/logs/*.log
+opendeliverybot/playerDatabase.json
