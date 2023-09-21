@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 import uvicorn
-from bot import MinecraftBot
 from opendeliverybot.bot import MinecraftBot
 import time
 from javascript import require
