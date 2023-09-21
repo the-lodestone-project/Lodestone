@@ -81,7 +81,7 @@ class MinecraftBot:
     
     
         
-    def __loging(self, message, icon="🤖", error=False, info=False, warning=False, chat=False, imageUrl:str=""):
+    def __loging(self, message, icon="🤖", error=False, info=False, warning=False, chat=False, imageUrl:str="", console:bool= True):
         
         if self.useReturn == True:
             self.logger.info(f"{message}")
@@ -111,8 +111,8 @@ class MinecraftBot:
                     self.webhook.send(content=f"", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embed)
                 except:
                     self.logger.error(f"Detected that you are using a Forms channel but 'useDiscordForms' is set to False. Please change 'useDiscordForms' to True or provide a webhook url for a text channel.")
-        
-        self.logger.info(f"{message}")
+        if console == True:
+            self.logger.info(f"{message}")
         
     
     def __findFiles(self, base, pattern):
@@ -140,6 +140,7 @@ class MinecraftBot:
     def __msa(self, *msa):
         self.msa_data = msa[0]
         self.msa_status = True
+        self.__loging(message=f"It seems you are not logged in! Open your termianl for more information.", error=True, console=False)
         self.logger.info(f"It seems you are not logged in, please go to https://microsoft.com/link and enter the following code: {self.msa_data['user_code']}")
         self.__waitForMsa(code=self.msa_data['user_code'])
         self.msa_status = False

@@ -12,6 +12,10 @@ logger = structlog.get_logger()
 
 
 def api():
+    
+    logger.info("API running at http://localhost:5000/ (beta)")
+    
+    
     @app.middleware("http")
     async def add_process_time_header(request: Request, call_next):
         logger.warning(f"[API] {request.method} {request.scope['path']}")
@@ -58,7 +62,7 @@ def api():
         "password": "",  
         "auth": "microsoft",
         "version": "1.19",
-        "viewer_port": 1000,
+        "viewer_port": 5001,
         "chest_coords": [10, 64, -8],
         "chest_range": 64,
         "chest_type": "chest",
@@ -73,15 +77,16 @@ def api():
         msa_status = False
         loops = 0
         try:
-            if msa.bot.username:
-                msa.stop()
-                JSONResponse(content={"msa": "Already logged in!"})
-                msa_status = True
+            
             while msa_status == False:
+                
                 if loops >= 10:
                     
                     return JSONResponse(content={"msa": f"Max tries exceeded!"})
-                
+                if msa.bot.username:
+                    msa.stop()
+                    JSONResponse(content={"msa": "Already logged in!"})
+                    msa_status = True
                 try:
                     if msa.msa_data['user_code'] != False:
                         return JSONResponse(content={"msa": f"{msa.msa_data['user_code']}"})
@@ -94,4 +99,4 @@ def api():
 
 
     
-    uvicorn.run(app, log_level="critical")
+    uvicorn.run(app, log_level="critical", port=5000)
