@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "opendeliverybot"
-version = "0.3.11"
+version = "0.4.0"
 description = "🤖📦 Deliver anything, anywere! powered by MineFlayer."
 authors = ["Silke pilon <silkepilon2009@gmail.com>"]
 license = "MIT"

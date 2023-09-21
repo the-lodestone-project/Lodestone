@@ -1,4 +1,4 @@
-from javascript import require, On
+from javascript import require, On, once
 import datetime
 import asyncio
 import math
@@ -8,8 +8,10 @@ import structlog
 import os
 import sys
 import time
+import fnmatch
 import re
 from datetime import date
+from pathlib import Path
 from tinydb import TinyDB
 import subprocess
 playerDatabase = TinyDB("playerDatabase.json")
@@ -67,14 +69,12 @@ class MinecraftBot:
         self.config = config
         self.logedin = False
         self.useReturn = useReturn
-        
+        self.msa_status = False
     
         self.script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
         self.bot = self.__create_bot()
         self.msa_data = False
         
-        global api_bot
-        api_bot = self.bot
         
     
     
@@ -113,11 +113,37 @@ class MinecraftBot:
                     self.logger.error(f"Detected that you are using a Forms channel but 'useDiscordForms' is set to False. Please change 'useDiscordForms' to True or provide a webhook url for a text channel.")
         
         self.logger.info(f"{message}")
+        
+    
+    def __findFiles(self, base, pattern):
+        '''Return list of files matching pattern in base folder.'''
+        return [n for n in fnmatch.filter(os.listdir(base), pattern) if
+            os.path.isfile(os.path.join(base, n))]
+        
+    def __waitForMsa(self, code):
+        if os.name == 'nt':
+            basePath = os.getenv('APPDATA')
+        else:
+            basePath = Path().home()
+        
+        
+        while True:
+            msa_file = Path(f"{basePath}/.minecraft/nmp-cache/")
+            msa_file = f"{msa_file}/{self.__findFiles(msa_file, '*_mca-cache.json')[0]}"
+            with open(msa_file, "r") as check:
+                if check.read() != "{}":
+                    self.logger.info("Logged in successfully!")
+                    return
+        
     
             
     def __msa(self, *msa):
         self.msa_data = msa[0]
-        self.logger.info(f"{msa[0]['user_code']} MSA Code")
+        self.msa_status = True
+        self.__loging(message=f"It seems you are not logged in, please go to https://microsoft.com/link and enter the following code: {self.msa_data['user_code']}")
+        self.__waitForMsa(code=self.msa_data['user_code'])
+        self.msa_status = False
+        # self.logger.info(f"{msa[0]['user_code']} MSA Code")
         
     
     
@@ -164,7 +190,7 @@ class MinecraftBot:
             self.version = False
         else:
             self.version = str(self.config['version'])
-        return self.mineflayer.createBot({
+        localBot = self.mineflayer.createBot({
             'host': self.config['server_ip'],
             'port': self.config['server_port'],
             'username': self.config['bot_name'],
@@ -174,31 +200,36 @@ class MinecraftBot:
             'hideErrors': True,
             'onMsaCode': self.__msa
         })
-    
+        @On(localBot, "login")
+        def on_login(*args):
+            self.bot = localBot
+            self.logedin = True
+            self.__loging(f'Logged in as {self.bot.username}', info=True, imageUrl=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
+            self.__start_viewer()
+            self.__setup_events()
+            self.__loging(f'Cordinates: {int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}', info=True)
+            self.__load_plugins()
+            return localBot
     
     
     
     
 
     def start(self):
+        while self.logedin == False:
+            time.sleep(1) 
         # @On(self.bot, "login")
         # def on_login(*args):
         
-            # r = self.repl.start('> ')
-            # r.context.bot = self.bot
-            self.__loging(f'Logged in as {self.bot.username}', info=True, imageUrl=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
-            self.logedin = True
-            self.__start_viewer()
-            self.__setup_events()
-            self.__loging(f'Cordinates: {int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}', info=True)
-            self.__load_plugins()
-            # self.__auto_totem()
-            self.__equip_armor()
-            self.__log_players()
-            
-            # self.__get_items()
-            # self.__go_to_location()
-            # self.__deposit_items()
+        # r = self.repl.start('> ')
+        # r.context.bot = self.bot
+        # self.__auto_totem()
+        self.__equip_armor()
+        self.__log_players()
+        
+        # self.__get_items()
+        # self.__go_to_location()
+        # self.__deposit_items()
         
     
         
@@ -296,7 +327,7 @@ class MinecraftBot:
     
     def __log_players(self):
         print(type(self.bot.players))
-        # playerDatabase.insert_multiple(dict(self.bot.players))
+        playerDatabase.insert_multiple(self.bot.players.valueOf())
             
     def __item_By_Name(self, items, name):
             item = None
