@@ -189,7 +189,6 @@ class MinecraftBot:
     
 
     def __create_bot(self):
-        self.__loging(f"Connecting to {self.config['server_ip']}", info=True, imageUrl=f"https://eu.mc-api.net/v3/server/favicon/{self.config['server_ip']}")
         if self.config['version'] == "auto":
             self.version = False
         else:
@@ -208,6 +207,7 @@ class MinecraftBot:
         def on_login(*args):
             self.bot = localBot
             self.logedin = True
+            self.__loging(f"Connecting to {self.config['server_ip']}", info=True, imageUrl=f"https://eu.mc-api.net/v3/server/favicon/{self.config['server_ip']}")
             self.__loging(f'Logged in as {self.bot.username}', info=True, imageUrl=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
             self.__start_viewer()
             self.__setup_events()
