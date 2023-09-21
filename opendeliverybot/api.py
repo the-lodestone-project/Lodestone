@@ -60,18 +60,23 @@ def api():
         time.sleep(6)
         try:
             if account.bot.username != None:
+                account.stop()
                 JSONResponse(content={"msa": "Already logged in!"})
                 msa_status = True
             while msa_status == False:
                 if loops >= 30:
+                    account.stop()
                     return JSONResponse(content={"msa": f"Max tries exceeded!"})
+                
                 try:
                     if account.msa_data['user_code'] != False:
+                        account.stop()
                         return JSONResponse(content={"msa": f"{account.msa_data['user_code']}"})
                 except:
                     continue
                 loops += 1
         except:
+            account.stop()
             return JSONResponse(content={"msa": f"Error"})
 
 
