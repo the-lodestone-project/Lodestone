@@ -37,9 +37,9 @@ def api():
     @app.get("/api/v1/get_msa")
     async def startup(email:str = ""):
         config = {
-        "server_ip": "menu.mc-complex.com", 
+        "server_ip": "blockmania.com", 
         "server_port": 25565,
-        "bot_name": "silke2007minecraft@gmail.com",
+        "bot_name": email,
         "password": "",  
         "auth": "microsoft",
         "version": "1.12",
@@ -58,17 +58,21 @@ def api():
         msa_status = False
         loops = 0
         time.sleep(6)
-        if account.bot.username != None:
-            JSONResponse(content={"msa": "Already logged in!"})
-            msa_status = True
-        while msa_status == False:
-            if loops >= 30:
-                return JSONResponse(content={"msa": f"Max tries exceeded!"})
-            try:
-                if account.msa_data['user_code'] != False:
-                    return JSONResponse(content={"msa": f"{account.msa_data['user_code']}"})
-            except:
-                continue
+        try:
+            if account.bot.username != None:
+                JSONResponse(content={"msa": "Already logged in!"})
+                msa_status = True
+            while msa_status == False:
+                if loops >= 30:
+                    return JSONResponse(content={"msa": f"Max tries exceeded!"})
+                try:
+                    if account.msa_data['user_code'] != False:
+                        return JSONResponse(content={"msa": f"{account.msa_data['user_code']}"})
+                except:
+                    continue
+                loops += 1
+        except:
+            return JSONResponse(content={"msa": f"Error"})
 
 
     
