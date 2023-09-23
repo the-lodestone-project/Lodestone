@@ -9,7 +9,7 @@ from fuzzyfinder import fuzzyfinder
 from pygments.lexers.sql import SqlLexer
 import threading
 from bot import MinecraftBot
-BotKeywords = ['bot.start()', 'bot.inventory()', 'bot.version', 'bot.webhook', 'bot.config', 'help', 'documentation', 'discord']
+BotKeywords = ['bot.start()', 'bot.stop()','bot.inventory()', 'bot.version', 'bot.config', 'help', 'documentation', 'discord']
 
 class BotCompleter(Completer):
     def get_completions(self, document, complete_event):
@@ -36,6 +36,9 @@ def get_input():
                 if user_input == "":
                     continue
                 if "bot" in user_input:
+                    if user_input == "bot.stop()":
+                        bot.stop()
+                        quit()
                     try:
                         print(eval(user_input))
                     except:
@@ -82,7 +85,7 @@ import click
 @click.option("--version", default="auto", help="Game version.",prompt=True)
 @click.option("--check_timeout", default=600000, help="Timeout interval for checks.")
 @click.option("--viewer_port", default=8000, help="Port for viewer.")
-@click.option("--goto", default=["100", "100", "100"],  help="Coordinates to go to.", prompt=True)
+@click.option("--goto", default=["100", "100", "100"],  help="Coordinates to go to.")
 @click.option("--chest_range", default=100, help="Range to search for chests.")
 @click.option("--init_chest_type", default="chest", help="Type of chest to look for when starting.")
 @click.option("--init_chest_cords", default=["100", "100", "100"],  help="Coordinates to base chest.")  
@@ -93,7 +96,7 @@ import click
 @click.option("--init_items_count", default=1, help="Number of items to get from the base chest.")
 #
 
-@click.option("--recipient_username", default="OpenDeliveryBot", help="Username to deliver to.", prompt=True)
+@click.option("--recipient_username", default="OpenDeliveryBot", help="Username to deliver to.")
 @click.option("--quit_on_low_health", default=True, help="Disconect the bot if the bot is on low health")
 @click.option("--low_health_threashold", default=10, help="How low the health must be for the bot to quit")
 @click.option("--armor_equip", default=True, help="If the bot needs to equip available armor.")
@@ -108,4 +111,4 @@ def console(email, password, host, port, auth, version, check_timeout, viewer_po
     thread2.join()
     
 if __name__ == '__main__':
-  console()
+    console()

@@ -66,7 +66,8 @@ class MinecraftBot:
         self.autoeat = require('mineflayer-auto-eat').plugin
         self.repl = require('repl')
         self.statemachine = require("mineflayer-statemachine")
-        os.system(f'{sys.argv[0]} -m javascript update')
+        self.pythonCommand = self.__checkPythonCommand()
+        os.system(f'{self.pythonCommand} -m javascript update')
         self.config = config
         self.logedin = False
         self.useReturn = useReturn
@@ -78,15 +79,26 @@ class MinecraftBot:
         
         
     
-    
+    def __checkPythonCommand(self):
+        try:
+            subprocess.check_output(['python', '--version'])
+            return 'python'
+        except:
+            try:
+                subprocess.check_output(['python3', '--version']) 
+                return 'python3'
+            except:
+                self.__loging(message='Python command not found, make sure python is installed!', error=True, discord=False)
+                sys.exit(1)
+
     
     
         
-    def __loging(self, message, icon="🤖", error=False, info=False, warning=False, chat=False, imageUrl:str="", console:bool= True):
+    def __loging(self, message, icon="🤖", error=False, info=False, warning=False, chat=False, imageUrl:str="", console:bool= True, discord:bool=True):
         
         if self.useReturn == True:
             self.logger.info(f"{message}")
-        elif self.discordWebhook != None:
+        elif self.discordWebhook != None and discord == True:
             color = 0x3498db
             if error == True:
                 color = 0x992d22
@@ -143,7 +155,7 @@ class MinecraftBot:
         self.msa_data = msa[0]
         self.msa_status = True
         self.__loging(message=f"It seems you are not logged in! Open your termianl for more information.", error=True, console=False)
-        self.logger.info(f"It seems you are not logged in, please go to https://microsoft.com/link and enter the following code: {self.msa_data['user_code']}")
+        self.logger.error(f"It seems you are not logged in, please go to https://microsoft.com/link and enter the following code: {self.msa_data['user_code']}")
         if self.apiMode == False:
             self.__waitForMsa(code=self.msa_data['user_code'])
         self.msa_status = False
