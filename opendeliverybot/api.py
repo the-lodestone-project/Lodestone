@@ -81,6 +81,7 @@ def api():
             time.sleep(1)
             maxLoops += 1
         if msa.msa_status == True:
+            
             return JSONResponse(content=msa.msa_data)
         
 

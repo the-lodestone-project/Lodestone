@@ -213,7 +213,7 @@ class MinecraftBot:
             self.__setup_events()
             self.__loging(f'Cordinates: {int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}', info=True)
             self.__load_plugins()
-            return localBot
+        return localBot
     
     
     
@@ -303,7 +303,7 @@ class MinecraftBot:
             
         @On(self.bot, 'chat')
         def handleMsg(this, sender, message, *args):
-            if sender and (sender != self.bot.username):
+            if sender:
                 self.__loging(f"💬 {sender}: {message}", chat=True)
             
 
@@ -442,6 +442,9 @@ class MinecraftBot:
             for item in self.bot.inventory.items():
                 inv.append(item.displayName)
         return inv
+    
+    def chat(self, message:str):
+        self.bot.chat(message)
         
     
     

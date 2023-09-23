@@ -37,3 +37,4 @@ opendeliverybot/api.py
 opendeliverybot/logs/*.log
 opendeliverybot/playerDatabase.json
 opendeliverybot/api-test.py
+history.txt
