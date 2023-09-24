@@ -168,8 +168,10 @@ class MinecraftBot:
             self.msa_status = True
             self.__loging(message=f"It seems you are not logged in! Open your termianl for more information.", error=True, console=False)
             self.logger.error(f"It seems you are not logged in, please go to https://microsoft.com/link and enter the following code: {self.msa_data['user_code']}")
-            if self.apiMode == False:
-                self.__waitForMsa(code=self.msa_data['user_code'])
+            self.__waitForMsa(code=self.msa_data['user_code'])
+            if self.apiMode == True:
+                self.bot.end()
+                quit()
             self.msa_status = False
             # self.logger.info(f"{msa[0]['user_code']} MSA Code")
         
@@ -225,7 +227,7 @@ class MinecraftBot:
             'password': self.config['password'],
             'auth': self.config['auth'],
             'version': self.version,
-            'hideErrors': True,
+            'hideErrors': False,
             'onMsaCode': self.__msa
         })
         @On(localBot, "login")

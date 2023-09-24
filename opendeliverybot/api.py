@@ -45,7 +45,7 @@ def api():
         "password": "",  
         "auth": "microsoft",
         "version": "1.12",
-        "viewer_port": 1000,
+        "viewer_port": 5001,
         "chest_coords": [10, 64, -8],
         "chest_range": 64,
         "chest_type": "chest",
@@ -63,6 +63,11 @@ def api():
 
     @app.get("/api/v1/get_msa")
     async def startup(email:str = ""):
+        global msa
+        try:
+            msa.stop()
+        except:
+            pass
         config = {
         "server_ip": "og-network.net", 
         "server_port": 25565,
@@ -80,8 +85,7 @@ def api():
         "y_coord": 70, 
         "z_coord": 0
         }
-        global msa
-        msa = MinecraftBot(config)
+        msa = MinecraftBot(config, apiMode=True)
         maxLoops = 0
         while msa.msa_status == False:
             if maxLoops >= 20:

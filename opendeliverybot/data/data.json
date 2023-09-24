@@ -8,7 +8,7 @@
     "check_timeout_interval": 20,
     "armor_manager": true,
     "viewer_ip": "127.0.0.1",
-    "viewer_port": "1000",
+    "viewer_port": "5001",
     "chest_type": null,
     "chest_coords": [
         "-62",
