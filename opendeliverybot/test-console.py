@@ -28,10 +28,18 @@ def get_input():
                         username = "username unknown (press enter to refresh)"
                 except:
                     username = "username unknown (press enter to refresh)"
-                user_input = prompt(f'{username} > ',
+                try:
+                    if bot.bot.version:
+                        version = bot.bot.version
+                    else:
+                        version = "unknown"
+                except:
+                    version = "unknown"
+                user_input = prompt(f'{username} ({version}) > ',
                                     history=FileHistory('history.txt'),
                                     completer=BotCompleter(),
-                                    auto_suggest=AutoSuggestFromHistory()
+                                    auto_suggest=AutoSuggestFromHistory(),
+                                    in_thread=True
                                     )
                 if user_input == "":
                     continue
