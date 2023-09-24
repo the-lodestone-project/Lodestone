@@ -228,7 +228,8 @@ class MinecraftBot:
             'auth': self.config['auth'],
             'version': self.version,
             'hideErrors': False,
-            'onMsaCode': self.__msa
+            'onMsaCode': self.__msa,
+            'checkTimeoutInterval': 60 * 10000
         })
         @On(localBot, "login")
         def on_login(*args):
