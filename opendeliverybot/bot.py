@@ -71,9 +71,9 @@ class MinecraftBot:
         self.statemachine = require("mineflayer-statemachine")
         self.pythonCommand = self.__checkPythonCommand()
         with self.console.status("[bold green]Checking for updates...\n") as status:
-            self.logger.info("Updaing javascript librarys...")
+            status.update("[bold green]Updaing javascript librarys...\n")
             os.system(f'{self.pythonCommand} -m javascript --update >/dev/null 2>&1')
-            self.logger.info("Updaing pip package...")
+            status.update("[bold green]Updaing pip package...\n")
             os.system(f'{self.pythonCommand} -m pip install -U opendeliverybot >/dev/null 2>&1')
             time.sleep(3)
 
