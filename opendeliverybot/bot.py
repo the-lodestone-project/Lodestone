@@ -14,6 +14,8 @@ from datetime import date
 from pathlib import Path
 from tinydb import TinyDB
 import subprocess
+from rich.console import Console
+import functools
 playerDatabase = TinyDB("playerDatabase.json")
 # new_item = {"name": "Book", "quantity": 5}
 # playerDatabase.insert(new_item) 
@@ -36,6 +38,7 @@ class MinecraftBot:
         global logger
         self.logger = structlog.get_logger()
         logger = self.logger
+        self.console = Console()
         # [:2]
         self.apiMode = apiMode
         self.nodeVersion, self.pipVersion, self.pythonVersion = self.__versionsCheck()
@@ -67,7 +70,14 @@ class MinecraftBot:
         self.repl = require('repl')
         self.statemachine = require("mineflayer-statemachine")
         self.pythonCommand = self.__checkPythonCommand()
-        os.system(f'{self.pythonCommand} -m javascript update')
+        with self.console.status("[bold green]Checking for updates...\n") as status:
+            self.logger.info("Updaing javascript librarys...")
+            os.system(f'{self.pythonCommand} -m javascript --update >/dev/null 2>&1')
+            self.logger.info("Updaing pip package...")
+            os.system(f'{self.pythonCommand} -m pip install -U opendeliverybot >/dev/null 2>&1')
+            time.sleep(3)
+
+            self.logger.info(f'Done!')
         self.config = config
         self.logedin = False
         self.useReturn = useReturn
@@ -141,6 +151,7 @@ class MinecraftBot:
         
         
         while True:
+            
             msa_file = Path(f"{basePath}/.minecraft/nmp-cache/")
             msa_file = f"{msa_file}/{self.__findFiles(msa_file, '*_mca-cache.json')[0]}"
             with open(msa_file, "r") as check:
@@ -152,50 +163,52 @@ class MinecraftBot:
     
             
     def __msa(self, *msa):
-        self.msa_data = msa[0]
-        self.msa_status = True
-        self.__loging(message=f"It seems you are not logged in! Open your termianl for more information.", error=True, console=False)
-        self.logger.error(f"It seems you are not logged in, please go to https://microsoft.com/link and enter the following code: {self.msa_data['user_code']}")
-        if self.apiMode == False:
-            self.__waitForMsa(code=self.msa_data['user_code'])
-        self.msa_status = False
-        # self.logger.info(f"{msa[0]['user_code']} MSA Code")
+        with self.console.status("[bold green]Waiting for login...\n") as status:
+            self.msa_data = msa[0]
+            self.msa_status = True
+            self.__loging(message=f"It seems you are not logged in! Open your termianl for more information.", error=True, console=False)
+            self.logger.error(f"It seems you are not logged in, please go to https://microsoft.com/link and enter the following code: {self.msa_data['user_code']}")
+            if self.apiMode == False:
+                self.__waitForMsa(code=self.msa_data['user_code'])
+            self.msa_status = False
+            # self.logger.info(f"{msa[0]['user_code']} MSA Code")
         
     
     
         
     def __versionsCheck(self):
-        # Node
-        result = subprocess.run(["node", "--version"], 
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE,
-                                text=True)
-        node_version = result.stdout.strip()
-        # Remove leading 'v'
-        node_version = node_version[1:] if node_version.startswith('v') else node_version
-        # Remove periods
-        node_version = node_version.replace('.', '')
-        if int(node_version[:2]) >= 18:
-            self.logger.info(f"Detected Node version {node_version[:2]} witch is supported!")
-        else:
-            self.logger.warning(f"Detected node version {node_version[:2]} witch is NOT supported!\nThis may cause problems. Please update to node 18 or above!")
-            time.sleep(7)
-            
-            
-        # Pip
-        result = subprocess.run(["pip", "--version"], 
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE,
-                                text=True)
-        pip_version = result.stdout.strip()
-        # Remove
-        match = re.search(r'pip (\d+(?:\.\d+)*).*python (\d+(?:\.\d+)*)', pip_version)
-        if match:
-            pip_version = match.group(1)
-            python_version = match.group(2)
-        self.logger.info(f"Detected Pip version {pip_version} witch is supported!")
-        self.logger.info(f"Detected Python version {python_version} witch is supported!")
-        return node_version, pip_version, python_version
+        with self.console.status("[bold green]Checking versions...\n") as status:
+            # Node
+            result = subprocess.run(["node", "--version"], 
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE,
+                                    text=True)
+            node_version = result.stdout.strip()
+            # Remove leading 'v'
+            node_version = node_version[1:] if node_version.startswith('v') else node_version
+            # Remove periods
+            node_version = node_version.replace('.', '')
+            if int(node_version[:2]) >= 18:
+                self.logger.info(f"Detected Node version {node_version[:2]} witch is supported!")
+            else:
+                self.logger.warning(f"Detected node version {node_version[:2]} witch is NOT supported!\nThis may cause problems. Please update to node 18 or above!")
+                time.sleep(7)
+                
+                
+            # Pip
+            result = subprocess.run(["pip", "--version"], 
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE,
+                                    text=True)
+            pip_version = result.stdout.strip()
+            # Remove
+            match = re.search(r'pip (\d+(?:\.\d+)*).*python (\d+(?:\.\d+)*)', pip_version)
+            if match:
+                pip_version = match.group(1)
+                python_version = match.group(2)
+            self.logger.info(f"Detected Pip version {pip_version} witch is supported!")
+            self.logger.info(f"Detected Python version {python_version} witch is supported!")
+            return node_version, pip_version, python_version
         
             
     

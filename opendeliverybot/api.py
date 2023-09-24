@@ -7,9 +7,10 @@ import json
 import structlog
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from rich.console import Console
 app = FastAPI()
 logger = structlog.get_logger()
-
+console = Console()
 
 def api():
     
@@ -18,13 +19,20 @@ def api():
     
     @app.middleware("http")
     async def add_process_time_header(request: Request, call_next):
-        logger.warning(f"[API] {request.method} {request.scope['path']}")
-        start_time = time.time()
-        response = await call_next(request)
-        process_time = time.time() - start_time
-        logger.warning(f"[API] {request.method} {request.scope['path']} ✅ {process_time} ms")
-        return response
+        with console.status(f"[bold green][API] {request.method} {request.scope['path']} ...\n") as status:
+            start_time = time.time()
+            response = await call_next(request)
+            process_time = time.time() - start_time
+            # logger.warning(f"[API] {request.method} {request.scope['path']} ✅ {process_time} ms")
+            status.update(f"[bold green][API] {request.method} {request.scope['path']} Done!\n")
+            logger.info(f"[API] {request.method} {request.scope['path']}")
+            return response
 
+    @app.get("/")
+    async def home():
+        time.sleep(1)
+        return JSONResponse(content="Welcome")
+    
     @app.get("/api/v1/login")
     async def startup():
         try:

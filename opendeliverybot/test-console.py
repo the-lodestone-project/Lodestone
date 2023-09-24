@@ -6,9 +6,8 @@ import click
 from prompt_toolkit import PromptSession
 from prompt_toolkit.patch_stdout import patch_stdout
 from fuzzyfinder import fuzzyfinder
-from pygments.lexers.sql import SqlLexer
 import threading
-from bot import MinecraftBot
+from opendeliverybot.bot import MinecraftBot
 BotKeywords = ['bot.start()', 'bot.stop()','bot.inventory()', 'bot.version', 'bot.config', 'help', 'documentation', 'discord']
 
 class BotCompleter(Completer):
