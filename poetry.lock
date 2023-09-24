@@ -417,6 +417,17 @@ files = [
 ]
 
 [[package]]
+name = "fuzzyfinder"
+version = "2.1.0"
+description = "Fuzzy Finder implemented in Python."
+optional = false
+python-versions = "*"
+files = [
+    {file = "fuzzyfinder-2.1.0-py2.py3-none-any.whl", hash = "sha256:aa8223e31bd12fefd3f94c3c46c60b64692594efaa05f5d93e24353e57d57572"},
+    {file = "fuzzyfinder-2.1.0.tar.gz", hash = "sha256:c56d86f110866becad6690c7518f7036c20831c0f82fc87eba8fdb943132f04b"},
+]
+
+[[package]]
 name = "h11"
 version = "0.14.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
@@ -961,4 +972,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "d1261807f47b6d248cfd48624bf6b009755838cf70d923a46c8a83997f73d817"
+content-hash = "2c3fe34dbb5d72588a942885a100fbaa5c5d5138eb7643ff26cc99d480ff2806"
