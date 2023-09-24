@@ -9,7 +9,10 @@ from fuzzyfinder import fuzzyfinder
 import threading
 import time
 from opendeliverybot.bot import MinecraftBot
-BotKeywords = ['bot.start()', 'bot.stop()','bot.inventory()', 'bot.version', 'bot.config', 'help', 'documentation', 'discord']
+from rich.console import Console
+from rich.columns import Columns
+from rich.panel import Panel
+BotKeywords = ['bot.start()', 'bot.stop()','bot.inventory()', 'bot.version', 'bot.config', 'help', 'documentation', 'discord', 'players']
 
 class BotCompleter(Completer):
     def get_completions(self, document, complete_event):
@@ -42,6 +45,18 @@ def get_input():
                                     in_thread=True
                                     )
                 if user_input == "":
+                    continue
+                if user_input == "players":
+                    def get_content(players):
+                        username = players
+                        return f"[b]{username}[/b]"
+
+
+                    console = Console()
+
+
+                    user_renderables = [Panel(get_content(player), expand=True) for player in bot.bot.players]
+                    console.print(Columns(user_renderables))
                     continue
                 if "bot" in user_input:
                     if user_input == "bot.stop()":
