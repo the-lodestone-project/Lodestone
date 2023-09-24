@@ -7,6 +7,7 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.patch_stdout import patch_stdout
 from fuzzyfinder import fuzzyfinder
 import threading
+import time
 from opendeliverybot.bot import MinecraftBot
 BotKeywords = ['bot.start()', 'bot.stop()','bot.inventory()', 'bot.version', 'bot.config', 'help', 'documentation', 'discord']
 
@@ -24,9 +25,9 @@ def get_input():
                     if bot.bot.username:
                         username = bot.bot.username
                     else:
-                        username = "unknown (press enter to refresh)"
+                        username = "username unknown (press enter to refresh)"
                 except:
-                    username = "unknown (press enter to refresh)"
+                    username = "username unknown (press enter to refresh)"
                 user_input = prompt(f'{username} > ',
                                     history=FileHistory('history.txt'),
                                     completer=BotCompleter(),

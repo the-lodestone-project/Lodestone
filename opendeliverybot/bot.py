@@ -151,7 +151,7 @@ class MinecraftBot:
         
         
         while True:
-            
+            time.sleep(1)
             msa_file = Path(f"{basePath}/.minecraft/nmp-cache/")
             msa_file = f"{msa_file}/{self.__findFiles(msa_file, '*_mca-cache.json')[0]}"
             with open(msa_file, "r") as check:
