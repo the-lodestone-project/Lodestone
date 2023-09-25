@@ -227,7 +227,7 @@ class MinecraftBot:
             'password': self.config['password'],
             'auth': self.config['auth'],
             'version': self.version,
-            'hideErrors': False,
+            'hideErrors': True,
             'onMsaCode': self.__msa,
             'checkTimeoutInterval': 60 * 10000
         })
@@ -336,7 +336,10 @@ class MinecraftBot:
             
 
     def __equip_armor(self):
-        self.bot.armorManager.equipAll()
+        try:
+            self.bot.armorManager.equipAll()
+        except:
+            return
         
         
     # def __auto_totem(self):
@@ -358,8 +361,9 @@ class MinecraftBot:
         self.__loging("Viewer started on port %s" % self.config['viewer_port'], info=True)
     
     def __log_players(self):
-        print(type(self.bot.players))
-        playerDatabase.insert_multiple(self.bot.players.valueOf())
+        # print(type(self.bot.players))
+        # playerDatabase.insert_multiple(self.bot.players.valueOf())
+        pass
             
     def __item_By_Name(self, items, name):
             item = None

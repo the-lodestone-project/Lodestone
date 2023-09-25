@@ -76,7 +76,92 @@ To run the bot simply use the following command:
 python -m opendeliverybot
 ```
 
-### (6) Arguments & Config 📄
+### Code Examples ⚡
+
+creating a bot
+```python
+# import the package
+from opendeliverybot.bot import MinecraftBot
+
+# set main settings
+config = {
+    "server_ip": "example.net",
+    "server_port": "25565",
+    "bot_name": "example@gmail.com",
+    "password": "",
+    "auth": "microsoft",
+    "version": "1.19",
+    "check_timeout_interval": 20,
+    "armor_manager": True,
+    "viewer_ip": "127.0.0.1",
+    "viewer_port": "5001",
+    "quit_on_low_health": False,
+    "low_health_threshold": 10
+}
+
+# create the bot
+bot = MinecraftBot(config=config)
+
+# do not run code here that needs acces to the bot!
+
+# start the bot
+bot.start()
+
+# run code on the bot here!
+```
+
+Using a Discord Webhook
+
+the only thing you need to change in comparison to the example above is the creation of the bot
+
+```python
+bot = MinecraftBot(config=config, discordWebhook="YOUR WEBHOOK")
+```
+
+
+Using AI (LLM)
+
+OpenDeliveryBot now features a integration with many lare language models!
+here is how you can use them!
+
+```python
+# import the packages
+from opendeliverybot.bot import MinecraftBot
+from opendeliverybot.utils import LLM
+
+# set main settings
+config = {
+    "server_ip": "example.net",
+    "server_port": "25565",
+    "bot_name": "example@gmail.com",
+    "password": "",
+    "auth": "microsoft",
+    "version": "1.19",
+    "check_timeout_interval": 20,
+    "armor_manager": True,
+    "viewer_ip": "127.0.0.1",
+    "viewer_port": "5001",
+    "quit_on_low_health": False,
+    "low_health_threshold": 10
+}
+
+# create the bot
+bot = MinecraftBot(config=config)
+
+# do not run code here that needs acces to the bot!
+
+# start the bot
+bot.start()
+
+# ask the names of all the players that are online
+print(LLM(input="what is the username of all the online players?", data=bot.bot.players))
+
+# output:
+[{'DeepAi': "The username of the online player is 'CustomCapes'."}, {'GptGo': 'The username of the online player is "customcapes".'}, {'Bing': 'The username of the only online player is CustomCapes.'}, {'base': "The username of the online player is 'CustomCapes'."}]
+```
+
+
+### (6) Arguments & Options 📄
 
 > [!IMPORTANT]
 > Not changing some of these settings will result in the bot not working. 🛑
@@ -90,7 +175,7 @@ python -m opendeliverybot
 
 The command line arguments available are:
 
-* `--username`: The Minecraft Email the bot will log into (use a name and no password for a cracked account). 📧
+* `--email`: The Minecraft Email the bot will log into (use a name and no password for a cracked account). 📧
 * `--password`: The password for your account (if not using cracked). 🔑
 * `--host`: The IP address or hostname of the Minecraft server. 🖥
 * `--port`: The port number the Minecraft server is listening on. Default is 25565. ⚡
@@ -98,19 +183,9 @@ The command line arguments available are:
 * `--version`: Minecraft version to use when connecting to a server. Default is auto. 🕹
 * `--check_timeout`: How often in milliseconds the bot checks if it is still logged into the server. Default is 600000 (10 minutes). ⏱
 * `--viewer_port`: The local port to run the viewer server on so you can visually see what the bot is doing. Default is 8000. 👀
-* `--goto`: The x, y, z coordinates for the bot to navigate to. Default is ["100", "100", "100"] (x=100, y=100, z=100). 🗺
-* `--chest_range`: How close a chest must be to the bot for the bot to pathfind to it. Default is 100 blocks. 📦
-* `--init_chest_type`: The type of chest for the bot to get items from. Default is "Chest". 🗄
-* `--init_chest_cords`: The coordinates of the initial chest. Default is ["100", "100", "100"] (x=100, y=100, z=100). 📍
-* `--init_items_name`: The name of the item(s) to get from the initial chest. Default is "SchulkerBox". 🎒
-* `--init_items_count`: The number of items to place in the initial chest. Default is 1. 🔢
-* `--recipient_username`: The username for the client the delivery is made to. Default is "OpenDeliveryBot". 👤
 * `--quit_on_low_health`: Disconect the bot if the bot is on low health. Default is "True". 👤
 * `--low_health_threashold`: How low the health must be for the bot to quit. Default is "10". 👤
 * `--armor_equip`: If the bot needs to equip all available armor. Default is "True". 👤
-
-> [!NOTE]
-> Setting ``init_chest_cords`` to `["0", "0", "0"]` will make the bot look for chest with the specified type in a 100 block radius. This can be helpful if the chest is moving a lot. Make sure to use a trapped chest as it's easier to find.
 
 </details>
 
