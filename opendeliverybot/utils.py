@@ -43,5 +43,13 @@ def LLM(input:str, data=""):
         model=g4f.models.gpt_4,
         messages=[{"role": "user", "content": f"question about provided data: {input} data: {data} USE THIS DATA TO AWNSER THE QUESTION, KEEP IT SHORT"}],
     )  # alterative model setting
-    output.append({"base": defualt})
+    if not "<!DOCTYPE html>" in defualt:
+        output.append({"base": defualt})
+    else: 
+        logger.warning(f"[LLM] defualt is not available. Trying another...")
+        defualt = g4f.ChatCompletion.create(
+            model=g4f.models.gpt_35_turbo,
+            messages=[{"role": "user", "content": f"question about provided data: {input} data: {data} USE THIS DATA TO AWNSER THE QUESTION, KEEP IT SHORT"}],
+        )  # alterative model setting
+        output.append({"base": defualt})
     return output

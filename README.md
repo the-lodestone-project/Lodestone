@@ -110,7 +110,7 @@ bot.start()
 # run code on the bot here!
 ```
 
-Using a Discord Webhook
+#### Discord Webhook
 
 the only thing you need to change in comparison to the example above is the creation of the bot
 
@@ -119,7 +119,7 @@ bot = MinecraftBot(config=config, discordWebhook="YOUR WEBHOOK")
 ```
 
 
-Using AI (LLM)
+#### Large Language Models (e.g. AI)
 
 OpenDeliveryBot now features a integration with many lare language models!
 here is how you can use them!
