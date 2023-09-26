@@ -5,10 +5,11 @@ import structlog
 from rich.console import Console
 import g4f
 import asyncio
+from claude_api import Client
 logger = structlog.get_logger()
 console = Console()
 
-def LLM(input:str, data=""):
+def llm(input:str, data=""):
     _providers = [
         g4f.Provider.Bing,
         g4f.Provider.DeepAi,
@@ -43,13 +44,24 @@ def LLM(input:str, data=""):
         model=g4f.models.gpt_4,
         messages=[{"role": "user", "content": f"question about provided data: {input} data: {data} USE THIS DATA TO AWNSER THE QUESTION, KEEP IT SHORT"}],
     )  # alterative model setting
-    if not "<!DOCTYPE html>" in defualt:
-        output.append({"base": defualt})
-    else: 
+    if "<!DOCTYPE html>" in defualt: 
         logger.warning(f"[LLM] defualt is not available. Trying another...")
-        defualt = g4f.ChatCompletion.create(
+        defualtnew = g4f.ChatCompletion.create(
             model=g4f.models.gpt_35_turbo,
             messages=[{"role": "user", "content": f"question about provided data: {input} data: {data} USE THIS DATA TO AWNSER THE QUESTION, KEEP IT SHORT"}],
         )  # alterative model setting
+        output.append({"base": defualtnew})
+    else:
         output.append({"base": defualt})
     return output
+
+
+def claude(input:str, cookie:str, data="", conversation_id=""):
+    claude_api = Client(cookie)
+    conversation_id = conversation_id or claude_api.create_new_chat()['uuid']
+    with console.status(f"[bold green][CLAUDE] Please wait...\n") as status:
+        try:
+            response = claude_api.send_message(f"question about provided data: {input} data: {data} USE THIS DATA TO AWNSER THE QUESTION, KEEP IT SHORT, DONT USE USERNAMES AS A BASES FOR A AWNSER", conversation_id)
+            return response
+        except:
+            logger.warning(f"[LLM] Claude is not available. This may be because you reached your message limit")

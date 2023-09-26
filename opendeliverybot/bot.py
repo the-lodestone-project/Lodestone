@@ -12,11 +12,13 @@ import fnmatch
 import re
 from datetime import date
 from pathlib import Path
-from tinydb import TinyDB
+from tinydb import TinyDB, Query
 import subprocess
 from rich.console import Console
 import functools
 playerDatabase = TinyDB("playerDatabase.json")
+chatDatabase = TinyDB("chatDatabase.json")
+User = Query()
 # new_item = {"name": "Book", "quantity": 5}
 # playerDatabase.insert(new_item) 
 
@@ -112,11 +114,11 @@ class MinecraftBot:
             color = 0x3498db
             if error == True:
                 color = 0x992d22
-            if info == True:
+            elif info == True:
                 color = 0x3498db
-            if warning == True:
+            elif warning == True:
                 color = 0xe67e22
-            if chat == True:
+            elif chat == True:
                 color = 0x2ecc71
             embed = self.Embed(title="", description=f"**{message}**", color=color)
             embed.timestamp = datetime.datetime.utcnow()
@@ -135,7 +137,16 @@ class MinecraftBot:
                 except:
                     self.logger.error(f"Detected that you are using a Forms channel but 'useDiscordForms' is set to False. Please change 'useDiscordForms' to True or provide a webhook url for a text channel.")
         if console == True:
-            self.logger.info(f"{message}")
+            if error == True:
+                self.logger.error(f"{message}")
+            elif info == True:
+                self.logger.info(f"{message}")
+            elif warning == True:
+                self.logger.warning(f"{message}")
+            elif chat == True:
+                self.logger.info(f"{message}")
+            else:
+                self.logger.info(f"{message}")
         
     
     def __findFiles(self, base, pattern):
@@ -332,6 +343,13 @@ class MinecraftBot:
         @On(self.bot, 'chat')
         def handleMsg(this, sender, message, *args):
             if sender:
+                if not chatDatabase.contains(User.username == sender):
+                    chatDatabase.insert({'username': sender, 'messages': [message]}) 
+                else:
+                    user = chatDatabase.get(User.username == sender)  # Use get instead of search
+                    existing_messages = user['messages']
+                    existing_messages.extend([f"{message}"])  # Append new messages to existing ones
+                    chatDatabase.update({'messages': existing_messages}, User.username == sender)
                 self.__loging(f"💬 {sender}: {message}", chat=True)
             
 
@@ -491,6 +509,18 @@ class MinecraftBot:
             bot = self.bot
             response = eval(code)(bot)
             return response
+        
+    def chatHistory(self, username:str):
+        user = chatDatabase.get(User.username == username)
+        if user:
+            return user['messages']
+        else:
+            self.__loging(f"{username} has no chat history", warning=True)
+        
+    def clearLogs(self):
+        chatDatabase.truncate()
+        playerDatabase.truncate()
+        self.__loging("All databases are cleared!")
     
     def stop(self):
         self.bot.end()

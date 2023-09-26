@@ -40,3 +40,4 @@ opendeliverybot/api-test.py
 history.txt
 node_modules/
 old_code/
+opendeliverybot/chatDatabase.json
