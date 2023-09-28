@@ -7,7 +7,5 @@ package-lock.json
 old_code/*
 opendeliverybot/api-test.py
 opendeliverybot/test.py
-opendeliverybot/__pycache__/bot.cpython-311.pyc
-opendeliverybot/__pycache__/utils.cpython-311.pyc
-opendeliverybot/chatDatabase.json
-opendeliverybot/playerDatabase.json
+opendeliverybot/__pycache__/*
+opendeliverybot/*.json

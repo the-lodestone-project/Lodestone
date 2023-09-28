@@ -16,8 +16,6 @@ from tinydb import TinyDB, Query
 import subprocess
 from rich.console import Console
 import functools
-playerDatabase = TinyDB("playerDatabase.json")
-chatDatabase = TinyDB("chatDatabase.json")
 User = Query()
 # new_item = {"name": "Book", "quantity": 5}
 # playerDatabase.insert(new_item) 
@@ -84,7 +82,8 @@ class MinecraftBot:
         self.logedin = False
         self.useReturn = useReturn
         self.msa_status = False
-    
+        self.servername = f"{self.config['server_ip']}".lower().replace(".", "")
+        self.chatDatabase = TinyDB(f"{self.servername}Database.json")
         self.script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
         self.bot = self.__create_bot()
         self.msa_data = False
@@ -343,13 +342,13 @@ class MinecraftBot:
         @On(self.bot, 'chat')
         def handleMsg(this, sender, message, *args):
             if sender:
-                if not chatDatabase.contains(User.username == sender):
-                    chatDatabase.insert({'username': sender, 'messages': [message]}) 
+                if not self.chatDatabase.contains(User.username == sender):
+                    self.chatDatabase.insert({'username': sender, 'messages': [message]}) 
                 else:
-                    user = chatDatabase.get(User.username == sender)  # Use get instead of search
+                    user = self.chatDatabase.get(User.username == sender)  # Use get instead of search
                     existing_messages = user['messages']
                     existing_messages.extend([f"{message}"])  # Append new messages to existing ones
-                    chatDatabase.update({'messages': existing_messages}, User.username == sender)
+                    self.chatDatabase.update({'messages': existing_messages}, User.username == sender)
                 self.__loging(f"💬 {sender}: {message}", chat=True)
             
 
@@ -510,16 +509,22 @@ class MinecraftBot:
             response = eval(code)(bot)
             return response
         
-    def chatHistory(self, username:str):
-        user = chatDatabase.get(User.username == username)
-        if user:
-            return user['messages']
+    def chatHistory(self, username:str, server:str=""):
+        if server == "":
+            server = self.config['server_ip']
+        if os.path.exists(f"{server}".lower().replace(".", "") + "Database.json"):
+            serverHistory = TinyDB(f"{server}".lower().replace(".", "") + "Database.json")
+            user = serverHistory.get(User.username == username)
+            if user:
+                return user['messages']
+            else:
+                self.__loging(f"{username} has no chat history", warning=True)
         else:
-            self.__loging(f"{username} has no chat history", warning=True)
+            self.__loging(f"{server} has no database", warning=True)
+            return []
         
     def clearLogs(self):
-        chatDatabase.truncate()
-        playerDatabase.truncate()
+        self.chatDatabase.truncate()
         self.__loging("All databases are cleared!")
     
     def stop(self):

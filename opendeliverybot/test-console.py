@@ -8,7 +8,7 @@ from prompt_toolkit.patch_stdout import patch_stdout
 from fuzzyfinder import fuzzyfinder
 import threading
 import time
-from opendeliverybot.bot import MinecraftBot
+from bot import MinecraftBot
 from rich.console import Console
 from rich.columns import Columns
 from rich.panel import Panel
@@ -64,8 +64,8 @@ def get_input():
                         quit()
                     try:
                         print(eval(user_input))
-                    except:
-                        print("error")
+                    except Exception as e:
+                        print("error", e)
                 else:
                     bot.bot.chat(user_input)
     
