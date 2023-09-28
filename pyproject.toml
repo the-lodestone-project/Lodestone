@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "mineflayer"
+name = "opendeliverybot"
 version = "0.4.19"
 description = "🤖📦 Deliver anything, anywere! powered by MineFlayer."
 authors = ["Silke pilon <silkepilon2009@gmail.com>"]
