@@ -1,17 +1,17 @@
 [tool.poetry]
-name = "opendeliverybot"
-version = "0.4.20"
-description = "🤖📦 Deliver anything, anywere! powered by MineFlayer."
+name = "mineflayer"
+version = "0.0.1"
+description = "🤖 Create Minecraft bots with a powerful, stable, and high level Python API."
 authors = ["Silke pilon <silkepilon2009@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 
 
 [tool.poetry.package.include]
-opendeliverybot = [
-  {path = "opendeliverybot/**/*.py"},
-  {path = "opendeliverybot/**/*.css"},
-  {path = "opendeliverybot/**/*.json"}  
+mineflayer = [
+  {path = "mineflayer/**/*.py"},
+  {path = "mineflayer/**/*.css"},
+  {path = "mineflayer/**/*.json"}  
 ]
 
 [tool.poetry.dependencies]
