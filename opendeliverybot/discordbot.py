@@ -130,7 +130,10 @@ class History(discord.ui.Modal, title='Chat History'):
         label='Player Username',
         placeholder='Notch',
     )
-    
+    server = discord.ui.TextInput(
+        label='Server Database',
+        placeholder='2b2t.org',
+    )
 
     # This is a longer, paragraph style input, where user can submit feedback
     # Unlike the name, it is not required. If filled out, however, it will
@@ -147,7 +150,7 @@ class History(discord.ui.Modal, title='Chat History'):
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer()
         try:
-            history = mcbot.chatHistory(username=f"{self.username.value}")
+            history = mcbot.chatHistory(username=f"{self.username.value}", server=f"{self.server.value}")
             if history is None:
                 history = f"{self.username.value} has no chat history"
         except Exception as e:

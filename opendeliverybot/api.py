@@ -8,11 +8,19 @@ import structlog
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from rich.console import Console
+import time 
+from rich.panel import Panel
+from rich.progress import track
+from rich import print
+from rich.layout import Layout
 app = FastAPI()
 logger = structlog.get_logger()
 console = Console()
+layout = Layout()
 
 def api():
+
+    print(Panel("Welcome to the Open Delivery Bot python package!\n\nAPI docs are avable at: https://open-delivery-bot-documentation.vercel.app/", title="Welcome", expand=False, border_style="green"))
     
     logger.info("API running at http://localhost:5000/ (beta)")
     

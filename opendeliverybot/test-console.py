@@ -8,7 +8,7 @@ from prompt_toolkit.patch_stdout import patch_stdout
 from fuzzyfinder import fuzzyfinder
 import threading
 import time
-from bot import MinecraftBot
+from opendeliverybot.bot import MinecraftBot
 from rich.console import Console
 from rich.columns import Columns
 from rich.panel import Panel
