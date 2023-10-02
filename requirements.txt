@@ -1,2 +1,2 @@
-opendeliverybot
+mineflayer
 poetry
