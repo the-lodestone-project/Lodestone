@@ -1,9 +1,8 @@
 import os
 import sys
 import click
-from mineflayer import api
+from mineflayer import fastapi
 import subprocess
-
 @click.command(context_settings={"ignore_unknown_options": True})
 @click.option("--console", default=False, is_flag=True, help="Force the app to use the console")
 @click.argument('args', nargs=-1)
@@ -36,10 +35,10 @@ def run(console, args):
                 os.system(f"{python_command} {script_directory}/test-console.py {' '.join(args)}")
             else:
                 # print('Web ui is still in developmet and is not working atm, rerun the command again with --console')
-                api()
+                fastapi()
         elif is_windows:
             # print('Web ui is still in developmet and is not working atm, rerun the command again with --console')
-            api()
+            fastapi()
         else:
             os.system(f"{python_command} {script_directory}/test-console.py {' '.join(args)}")
 

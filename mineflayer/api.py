@@ -18,7 +18,7 @@ logger = structlog.get_logger()
 console = Console()
 layout = Layout()
 
-def api():
+def fastapi():
 
     print(Panel("Welcome to the Open Delivery Bot python package!\n\nAPI docs are avable at: https://open-delivery-bot-documentation.vercel.app/", title="Welcome", expand=False, border_style="green"))
     
