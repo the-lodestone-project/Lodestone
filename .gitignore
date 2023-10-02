@@ -6,7 +6,7 @@ package-lock.json
 old_code/*
 opendeliverybot/api-test.py
 opendeliverybot/test.py
-opendeliverybot/__pycache__/*
+opendeliverybot/__pycache__/
 opendeliverybot/*.json
 .vscode/
 test.py

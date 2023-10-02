@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 import uvicorn
-from mineflayer import createBot
+import mineflayer
 import time
 from javascript import require
 import json
@@ -64,7 +64,7 @@ def fastapi():
         "z_coord": 0
         }
         global bot
-        bot = createBot(config)
+        bot = mineflayer.createBot(config)
         bot.start()
         return JSONResponse(content={"status": f"{bot.bot.username}"})
 
@@ -93,7 +93,7 @@ def fastapi():
         "y_coord": 70, 
         "z_coord": 0
         }
-        msa = createBot(config, apiMode=True)
+        msa = mineflayer.createBot(config, apiMode=True)
         maxLoops = 0
         while msa.msa_status == False:
             if maxLoops >= 20:

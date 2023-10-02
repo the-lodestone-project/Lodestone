@@ -1,6 +1,6 @@
 import discord
 from discord import app_commands
-from mineflayer import createBot
+import mineflayer
 import traceback
 import time
 import asyncio
@@ -99,7 +99,7 @@ class Create(discord.ui.Modal, title='Create A Bot'):
             "low_health_threshold": 10
         }
 
-        mcbot = createBot(config=config)
+        mcbot = mineflayer.createBot(config=config)
         maxLoops = 0
         while mcbot.msa_status == False:
             if maxLoops >= 15:

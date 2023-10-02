@@ -243,7 +243,7 @@ class createBot:
 
     def __create_bot(self):
         if self.version == "auto" or self.version == "false":
-            self.version = "false"
+            self.version = False
         else:
             self.version = str(self.version)
         localBot = self.mineflayer.createBot({
@@ -357,15 +357,16 @@ class createBot:
             
         @On(self.bot, 'chat')
         def handleMsg(this, sender, message, *args):
-            if sender:
-                if not self.chatDatabase.contains(User.username == sender):
-                    self.chatDatabase.insert({'username': sender, 'messages': [message]}) 
-                else:
-                    user = self.chatDatabase.get(User.username == sender)  # Use get instead of search
-                    existing_messages = user['messages']
-                    existing_messages.extend([f"{message}"])  # Append new messages to existing ones
-                    self.chatDatabase.update({'messages': existing_messages}, User.username == sender)
-                self.__loging(f"💬 {sender}: {message}", chat=True)
+            if not sender:
+                sender = "unknown"
+            if not self.chatDatabase.contains(User.username == sender):
+                self.chatDatabase.insert({'username': sender, 'messages': [message]}) 
+            else:
+                user = self.chatDatabase.get(User.username == sender)  # Use get instead of search
+                existing_messages = user['messages']
+                existing_messages.extend([f"{message}"])  # Append new messages to existing ones
+                self.chatDatabase.update({'messages': existing_messages}, User.username == sender)
+            self.__loging(f"💬 {sender}: {message}", chat=True)
             
 
     def __equip_armor(self):
