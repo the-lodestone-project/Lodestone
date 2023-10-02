@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mineflayer"
-version = "0.0.3"
+version = "0.0.4"
 description = "🤖 Create Minecraft bots with a powerful, stable, and high level Python API."
 authors = ["Silke pilon <silkepilon2009@gmail.com>"]
 license = "MIT"
