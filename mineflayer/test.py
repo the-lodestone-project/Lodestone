@@ -15,7 +15,7 @@ config = {
     "low_health_threshold": 10
 }
 
-mcbot = bot.MinecraftBot(config=config)
+mcbot = bot.createBot(config=config)
 mcbot.start()
 print(claude(input="can you give me some of the info about the players?",data=mcbot.bot.players, cookie="sessionKey=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"))
 mcbot.clearLogs()

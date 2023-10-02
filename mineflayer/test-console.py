@@ -8,7 +8,7 @@ from prompt_toolkit.patch_stdout import patch_stdout
 from fuzzyfinder import fuzzyfinder
 import threading
 import time
-from opendeliverybot.bot import MinecraftBot
+from mineflayer.bot import createBot
 from rich.console import Console
 from rich.columns import Columns
 from rich.panel import Panel
@@ -94,7 +94,7 @@ def print_output(email, password, host, port, auth, version, check_timeout, view
         "quit_on_low_health": False,
         "low_health_threshold": 10
     }
-    bot = MinecraftBot(config=config)
+    bot = createBot(config=config)
 
 
 

@@ -1,18 +1,11 @@
 [tool.poetry]
 name = "mineflayer"
-version = "0.0.1"
+version = "0.0.2"
 description = "🤖 Create Minecraft bots with a powerful, stable, and high level Python API."
 authors = ["Silke pilon <silkepilon2009@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 
-
-[tool.poetry.package.include]
-mineflayer = [
-  {path = "mineflayer/**/*.py"},
-  {path = "mineflayer/**/*.css"},
-  {path = "mineflayer/**/*.json"}  
-]
 
 [tool.poetry.dependencies]
 python = "^3.10"

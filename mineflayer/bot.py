@@ -32,7 +32,7 @@ else:
 
 
 
-class MinecraftBot:
+class createBot:
     def __init__(self, config: dict, useReturn = False, discordWebhook = None, useDiscordForms = False, apiMode = False):
         """Main bot run loop"""
         global logger

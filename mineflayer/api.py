@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 import uvicorn
-from opendeliverybot.bot import MinecraftBot
+from mineflayer.bot import createBot
 import time
 from javascript import require
 import json
@@ -64,7 +64,7 @@ def api():
         "z_coord": 0
         }
         global bot
-        bot = MinecraftBot(config)
+        bot = createBot(config)
         bot.start()
         return JSONResponse(content={"status": f"{bot.bot.username}"})
 
@@ -93,7 +93,7 @@ def api():
         "y_coord": 70, 
         "z_coord": 0
         }
-        msa = MinecraftBot(config, apiMode=True)
+        msa = createBot(config, apiMode=True)
         maxLoops = 0
         while msa.msa_status == False:
             if maxLoops >= 20:
