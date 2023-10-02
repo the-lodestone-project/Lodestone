@@ -3,7 +3,7 @@ import sys
 import click
 from opendeliverybot.api import api
 import subprocess
-from mineflayer import createBot
+from mineflayer.bot import createBot
 @click.command(context_settings={"ignore_unknown_options": True})
 @click.option("--console", default=False, is_flag=True, help="Force the app to use the console")
 @click.argument('args', nargs=-1)
