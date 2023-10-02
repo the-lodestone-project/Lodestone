@@ -33,8 +33,25 @@ else:
 
 
 class createBot:
-    def __init__(self, config: dict, useReturn = False, discordWebhook = None, useDiscordForms = False, apiMode = False):
+    def __init__(self, host:str,auth:str="microsoft",port:int=25565,version:str="false",password:str="",check_timeout_interval:int=20,armor_manager:bool=False,viewer_port:int=5001, quit_on_low_health:bool=True, low_health_threshold:int=10,disableChatSigning:bool=False,profilesFolder:str="", username:str="MineflayerPy", useReturn = False, discordWebhook = None, useDiscordForms = False, apiMode = False):
         """Main bot run loop"""
+        self.host = host
+        self.auth = auth
+        self.port = port
+        self.version = version
+        self.password = password
+        self.check_timeout_interval = check_timeout_interval
+        self.armor_manager = armor_manager
+        self.viewer_port = viewer_port
+        self.quit_on_low_health = quit_on_low_health
+        self.low_health_threshold = low_health_threshold
+        self.disableChatSigning = disableChatSigning
+        self.profilesFolder = profilesFolder
+        self.username = username
+        
+        
+        
+        
         global logger
         self.logger = structlog.get_logger()
         logger = self.logger
@@ -78,11 +95,10 @@ class createBot:
             time.sleep(3)
 
             self.logger.info(f'Done!')
-        self.config = config
         self.logedin = False
         self.useReturn = useReturn
         self.msa_status = False
-        self.servername = f"{self.config['server_ip']}".lower().replace(".", "")
+        self.servername = f"{self.host}".lower().replace(".", "")
         self.chatDatabase = TinyDB(f"{self.servername}Database.json")
         self.script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
         self.bot = self.__create_bot()
@@ -226,16 +242,16 @@ class createBot:
     
 
     def __create_bot(self):
-        if self.config['version'] == "auto":
-            self.version = False
+        if self.version == "auto" or self.version == "false":
+            self.version = "false"
         else:
-            self.version = str(self.config['version'])
+            self.version = str(self.version)
         localBot = self.mineflayer.createBot({
-            'host': self.config['server_ip'],
-            'port': self.config['server_port'],
-            'username': self.config['bot_name'],
-            'password': self.config['password'],
-            'auth': self.config['auth'],
+            'host': self.host,
+            'port': self.port,
+            'username': self.username,
+            'password': self.password,
+            'auth': self.auth,
             'version': self.version,
             'hideErrors': True,
             'onMsaCode': self.__msa,
@@ -245,7 +261,7 @@ class createBot:
         def on_login(*args):
             self.bot = localBot
             self.logedin = True
-            self.__loging(f"Connecting to {self.config['server_ip']}", info=True, imageUrl=f"https://eu.mc-api.net/v3/server/favicon/{self.config['server_ip']}")
+            self.__loging(f"Connecting to {self.host}", info=True, imageUrl=f"https://eu.mc-api.net/v3/server/favicon/{self.host}")
             self.__loging(f'Logged in as {self.bot.username}', info=True, imageUrl=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
             self.__start_viewer()
             self.__setup_events()
@@ -374,8 +390,8 @@ class createBot:
     #             time.sleep(0.05)
 
     def __start_viewer(self):
-        self.mineflayerViewer(self.bot, {"port": self.config['viewer_port']})
-        self.__loging("Viewer started on port %s" % self.config['viewer_port'], info=True)
+        self.mineflayerViewer(self.bot, {"port": self.viewer_port})
+        self.__loging("Viewer started on port %s" % self.viewer_port, info=True)
     
     def __log_players(self):
         # print(type(self.bot.players))
@@ -501,7 +517,7 @@ class createBot:
         if self.logedin == True:
             return f"{int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}"
         
-    def custom_code(self, code:str=""):
+    def customCode(self, code:str=""):
         """Run Custom Code on the bot"""
         if self.logedin == True:
             self.__loging("Running custom code on the bot is not reconmended!", warning=True)
@@ -511,7 +527,7 @@ class createBot:
         
     def chatHistory(self, username:str, server:str=""):
         if server == "":
-            server = self.config['server_ip']
+            server = self.host
         if os.path.exists(f"{server}".lower().replace(".", "") + "Database.json"):
             serverHistory = TinyDB(f"{server}".lower().replace(".", "") + "Database.json")
             user = serverHistory.get(User.username == username)

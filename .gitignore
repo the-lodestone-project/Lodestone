@@ -9,3 +9,4 @@ opendeliverybot/test.py
 opendeliverybot/__pycache__/*
 opendeliverybot/*.json
 .vscode/
+test.py
