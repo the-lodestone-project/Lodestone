@@ -1,2 +1,2 @@
-from mineflayer.bot import createBot
-from mineflayer.utils import llm
+from .bot import createBot
+from .utils import llm
