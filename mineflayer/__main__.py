@@ -1,10 +1,8 @@
 import os
 import sys
 import click
-from mineflayer.api import api
+from mineflayer import api
 import subprocess
-from .bot import createBot
-createBot = createBot
 
 @click.command(context_settings={"ignore_unknown_options": True})
 @click.option("--console", default=False, is_flag=True, help="Force the app to use the console")

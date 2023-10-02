@@ -1,6 +1,6 @@
 import discord
 from discord import app_commands
-from mineflayer.bot import createBot
+from mineflayer import createBot
 import traceback
 import time
 import asyncio

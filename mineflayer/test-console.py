@@ -8,7 +8,7 @@ from prompt_toolkit.patch_stdout import patch_stdout
 from fuzzyfinder import fuzzyfinder
 import threading
 import time
-from mineflayer import createBot
+import mineflayer
 from rich.console import Console
 from rich.columns import Columns
 from rich.panel import Panel
@@ -71,30 +71,14 @@ def get_input():
     
 def print_output(email, password, host, port, auth, version, check_timeout, viewer_port, goto, chest_range, init_chest_type, init_chest_cords, init_items_name, init_items_count, recipient_username, quit_on_low_health, low_health_threashold, armor_equip):
     global bot
-    config = {
-        "server_ip": f"{host}",
-        "server_port": f"{port}",
-        "bot_name": f"{email}",
-        "password": "",
-        "auth": "microsoft",
-        "version": f"{version}",
-        "check_timeout_interval": 20,
-        "armor_manager": True,
-        "viewer_ip": "127.0.0.1",
-        "viewer_port": "5001",
-        "chest_type": None,
-        "chest_coords": [
-            "-62",
-            "72",
-            "47"
-        ],
-        "items_name": "ShulkerBox",
-        "items_count": 1,
-        "chest_range": "10",
-        "quit_on_low_health": False,
-        "low_health_threshold": 10
-    }
-    bot = createBot(config=config)
+    bot = mineflayer.createBot(
+        host=host,
+        port=port,
+        username=email,
+        auth=auth,
+        version=version,
+        password=password
+    )
 
 
 

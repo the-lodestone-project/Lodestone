@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 import uvicorn
-from mineflayer.bot import createBot
+from mineflayer import createBot
 import time
 from javascript import require
 import json
