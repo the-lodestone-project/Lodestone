@@ -620,13 +620,13 @@ files = [
 
 [[package]]
 name = "g4f"
-version = "0.0.3.4"
+version = "0.1.4.5"
 description = "The official gpt4free repository | various collection of powerful language models"
 optional = false
 python-versions = "*"
 files = [
-    {file = "g4f-0.0.3.4-py3-none-any.whl", hash = "sha256:6409003a799c1a7b70a7c04bdc0d0d96ea1bccd00875d36439c22a631de0137e"},
-    {file = "g4f-0.0.3.4.tar.gz", hash = "sha256:09d10217a773f810ef071e7ebffd7aa01d4d4d6493396084e4e431d7b98d6309"},
+    {file = "g4f-0.1.4.5-py3-none-any.whl", hash = "sha256:c0919816b5e6cebe5a9d9997cf62335afd782f9e315692d027f5b66fa19427ed"},
+    {file = "g4f-0.1.4.5.tar.gz", hash = "sha256:af6eada9ed859ffc2ebbf421d43d2c6949aac4723b71fc21eaca666fb2bda863"},
 ]
 
 [package.dependencies]
@@ -638,12 +638,13 @@ flask = "*"
 flask-cors = "*"
 js2py = "*"
 pycryptodome = "*"
+PyExecJS = "*"
 requests = "*"
 typing-extensions = "*"
 websockets = "*"
 
 [package.extras]
-api = ["flask-cors", "watchdog (>=3.0.0,<3.1.0)"]
+api = ["flask-cors", "tensorflow", "torch", "transformers", "watchdog (>=3.0.0,<3.1.0)"]
 
 [[package]]
 name = "h11"
@@ -1657,4 +1658,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "c87cc6389c55127f73d98a91a1f4bd039a40941dbccad600f6e2f57373d63426"
+content-hash = "923764f9e620921c92d60c9de12473c95e180ad9ade982a53af091df80b31f73"
