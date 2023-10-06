@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "lodestone"
-version = "0.0.1"
+version = "0.0.2"
 description = "🤖 Create Minecraft bots with a powerful, stable, and high level Python API."
 authors = ["Silke pilon <silkepilon2009@gmail.com>"]
 license = "MIT"
