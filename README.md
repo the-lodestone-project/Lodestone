@@ -2,7 +2,7 @@
 
 <h1 align="center">
   <br>
-  <a href="https://github.com/SilkePilon/OpenDeliveryBot/"><img src="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/logo.png?raw=true" alt="YouAgent" width="500"></a>
+  <a href="https://github.com/SilkePilon/OpenDeliveryBot/"><img src="https://static.wikia.nocookie.net/minecraft_gamepedia/images/3/32/Lodestone_JE1_BE1.png/revision/latest?cb=20200325183527" alt="YouAgent" width="500"></a>
   <br>
   <br>
   The Lodestone Project 🤖
