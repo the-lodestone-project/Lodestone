@@ -4,9 +4,9 @@ history.txt
 dist/*
 package-lock.json
 old_code/*
-opendeliverybot/api-test.py
-opendeliverybot/test.py
-opendeliverybot/__pycache__/
-opendeliverybot/*.json
+lodestone/api-test.py
+lodestone/test.py
+lodestone/__pycache__/
+lodestone/*.json
 .vscode/
 test.py

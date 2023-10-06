@@ -17,11 +17,6 @@ import subprocess
 from rich.console import Console
 import functools
 User = Query()
-# new_item = {"name": "Book", "quantity": 5}
-# playerDatabase.insert(new_item) 
-
-global api_bot
-
 filestruc = "/"
 
 if os.name == 'nt':
@@ -33,21 +28,60 @@ else:
 
 
 class createBot:
-    def __init__(self, host:str,auth:str="microsoft",port:int=25565,version:str="false",password:str="",check_timeout_interval:int=20,armor_manager:bool=False,viewer_port:int=5001, quit_on_low_health:bool=True, low_health_threshold:int=10,disableChatSigning:bool=False,profilesFolder:str="", username:str="MineflayerPy", useReturn = False, discordWebhook = None, useDiscordForms = False, apiMode = False):
-        """Main bot run loop"""
+    def __init__(self, 
+host:str,
+auth:str="microsoft",
+port:int=25565,
+version:str="false",
+password:str="",
+checkTimeoutInterval:int=20,
+armorManager:bool=False,
+viewerPort:int=5001,
+quit_on_low_health:bool=True,
+low_health_threshold:int=10,
+disableChatSigning:bool=False,
+profilesFolder:str="",
+username:str="MineflayerPy",
+useReturn:bool = False,
+discordWebhook:str = None,
+useDiscordForms:bool = False,
+apiMode:bool = False,
+clientToken = None,
+accessToken = None,
+logErrors:bool = True,
+hideErrors:bool = True,
+keepAlive:bool = True,
+loadInternalPlugins:bool = True,
+respawn:bool = True,
+physicsEnabled:bool = True,
+defaultChatPatterns:bool = True,
+disableLogs:bool = False
+):
+        """Create the bot"""
         self.host = host
         self.auth = auth
         self.port = port
         self.version = version
         self.password = password
-        self.check_timeout_interval = check_timeout_interval
-        self.armor_manager = armor_manager
-        self.viewer_port = viewer_port
+        self.check_timeout_interval = checkTimeoutInterval
+        self.armor_manager = armorManager
+        self.viewer_port = viewerPort
         self.quit_on_low_health = quit_on_low_health
         self.low_health_threshold = low_health_threshold
         self.disableChatSigning = disableChatSigning
         self.profilesFolder = profilesFolder
         self.username = username
+        self.clientToken = clientToken
+        self.accessToken = accessToken
+        self.logErrors = logErrors
+        self.hideErrors = hideErrors
+        self.keepAlive = keepAlive
+        self.loadInternalPlugins = loadInternalPlugins
+        self.respawn = respawn
+        self.physicsEnabled = physicsEnabled
+        self.defaultChatPatterns = defaultChatPatterns
+        self.disableLogs = disableLogs
+        
         
         
         
@@ -93,8 +127,6 @@ class createBot:
             status.update("[bold green]Updaing pip package...\n")
             os.system(f'{self.pythonCommand} -m pip install -U opendeliverybot >/dev/null 2>&1')
             time.sleep(3)
-
-            self.logger.info(f'Done!')
         self.logedin = False
         self.useReturn = useReturn
         self.msa_status = False
@@ -103,6 +135,7 @@ class createBot:
         self.script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
         self.bot = self.__create_bot()
         self.msa_data = False
+        
         
         
     
@@ -122,46 +155,46 @@ class createBot:
     
         
     def __loging(self, message, icon="🤖", error=False, info=False, warning=False, chat=False, imageUrl:str="", console:bool= True, discord:bool=True):
-        
-        if self.useReturn == True:
-            self.logger.info(f"{message}")
-        elif self.discordWebhook != None and discord == True:
-            color = 0x3498db
-            if error == True:
-                color = 0x992d22
-            elif info == True:
+        if self.disableLogs == False:
+            if self.useReturn == True:
+                self.logger.info(f"{message}")
+            elif self.discordWebhook != None and discord == True:
                 color = 0x3498db
-            elif warning == True:
-                color = 0xe67e22
-            elif chat == True:
-                color = 0x2ecc71
-            embed = self.Embed(title="", description=f"**{message}**", color=color)
-            embed.timestamp = datetime.datetime.utcnow()
-            if imageUrl != "":
-                embed.set_thumbnail(url=imageUrl)
-            try:
-                embed.set_footer(text=f'{self.bot.username}',icon_url=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
-            except:
-                embed.set_footer(text='\u200b',icon_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true")
-            if self.useDiscordForms == True:
-                today = date.today()
-                self.webhook.send(content=f"{today}", thread=f"{today}", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embed)
-            else:
+                if error == True:
+                    color = 0x992d22
+                elif info == True:
+                    color = 0x3498db
+                elif warning == True:
+                    color = 0xe67e22
+                elif chat == True:
+                    color = 0x2ecc71
+                embed = self.Embed(title="", description=f"**{message}**", color=color)
+                embed.timestamp = datetime.datetime.utcnow()
+                if imageUrl != "":
+                    embed.set_thumbnail(url=imageUrl)
                 try:
-                    self.webhook.send(content=f"", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embed)
+                    embed.set_footer(text=f'{self.bot.username}',icon_url=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
                 except:
-                    self.logger.error(f"Detected that you are using a Forms channel but 'useDiscordForms' is set to False. Please change 'useDiscordForms' to True or provide a webhook url for a text channel.")
-        if console == True:
-            if error == True:
-                self.logger.error(f"{message}")
-            elif info == True:
-                self.logger.info(f"{message}")
-            elif warning == True:
-                self.logger.warning(f"{message}")
-            elif chat == True:
-                self.logger.info(f"{message}")
-            else:
-                self.logger.info(f"{message}")
+                    embed.set_footer(text='\u200b',icon_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true")
+                if self.useDiscordForms == True:
+                    today = date.today()
+                    self.webhook.send(content=f"{today}", thread=f"{today}", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embed)
+                else:
+                    try:
+                        self.webhook.send(content=f"", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embed)
+                    except:
+                        self.logger.error(f"Detected that you are using a Forms channel but 'useDiscordForms' is set to False. Please change 'useDiscordForms' to True or provide a webhook url for a text channel.")
+            if console == True:
+                if error == True:
+                    self.logger.error(f"{message}")
+                elif info == True:
+                    self.logger.info(f"{message}")
+                elif warning == True:
+                    self.logger.warning(f"{message}")
+                elif chat == True:
+                    self.logger.info(f"{message}")
+                else:
+                    self.logger.info(f"{message}")
         
     
     def __findFiles(self, base, pattern):
@@ -217,7 +250,8 @@ class createBot:
             # Remove periods
             node_version = node_version.replace('.', '')
             if int(node_version[:2]) >= 18:
-                self.logger.info(f"Detected Node version {node_version[:2]} witch is supported!")
+                if self.disableLogs == False:
+                    self.logger.info(f"Detected Node version {node_version[:2]} witch is supported!")
             else:
                 self.logger.warning(f"Detected node version {node_version[:2]} witch is NOT supported!\nThis may cause problems. Please update to node 18 or above!")
                 time.sleep(7)
@@ -234,8 +268,9 @@ class createBot:
             if match:
                 pip_version = match.group(1)
                 python_version = match.group(2)
-            self.logger.info(f"Detected Pip version {pip_version} witch is supported!")
-            self.logger.info(f"Detected Python version {python_version} witch is supported!")
+            if self.disableLogs == False:
+                self.logger.info(f"Detected Pip version {pip_version} witch is supported!")
+                self.logger.info(f"Detected Python version {python_version} witch is supported!")
             return node_version, pip_version, python_version
         
             
@@ -253,9 +288,18 @@ class createBot:
             'password': self.password,
             'auth': self.auth,
             'version': self.version,
-            'hideErrors': True,
+            'hideErrors': self.hideErrors,
             'onMsaCode': self.__msa,
-            'checkTimeoutInterval': 60 * 10000
+            'checkTimeoutInterval': 60 * 10000,
+            'disableChatSigning': self.disableChatSigning,
+            'profilesFolder': self.profilesFolder,
+            'logErrors': self.logErrors,
+            'hideErrors': self.hideErrors,
+            'keepAlive': self.keepAlive,
+            'loadInternalPlugins': self.loadInternalPlugins,
+            'respawn': self.respawn,
+            'physicsEnabled': self.physicsEnabled,
+            'defaultChatPatterns': self.defaultChatPatterns
         })
         @On(localBot, "login")
         def on_login(*args):
@@ -284,10 +328,78 @@ class createBot:
         # self.__auto_totem()
         self.__equip_armor()
         self.__log_players()
+        self.registry = self.bot.registry
+        self.world = self.bot.world
+        self.entity = self.bot.entity
+        self.entities = self.bot.entities
+        self.username = self.bot.username 
+        self.spawnPoint = self.bot.spawnPoint
+        self.heldItem = self.bot.heldItem
+        self.usingHeldItem = self.bot.usingHeldItem
+
+        self.game_levelType = self.bot.game.levelType
+        self.game_dimension = self.bot.game.dimension
+        self.game_difficulty = self.bot.game.difficulty
+        self.game_gameMode = self.bot.game.gameMode
+        self.game_hardcore = self.bot.game.hardcore
+        self.game_maxPlayers = self.bot.game.maxPlayers
+        self.game_serverBrand = self.bot.game.serverBrand
+        self.game_minY = self.bot.game.minY
+        self.game_height = self.bot.game.height
+
+        self.physicsEnabled = self.bot.physicsEnabled
         
-        # self.__get_items()
-        # self.__go_to_location()
-        # self.__deposit_items()
+        self.player = self.bot.player
+        self.players = self.bot.players
+        self.tablist = self.bot.tablist
+
+        self.isRaining = self.bot.isRaining
+        self.rainState = self.bot.rainState
+        self.thunderState = self.bot.thunderState
+
+        self.chatPatterns = self.bot.chatPatterns
+        
+        self.settings_chat = self.bot.settings.chat
+        self.settings_colorsEnabled = self.bot.settings.colorsEnabled
+        self.settings_viewDistance = self.bot.settings.viewDistance
+        self.settings_difficulty = self.bot.settings.difficulty
+        self.settings_skinParts = self.bot.settings.skinParts
+        self.settings_enableTextFiltering = self.bot.settings.enableTextFiltering
+        self.settings_enableServerListing = self.bot.settings.enableServerListing
+
+        self.experience_level = self.bot.experience.level
+        self.experience_points = self.bot.experience.points
+        self.experience_progress = self.bot.experience.progress
+
+        self.health = self.bot.health
+        self.food = self.bot.food
+        self.foodSaturation = self.bot.foodSaturation
+        self.oxygenLevel = self.bot.oxygenLevel
+        
+        self.physics = self.bot.physics
+        self.fireworkRocketDuration = self.bot.fireworkRocketDuration
+
+        self.time_doDaylightCycle = self.bot.time.doDaylightCycle
+        self.time_bigTime = self.bot.time.bigTime
+        self.time_time = self.bot.time.time
+        self.time_timeOfDay = self.bot.time.timeOfDay
+        self.time_day = self.bot.time.day
+        self.time_isDay = self.bot.time.isDay
+        self.time_moonPhase = self.bot.time.moonPhase
+        self.time_bigAge = self.bot.time.bigAge
+        self.time_age = self.bot.time.age
+
+        self.quickBarSlot = self.bot.quickBarSlot
+        self.inventory = self.bot.inventory
+        self.targetDigBlock = self.bot.targetDigBlock
+        self.isSleeping = self.bot.isSleeping
+
+        self.scoreboards = self.bot.scoreboards
+        self.scoreboard = self.bot.scoreboard
+        self.teams = self.bot.teams
+        self.teamMap = self.bot.teamMap
+
+        self.controlState = self.bot.controlState
         
     
         
@@ -307,19 +419,17 @@ class createBot:
     
     
     def __setup_events(self):
-        
         @On(self.bot, "path_update")
         def path_update(_, r):
             path = [self.bot.entity.position.offset(0, 0.5, 0)]
             for node in r['path']:
                 path.append({'x': node['x'], 'y': node['y'] + 0.5, 'z': node['z']})
             self.bot.viewer.drawLine('path', path, 	0x0000FF)
-        
         @On(self.bot.viewer, "blockClicked")
         def on_block_clicked(_, block, face, button):
             try:
                 if button != 2:
-                    return  # only right click
+                    return
                 p = block.position.offset(0, 1, 0)
                 self.bot.pathfinder.goto(self.pathfinder.goals.GoalNear(p.x, p.y, p.z, 1), timeout=60)
             except:
@@ -330,31 +440,23 @@ class createBot:
         @On(self.bot, "death")
         def death(*args):
             self.bot.end()
-            
             self.__loging("Bot died... stopping bot!", warning=True)
-        
         @On(self.bot, "kicked")
         def kicked(this, reason, *a):
             self.bot.end()
-            
             self.__loging("Kicked from server... stopping bot!", warning=True)
-            
         @On(self.bot, "autoeat_started")
         def autoeat_started(item, offhand, *a):
             self.__loging(f"Eating {item['name']} in {'offhand' if offhand else 'hand'}", info=True)
-            
         @On(self.bot, "autoeat_finished")
         def autoeat_finished(item, offhand):
-            self.__loging(f"Finished eating {item['name']} in {'offhand' if offhand else 'hand'}", info=True)
-            
+            self.__loging(f"Finished eating {item['name']} in {'offhand' if offhand else 'hand'}", info=True) 
         @On(self.bot, "error")
         def error(_, error):
             self.__loging(error, error=True)
-        
         @On(self.bot, "end")
         def create_new_bot(*a):
             self.bot = self.__create_bot()
-            
         @On(self.bot, 'chat')
         def handleMsg(this, sender, message, *args):
             if not sender:
@@ -362,9 +464,9 @@ class createBot:
             if not self.chatDatabase.contains(User.username == sender):
                 self.chatDatabase.insert({'username': sender, 'messages': [message]}) 
             else:
-                user = self.chatDatabase.get(User.username == sender)  # Use get instead of search
+                user = self.chatDatabase.get(User.username == sender)
                 existing_messages = user['messages']
-                existing_messages.extend([f"{message}"])  # Append new messages to existing ones
+                existing_messages.extend([f"{message}"])
                 self.chatDatabase.update({'messages': existing_messages}, User.username == sender)
             self.__loging(f"💬 {sender}: {message}", chat=True)
             
@@ -374,21 +476,6 @@ class createBot:
             self.bot.armorManager.equipAll()
         except:
             return
-        
-        
-    # def __auto_totem(self):
-    #     totemId = self.bot.registry.itemsByName['totem_of_undying'].id  # Get the correct id
-    #     if 'totem_of_undying' in self.bot.registry.itemsByName:
-    #         import time
-
-    #         def equip_totem():
-    #             totem = self.bot.inventory.find_inventory_item(totemId, None)
-    #             if totem:
-    #                 self.bot.equip(totem, 'off-hand')
-
-    #         while True:
-    #             equip_totem()
-    #             time.sleep(0.05)
 
     def __start_viewer(self):
         self.mineflayerViewer(self.bot, {"port": self.viewer_port})
@@ -407,107 +494,14 @@ class createBot:
                     return item
                 return None
             
-    def __add_values_to_csv(self, data, bot):
-        now = datetime.datetime.now()
-        server_info = f"{data['server_ip']}:{data['server_port']}"
-        start_x = str(bot.entity.position.x)
-        start_y = str(bot.entity.position.y)
-        start_z = str(bot.entity.position.z)
-        
-        delivered_item = data["items_name"]
-
-        distance = math.sqrt((self.config['x_coord'] - start_x)**2 + (self.config['z_coord'] - start_z)**2)
-
-        row = [now, server_info, start_x, start_y, start_z, self.config['x_coord'], self.config['y_coord'], self.config['z_coord'], distance, delivered_item]
-        os.makedirs(os.path.dirname(f'{self.script_directory}{filestruc}logs{filestruc}analytics.csv'), exist_ok=True)
-        with open(f'{self.script_directory}{filestruc}logs{filestruc}analytics.csv', 'a', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(row)
-
-    def __go_to_location(self, x, y, z):
-        self.pathfinder.setGoal(
-            self.goals.GoalNear(x, y, z, 1),
-            timeout=60
-        )
-    
-    def __get_items(self):
-        x = self.config["chest_coords"][0]
-        y = self.config["chest_coords"][1]
-        z = self.config["chest_coords"][2]
-        locaton = self.bot.pathfinder.setGoal(self.pathfinder.goals.GoalNear(x, y, z, 1), timeout=60)
-        
-        chestToOpen = self.bot.findBlock({
-            'matching': [self.mcData.blocksByName[name].id for name in [f'{str(self.config["chest_type"]).lower()}']],
-            'maxDistance': 10,
-        })
-        
-        if chestToOpen:
-
-            chest = self.bot.openContainer(self.bot.blockAt(self.Vec3(-62, 72, 47)))
-            
-            item = self.__item_By_Name(chest.containerItems(), self.config["items_name"])
-            
-            if item:
-                try:
-                    self.windows.withdraw(item.type, None, self.config['items_count'])
-                except Exception as err:
-                    self.bot.chat(f"unable to withdraw {self.config['items_count']} {item.name}")
-            else:
-                self.bot.chat(f"unknown item {self.config['items_name']}")
-            
-            asyncio.sleep(5)
-            
-            chest.close()                
-            
-        else:
-            self.bot.chat("Can't find the chest")
-
-    def __deposit_items(self):
-
-        foundChest = False
-        
-        while not foundChest:
-            
-            chestToOpen = self.bot.findBlock({
-                'matching': [self.mcData.blocksByName[name].id for name in ['chest']], 
-                'maxDistance': self.config["chest_range"],
-            })
-        
-            if not chestToOpen and foundChest == False:
-                self.__loging("No delivery chest found", error=True)
-                break
-                
-            if chestToOpen.position.x:
-                x = chestToOpen.position.x
-                y = chestToOpen.position.y  
-                z = chestToOpen.position.z
-
-                locaton = self.bot.pathfinder.setGoal(self.pathfinder.goals.GoalNear(x, y, z, 1), timeout=60)
-                
-                try:
-                    chest = self.bot.openContainer(chestToOpen)
-                except Exception:
-                    print(Exception)
-                    continue
-                
-                item = next((item for item in chest.slots if item and item.name == f'{self.config["items_name"]}'), None)
-                self.windows.deposit(item, "null", "null", "null")
-                
-                chest.close()
-
-                foundChest = True
-                
-                break
-            
-        self.__add_values_to_csv(self.config, self.bot)
         
     # Needs to be changed to {"item": item_count}
-    def inventory(self):
-        inv = []
-        if self.bot and self.bot.inventory:
-            for item in self.bot.inventory.items():
-                inv.append(item.displayName)
-        return inv
+    # def inventory(self):
+    #     inv = []
+    #     if self.bot and self.bot.inventory:
+    #         for item in self.bot.inventory.items():
+    #             inv.append(item.displayName)
+    #     return inv
     
     def chat(self, message:str):
         self.bot.chat(message)
@@ -517,14 +511,6 @@ class createBot:
     def coordinates(self):
         if self.logedin == True:
             return f"{int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}"
-        
-    def customCode(self, code:str=""):
-        """Run Custom Code on the bot"""
-        if self.logedin == True:
-            self.__loging("Running custom code on the bot is not reconmended!", warning=True)
-            bot = self.bot
-            response = eval(code)(bot)
-            return response
         
     def chatHistory(self, username:str, server:str=""):
         if server == "":
@@ -547,4 +533,6 @@ class createBot:
     def stop(self):
         self.bot.end()
         self.__loging("Stopped bot!", warning=True)
+        
+        
         
