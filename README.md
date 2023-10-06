@@ -2,7 +2,7 @@
 
 <h1 align="center">
   <br>
-  <a href="https://github.com/SilkePilon/lodestone/"><img src="https://github.com/SilkePilon/Lodestone/blob/main/logo.png?raw=true" alt="YouAgent" width="180"></a>
+  <a href="https://github.com/SilkePilon/lodestone/"><img src="https://github.com/SilkePilon/Lodestone/blob/main/new_logo.png?raw=true" alt="YouAgent" width="180"></a>
   <br>
   <br>
   Project Lodestone 🤖
