@@ -55,7 +55,8 @@ loadInternalPlugins:bool = True,
 respawn:bool = True,
 physicsEnabled:bool = True,
 defaultChatPatterns:bool = True,
-disableLogs:bool = False
+disableLogs:bool = False,
+enableChatLogging:bool = False,
 ):
         """Create the bot"""
         self.host = host
@@ -81,6 +82,7 @@ disableLogs:bool = False
         self.physicsEnabled = physicsEnabled
         self.defaultChatPatterns = defaultChatPatterns
         self.disableLogs = disableLogs
+        self.enableChatLogging = enableChatLogging
         
         
         
@@ -131,11 +133,12 @@ disableLogs:bool = False
         self.useReturn = useReturn
         self.msa_status = False
         self.servername = f"{self.host}".lower().replace(".", "")
-        self.chatDatabase = TinyDB(f"{self.servername}Database.json")
+        if self.enableChatLogging == True:
+            self.chatDatabase = TinyDB(f"{self.servername}Database.json")
         self.script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
         self.bot = self.__create_bot()
         self.msa_data = False
-        
+        self.start()
         
         
     
@@ -459,16 +462,17 @@ disableLogs:bool = False
             self.bot = self.__create_bot()
         @On(self.bot, 'chat')
         def handleMsg(this, sender, message, *args):
-            if not sender:
-                sender = "unknown"
-            if not self.chatDatabase.contains(User.username == sender):
-                self.chatDatabase.insert({'username': sender, 'messages': [message]}) 
-            else:
-                user = self.chatDatabase.get(User.username == sender)
-                existing_messages = user['messages']
-                existing_messages.extend([f"{message}"])
-                self.chatDatabase.update({'messages': existing_messages}, User.username == sender)
-            self.__loging(f"💬 {sender}: {message}", chat=True)
+            if self.enableChatLogging == True:
+                if not sender:
+                    sender = "unknown"
+                if not self.chatDatabase.contains(User.username == sender):
+                    self.chatDatabase.insert({'username': sender, 'messages': [message]}) 
+                else:
+                    user = self.chatDatabase.get(User.username == sender)
+                    existing_messages = user['messages']
+                    existing_messages.extend([f"{message}"])
+                    self.chatDatabase.update({'messages': existing_messages}, User.username == sender)
+                self.__loging(f"💬 {sender}: {message}", chat=True)
             
 
     def __equip_armor(self):
@@ -513,6 +517,9 @@ disableLogs:bool = False
             return f"{int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}"
         
     def chatHistory(self, username:str, server:str=""):
+        if self.enableChatLogging == False:
+            self.__loging(f"Chat logging is not enabled, set enableChatLogging=True in the bot config", warning=True)
+            return []
         if server == "":
             server = self.host
         if os.path.exists(f"{server}".lower().replace(".", "") + "Database.json"):
@@ -527,6 +534,9 @@ disableLogs:bool = False
             return []
         
     def clearLogs(self):
+        if self.enableChatLogging == False:
+            self.__loging(f"Chat logging is not enabled, set enableChatLogging=True in the bot config", warning=True)
+            return
         self.chatDatabase.truncate()
         self.__loging("All databases are cleared!")
     
