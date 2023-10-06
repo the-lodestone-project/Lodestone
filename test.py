@@ -1,5 +1,5 @@
 # import the package
-from .mineflayer import createBot
+from .lodestone import createBot
  
 
 bot = createBot(

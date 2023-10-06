@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "mineflayer"
-version = "0.0.14"
+name = "lodestone"
+version = "0.0.1"
 description = "🤖 Create Minecraft bots with a powerful, stable, and high level Python API."
 authors = ["Silke pilon <silkepilon2009@gmail.com>"]
 license = "MIT"
