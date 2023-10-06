@@ -20,7 +20,7 @@ layout = Layout()
 
 def fastapi():
 
-    print(Panel("Welcome to the Open Delivery Bot python package!\n\nAPI docs are avable at: https://open-delivery-bot-documentation.vercel.app/", title="Welcome", expand=False, border_style="green"))
+    print(Panel("Welcome to the Lodestone project!\n\nAPI docs are avable at: https://open-delivery-bot-documentation.vercel.app/", title="Welcome", expand=False, border_style="green"))
     
     logger.info("API running at http://localhost:5000/ (beta)")
     
@@ -41,32 +41,6 @@ def fastapi():
         time.sleep(1)
         return JSONResponse(content="Welcome")
     
-    @app.get("/api/v1/login")
-    async def startup():
-        try:
-            msa.stop()
-        except: pass
-        config = {
-        "server_ip": "blockmania.com",
-        "server_port": 25565,
-        "bot_name": "silke2007minecraft@gmail.com",
-        "password": "",  
-        "auth": "microsoft",
-        "version": "1.12",
-        "viewer_port": 5001,
-        "chest_coords": [10, 64, -8],
-        "chest_range": 64,
-        "chest_type": "chest",
-        "items_name": "cobblestone",
-        "items_count": 64,
-        "x_coord": 0,
-        "y_coord": 70, 
-        "z_coord": 0
-        }
-        global bot
-        bot = mineflayer.createBot(config)
-        bot.start()
-        return JSONResponse(content={"status": f"{bot.bot.username}"})
 
 
     @app.get("/api/v1/get_msa")
@@ -76,24 +50,7 @@ def fastapi():
             msa.stop()
         except:
             pass
-        config = {
-        "server_ip": "og-network.net", 
-        "server_port": 25565,
-        "bot_name": email,
-        "password": "",  
-        "auth": "microsoft",
-        "version": "1.19",
-        "viewer_port": 5001,
-        "chest_coords": [10, 64, -8],
-        "chest_range": 64,
-        "chest_type": "chest",
-        "items_name": "cobblestone",
-        "items_count": 64,
-        "x_coord": 0,
-        "y_coord": 70, 
-        "z_coord": 0
-        }
-        msa = mineflayer.createBot(config, apiMode=True)
+        msa = mineflayer.createBot(host="og-network.net",username=email,version="1.19",apiMode=True)
         maxLoops = 0
         while msa.msa_status == False:
             if maxLoops >= 20:
