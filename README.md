@@ -5,11 +5,11 @@
   <a href="https://github.com/SilkePilon/OpenDeliveryBot/"><img src="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/logo.png?raw=true" alt="YouAgent" width="500"></a>
   <br>
   <br>
-  Open Delivery Bot 📦
+  The Lodestone Project 🤖
   <br>
 </h1>
 
-<h4 align="center">🤖📦 Deliver anything, anywere! powered by <a href="https://github.com/PrismarineJS/mineflayer" target="_blank">MineFlayer</a>.</h4>
+<h4 align="center">🤖 Create Minecraft bots with a powerful, stable, and high level Python API.</h4>
 
 <p align="center">
     <img alt="Node version" src="https://img.shields.io/static/v1?label=node&message=%20%3E=18.0.0&logo=node.js&color=2334D058" />
@@ -35,14 +35,28 @@ Welcome to the Open Delivery Bot project! This open-source initiative empowers u
 
 Open Delivery Bot shines with its dynamic features, including pathfinding and optimized elytra flight, accelerating your delivery processes for utmost efficiency. Say goodbye to manual intervention and embrace automation! 📦
 
+## Features
+
+* Supports Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19 and 1.20.
+* Entity knowledge and tracking.
+* Block knowledge. You can query the world around you. Milliseconds to find any block.
+* Physics and movement - handle all bounding boxes
+* Attacking entities and using vehicles.
+* Inventory management.
+* Crafting, chests, dispensers, enchantment tables.
+* Digging and building.
+* Miscellaneous stuff such as knowing your health and whether it is raining.
+* Activating blocks and using items.
+* Chat.
+
 ## Getting Started 🏁
 
 > [!IMPORTANT]
 > Some parts of the code are still in development and do not work!
 
-All instalation instructons can be found [here](https://open-delivery-bot-documentation.vercel.app/)
+All instalation instructons and documentation can be found [here](https://lodestone-documentation.vercel.app/ "docs")
 
-### (6) Arguments & Options 📄
+### Arguments & Options 📄
 
 > [!IMPORTANT]
 > Not changing some of these settings will result in the bot not working. 🛑
