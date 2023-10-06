@@ -1,12 +1,9 @@
 from javascript import require, On, once
 import datetime
-import asyncio
-import math
-import json
-import csv
 import structlog
 import os
 import sys
+import requests
 import time
 import fnmatch
 import re
@@ -15,7 +12,6 @@ from pathlib import Path
 from tinydb import TinyDB, Query
 import subprocess
 from rich.console import Console
-import functools
 User = Query()
 filestruc = "/"
 
@@ -41,7 +37,7 @@ quit_on_low_health:bool=True,
 low_health_threshold:int=10,
 disableChatSigning:bool=False,
 profilesFolder:str="",
-username:str="MineflayerPy",
+username:str="lodestone",
 useReturn:bool = False,
 discordWebhook:str = None,
 useDiscordForms:bool = False,
@@ -57,6 +53,7 @@ physicsEnabled:bool = True,
 defaultChatPatterns:bool = True,
 disableLogs:bool = False,
 enableChatLogging:bool = False,
+skipChecks:bool = False,
 ):
         """Create the bot"""
         self.host = host
@@ -83,6 +80,7 @@ enableChatLogging:bool = False,
         self.defaultChatPatterns = defaultChatPatterns
         self.disableLogs = disableLogs
         self.enableChatLogging = enableChatLogging
+        self.skipChecks = skipChecks
         
         
         
@@ -94,7 +92,8 @@ enableChatLogging:bool = False,
         self.console = Console()
         # [:2]
         self.apiMode = apiMode
-        self.nodeVersion, self.pipVersion, self.pythonVersion = self.__versionsCheck()
+        if skipChecks == False:
+            self.nodeVersion, self.pipVersion, self.pythonVersion = self.__versionsCheck()
         if discordWebhook != None:
             from discord import SyncWebhook
             from discord import Embed
@@ -138,7 +137,7 @@ enableChatLogging:bool = False,
         self.script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
         self.bot = self.__create_bot()
         self.msa_data = False
-        self.start()
+        self.__start()
         
         
     
@@ -320,7 +319,7 @@ enableChatLogging:bool = False,
     
     
 
-    def start(self):
+    def __start(self):
         while self.logedin == False:
             time.sleep(1) 
         # @On(self.bot, "login")
@@ -330,7 +329,6 @@ enableChatLogging:bool = False,
         # r.context.bot = self.bot
         # self.__auto_totem()
         self.__equip_armor()
-        self.__log_players()
         self.registry = self.bot.registry
         self.world = self.bot.world
         self.entity = self.bot.entity
@@ -512,11 +510,11 @@ enableChatLogging:bool = False,
         
     
     
-    def coordinates(self):
+    def coordinates(self) -> str:
         if self.logedin == True:
             return f"{int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}"
         
-    def chatHistory(self, username:str, server:str=""):
+    def chatHistory(self, username:str, server:str="") -> list:
         if self.enableChatLogging == False:
             self.__loging(f"Chat logging is not enabled, set enableChatLogging=True in the bot config", warning=True)
             return []
@@ -543,6 +541,12 @@ enableChatLogging:bool = False,
     def stop(self):
         self.bot.end()
         self.__loging("Stopped bot!", warning=True)
+        
+    def serverData(self, server:str=None) -> dict:
+        if server is None:
+            server = self.host
+        data = requests.get(f"https://api.mcstatus.io/v2/status/java/{server}").json()
+        return data
         
         
         
