@@ -3,7 +3,7 @@ name = "lodestone"
 version = "0.0.7"
 description = "🤖 Create Minecraft bots with a powerful, stable, and high level Python API."
 authors = ["Silke pilon <silkepilon2009@gmail.com>", "HellishBro (README.js) <@812125215051743282> on Discord"]
-license = "MIT"
+license = {file = "LICENSE.txt"}
 readme = "README.md"
 requires-python = ">=3.10"
 
