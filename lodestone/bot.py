@@ -16,9 +16,9 @@ import subprocess
 from rich.console import Console
 
 try:
-    from utils import cprop
+    from utils import cprop, send_webhook
 except ImportError:
-    from .utils import cprop
+    from .utils import cprop, send_webhook
 
 User = Query()
 filestruc = "/"
@@ -216,10 +216,10 @@ class Bot:
             embedVar.set_footer(text='\u200b', icon_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true")
             if useDiscordForms:
                 today = date.today()
-                self.webhook.send(content=f"{today}", thread_name=f"{today}", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embedVar)
+                send_webhook(self.webhook, content=f"{today}", thread_name=f"{today}", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embedVar)
             else:
                 try:
-                    self.webhook.send(content="", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embedVar)
+                    send_webhook(self.webhook, content="", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embedVar)
                 except:
                     self.logger.error(f"Detected that you are using a Forms channel but 'useDiscordForms' is set to False. Please change 'useDiscordForms' to True or provide a webhook url for a text channel.")
         self.discordWebhook = discordWebhook

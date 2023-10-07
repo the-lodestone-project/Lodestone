@@ -93,3 +93,9 @@ def cprop(cap = "pascal", proxy_name = ""):
             return getattr(self.proxy, proxy_name)
         return wrapped
     return decorator
+
+def send_webhook(webhook, *args, **kwargs):
+    async def send_webhook__(webhook, *args, **kwargs):
+        await webhook.send(*args, **kwargs)
+
+    return asyncio.run(send_webhook__(webhook, *args, **kwargs))
