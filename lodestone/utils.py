@@ -9,7 +9,7 @@ from claude_api import Client
 logger = structlog.get_logger()
 console = Console()
 
-def llm(input:str, data=""):
+def llm(input: str, data = ""):
     _providers = [
         g4f.Provider.Bing,
         g4f.Provider.DeepAi,
@@ -55,8 +55,7 @@ def llm(input:str, data=""):
         output.append({"base": defualt})
     return output
 
-
-def claude(input:str, cookie:str, data="", conversation_id=""):
+def claude(input: str, cookie: str, data = "", conversation_id = ""):
     claude_api = Client(cookie)
     conversation_id = conversation_id or claude_api.create_new_chat()['uuid']
     with console.status(f"[bold green][CLAUDE] Please wait...\n") as status:
@@ -65,3 +64,38 @@ def claude(input:str, cookie:str, data="", conversation_id=""):
             return response
         except:
             logger.warning(f"[LLM] Claude is not available. This may be because you reached your message limit")
+
+def cprop(cap = "pascal", proxy_name = ""):
+    def decorator(func):
+        @property
+        def wrapped(self):
+            nonlocal proxy_name
+            if not proxy_name:
+                proxy_name: str = func.__name__
+                match cap:
+                    case "snake":
+                        new = []
+                        for seq in proxy_name.split("_"):
+                            new.append(seq.lower())
+                        proxy_name = "_".join(new)
+                    case "camel":
+                        new = []
+                        for seq in proxy_name.split("_"):
+                            new.append(seq.title())
+                        proxy_name = "".join(new)
+                    case "pascal":
+                        new = []
+                        one = True
+                        for seq in proxy_name.split("_"):
+                            new.append(seq.lower() if one else seq.title())
+                            one = False
+                        proxy_name = "".join(new)
+            return getattr(self.proxy, proxy_name)
+        return wrapped
+    return decorator
+
+def send_webhook(webhook, *args, **kwargs):
+    async def send_webhook__(webhook, *args, **kwargs):
+        await webhook.send(*args, **kwargs)
+
+    return asyncio.run(send_webhook__(webhook, *args, **kwargs))
