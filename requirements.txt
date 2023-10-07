@@ -7,6 +7,5 @@ uvicorn
 tinydb
 fuzzyfinder
 g4f
-mineflayer
 requests
 py-cord
