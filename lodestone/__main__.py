@@ -4,7 +4,7 @@ import click
 from lodestone import fastapi
 import subprocess
 @click.command(context_settings={"ignore_unknown_options": True})
-@click.option("--console", default=False, is_flag=True, help="Force the app to use the console")
+@click.option("--console", "-c", default=False, is_flag=True, help="Force the app to use the console")
 @click.argument('args', nargs=-1)
 def run(console, args):
     def check_python_command():
@@ -28,19 +28,17 @@ def run(console, args):
     script_directory = os.path.dirname(os.path.abspath(__file__))
 
     if console:
-        os.system(f"{python_command} {script_directory}/test-console.py {' '.join(args)}")
+        os.system(f"{python_command} {script_directory}/console.py {' '.join(args)}")
     else:
         if is_linux or is_mac:
             if os.environ.get('DISPLAY') == '':
-                os.system(f"{python_command} {script_directory}/test-console.py {' '.join(args)}")
+                os.system(f"{python_command} {script_directory}/console.py {' '.join(args)}")
             else:
-                # print('Web ui is still in developmet and is not working atm, rerun the command again with --console')
                 fastapi()
         elif is_windows:
-            # print('Web ui is still in developmet and is not working atm, rerun the command again with --console')
             fastapi()
         else:
-            os.system(f"{python_command} {script_directory}/test-console.py {' '.join(args)}")
+            os.system(f"{python_command} {script_directory}/console.py {' '.join(args)}")
 
 if __name__ == "__main__":
     run()

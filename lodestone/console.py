@@ -77,7 +77,8 @@ def print_output(email, password, host, port, auth, version, check_timeout, view
         username=email,
         auth=auth,
         version=version,
-        password=password
+        password=password,
+        enableChatLogging=True,
     )
 
 

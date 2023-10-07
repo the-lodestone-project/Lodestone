@@ -84,7 +84,7 @@ class Create(discord.ui.Modal, title='Create A Bot'):
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer()
         global mcbot
-        mcbot = lodestone.createBot(host=self.host.value, port=self.port.value, username=self.email.value, version=self.version.value)
+        mcbot = lodestone.createBot(host=self.host.value, port=self.port.value, username=self.email.value, version=self.version.value, enableChatLogging=True)
         maxLoops = 0
         while mcbot.msa_status == False:
             if maxLoops >= 15:

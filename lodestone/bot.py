@@ -541,12 +541,15 @@ skipChecks:bool = False,
     def stop(self):
         self.bot.end()
         self.__loging("Stopped bot!", warning=True)
+        quit()
         
     def serverData(self, server:str=None) -> dict:
         if server is None:
             server = self.host
         data = requests.get(f"https://api.mcstatus.io/v2/status/java/{server}").json()
         return data
+    
+    
         
         
         
