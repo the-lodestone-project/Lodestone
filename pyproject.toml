@@ -1,11 +1,13 @@
-[tool.poetry]
+[project]
 name = "lodestone"
 version = "0.0.7"
 description = "🤖 Create Minecraft bots with a powerful, stable, and high level Python API."
-authors = [
-    "Silke pilon <silkepilon2009@gmail.com>",
-    "HellishBro (README.js) <@812125215051743282> on Discord"
-]
+authors = ["Silke pilon <silkepilon2009@gmail.com>", "HellishBro (README.js) <@812125215051743282> on Discord"]
 license = "MIT"
 readme = "README.md"
+requires-python = ">=3.10"
 
+[project.urls]
+Homepage = "https://github.com/SilkePilon/Lodestone"
+Repository = "https://github.com/SilkePilon/Lodestone"
+Documentation = "https://github.com/SilkePilon/Lodestone/blob/main/README.md"
