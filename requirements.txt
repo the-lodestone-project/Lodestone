@@ -1,2 +1,12 @@
+javascript
+click
+rich
+fastapi
+structlog
+uvicorn
+tinydb
+fuzzyfinder
+g4f
 mineflayer
-poetry
+requests
+py-cord

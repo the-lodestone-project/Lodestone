@@ -2,29 +2,10 @@
 name = "lodestone"
 version = "0.0.6"
 description = "🤖 Create Minecraft bots with a powerful, stable, and high level Python API."
-authors = ["Silke pilon <silkepilon2009@gmail.com>"]
+authors = [
+    "Silke pilon <silkepilon2009@gmail.com>",
+    "HellishBro (README.js) <@812125215051743282> on Discord"
+]
 license = "MIT"
 readme = "README.md"
 
-
-[tool.poetry.dependencies]
-python = "^3.10"
-javascript = "^1!1.0.3"
-click = "^8.1.7"
-rich = "^13.5.2"
-tqdm = "^4.66.1"
-fastapi = "^0.103.1"
-pydantic = "^2.3.0"
-structlog = "^23.1.0"
-uvicorn = "^0.23.2"
-discord-py = "^2.3.2"
-tinydb = "^4.8.0"
-prompt-toolkit = "^3.0.39"
-fuzzyfinder = "^2.1.0"
-pyexecjs = "^1.5.1"
-g4f = ">=0.0.3.4,<0.1.5.0"
-claude-api = "^1.0.17"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
