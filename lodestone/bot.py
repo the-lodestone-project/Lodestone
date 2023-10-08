@@ -282,7 +282,6 @@ class Bot:
         self.console = Console()
         # [:2]
         self.apiMode = apiMode
-        print(self.local_skipChecks)
         if not self.local_skipChecks:
             self.nodeVersion, self.pipVersion, self.pythonVersion = self.__versionsCheck()
         if discordWebhook is not None:
