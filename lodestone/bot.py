@@ -792,8 +792,10 @@ class Bot:
         return data
     
     def webhookSend(self, message:str, username:str = "OpenDeliveryBot", embed=None):
-        send_webhook(self.webhook, content=message, username=username, avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embed)
-    
+        send_webhook(self.discordWebhook, content=f"{message}", username=f"{username}", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true")
+        
+        
+        
 createBot = Bot
         
         
