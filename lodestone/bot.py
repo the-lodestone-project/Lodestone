@@ -9,17 +9,14 @@ import fnmatch
 import re
 from datetime import date
 from pathlib import Path
-
 from javascript.proxy import Proxy
 from tinydb import TinyDB, Query
 import subprocess
 from rich.console import Console
-
 try:
     from utils import cprop, send_webhook
 except ImportError:
     from .utils import cprop, send_webhook
-
 User = Query()
 filestruc = "/"
 logger = structlog.get_logger()
@@ -168,7 +165,8 @@ class Bot:
         defaultChatPatterns: bool = True,
         disableLogs: bool = False,
         enableChatLogging: bool = False,
-        skipChecks: bool = False
+        skipChecks: bool = False,
+        disableViewer: bool = False,
     ):
         """Create the bot"""
         self.local_host = host
@@ -196,6 +194,8 @@ class Bot:
         self.local_disableLogs = disableLogs
         self.local_enableChatLogging = enableChatLogging
         self.local_skipChecks = skipChecks
+        self.local_discordWebhook = discordWebhook
+        self.local_disableViewer = disableViewer
         
         global logger
         self.logger = structlog.get_logger()
@@ -203,14 +203,14 @@ class Bot:
         self.console = Console()
         # [:2]
         self.apiMode = apiMode
-        if not skipChecks:
+        if not self.local_skipChecks:
             self.nodeVersion, self.pipVersion, self.pythonVersion = self.__versionsCheck()
-        if discordWebhook is not None:
+        if self.local_discordWebhook is not None:
             from discord import Webhook
             from discord import Embed
             self.Embed = Embed
             self.useDiscordForms = useDiscordForms
-            self.webhook = Webhook.from_url(f"{discordWebhook}")
+            self.webhook = Webhook.from_url(url=f"{self.local_discordWebhook}")
             embedVar = Embed(title="Successfully Connected To The Webhook!", description=f"**Great news! The bot has successfully connected to this channel's webhook. From now on, it will send all the logs and valuable data right here, keeping you informed about everything happening on the server.**\n\n **Versions:**\n* [**Node**](https://nodejs.org/)**:      {self.nodeVersion[:2]}**\n* [**Pip**](https://pypi.org/project/pip/)**:          {self.pipVersion}**\n* [**Python**](https://www.python.org/)**:  {self.pythonVersion}**\n\n **Links:**\n* [**GitHub**](https://github.com/SilkePilon/OpenDeliveryBot)\n* [**Report Bugs**](https://github.com/SilkePilon/OpenDeliveryBot/issues)\n* [**Web Interface**](https://github.com/SilkePilon/OpenDeliveryBot-react)", color=0x3498db)
             embedVar.timestamp = datetime.datetime.utcnow()
             embedVar.set_footer(text='\u200b', icon_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true")
@@ -238,7 +238,7 @@ class Bot:
                 status.update("[bold green]Updaing javascript librarys...\n")
                 os.system(f'{self.pythonCommand} -m javascript --update >/dev/null 2>&1')
                 status.update("[bold green]Updaing pip package...\n")
-                os.system(f'{self.pythonCommand} -m pip install -U opendeliverybot >/dev/null 2>&1')
+                os.system(f'{self.pythonCommand} -m pip install -U lodestone >/dev/null 2>&1')
                 time.sleep(3)
         self.logedin = False
         self.useReturn = useReturn
@@ -321,18 +321,30 @@ class Bot:
             basePath = os.getenv('APPDATA')
         else:
             basePath = Path().home()
-
-        msa_file = Path(f"{basePath}/.minecraft/nmp-cache/")
-        msa_file = f"{msa_file}/{self.__findFiles(msa_file, '*_mca-cache.json')[0]}"
-        for _ in range(timeout):
-            time.sleep(1)
-            with open(msa_file) as check:
-                if check.read() != "{}":
-                    self.logger.info("Logged in successfully!")
-                    return
-        raise TimeoutError(
-            f"Fetching for MSA code timed out. Timeout={timeout} seconds"
-        )
+        if self.local_profilesFolder == "":
+            msa_file = Path(f"{basePath}/.minecraft/nmp-cache/")
+            msa_file = f"{msa_file}/{self.__findFiles(msa_file, '*_mca-cache.json')[0]}"
+            for _ in range(timeout):
+                time.sleep(1)
+                with open(msa_file) as check:
+                    if check.read() != "{}":
+                        self.logger.info("Logged in successfully!")
+                        return
+            raise TimeoutError(
+                f"Fetching for MSA code timed out. Timeout={timeout} seconds"
+            )
+        else:
+            msa_file = Path(f"{self.local_profilesFolder}")
+            msa_file = f"{msa_file}/{self.__findFiles(msa_file, '*_mca-cache.json')[0]}"
+            for _ in range(timeout):
+                time.sleep(1)
+                with open(msa_file) as check:
+                    if check.read() != "{}":
+                        self.logger.info("Logged in successfully!")
+                        return
+            raise TimeoutError(
+                f"Fetching for MSA code timed out. Timeout={timeout} seconds"
+            )
 
     def __msa(self, *msa):
         with self.console.status("[bold green]Waiting for login...\n") as status:
@@ -411,11 +423,10 @@ class Bot:
         def on_login(*args):
             self.bot = localBot
             self.logedin = True
-            self.__logging(f"Connecting to {self.local_host}", info=True,
-                           imageUrl=f"https://eu.mc-api.net/v3/server/favicon/{self.local_host}")
-            self.__logging(f'Logged in as {self.bot.username}', info=True,
-                           imageUrl=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
-            self.__start_viewer()
+            self.__logging(f"Connected to {self.local_host}", info=True, imageUrl=f"https://eu.mc-api.net/v3/server/favicon/{self.local_host}")
+            self.__logging(f'Logged in as {self.bot.username}', info=True, imageUrl=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
+            if not self.local_disableViewer:
+                self.__start_viewer()
             self.__setup_events()
             self.__load_plugins()
         return localBot
@@ -566,19 +577,21 @@ class Bot:
     def __setup_events(self):
         @On(self.bot, "path_update")
         def path_update(_, r):
-            path = [self.bot.entity.position.offset(0, 0.5, 0)]
-            for node in r['path']:
-                path.append({'x': node['x'], 'y': node['y'] + 0.5, 'z': node['z']})
-            self.bot.viewer.drawLine('path', path, 	0x0000FF)
-        @On(self.bot.viewer, "blockClicked")
-        def on_block_clicked(_, block, face, button):
-            try:
-                if button != 2:
-                    return
-                p = block.position.offset(0, 1, 0)
-                self.bot.pathfinder.goto(self.pathfinder.goals.GoalNear(p.x, p.y, p.z, 1), timeout=60)
-            except:
-                self.__logging(f"Cant get to goal", error=True)
+            if not self.local_disableViewer:
+                path = [self.bot.entity.position.offset(0, 0.5, 0)]
+                for node in r['path']:
+                    path.append({'x': node['x'], 'y': node['y'] + 0.5, 'z': node['z']})
+                self.bot.viewer.drawLine('path', path, 	0x0000FF)
+        if not self.local_disableViewer:
+            @On(self.bot.viewer, "blockClicked")
+            def on_block_clicked(_, block, face, button):
+                try:
+                    if button != 2:
+                        return
+                    p = block.position.offset(0, 1, 0)
+                    self.bot.pathfinder.goto(self.pathfinder.goals.GoalNear(p.x, p.y, p.z, 1), timeout=60)
+                except:
+                    self.__logging(f"Cant get to {p.x}, {p.y}, {p.z}", error=True)
         
         
         
@@ -586,10 +599,12 @@ class Bot:
         def death(*args):
             self.bot.end()
             self.__logging("Bot died... stopping bot!", warning=True)
+            quit()
         @On(self.bot, "kicked")
         def kicked(this, reason, *a):
             self.bot.end()
             self.__logging("Kicked from server... stopping bot!", warning=True)
+            quit()
         @On(self.bot, "autoeat_started")
         def autoeat_started(item, offhand, *a):
             self.__logging(f"Eating {item['name']} in {'offhand' if offhand else 'hand'}", info=True)
@@ -599,9 +614,6 @@ class Bot:
         @On(self.bot, "error")
         def error(_, error):
             self.__logging(error, error=True)
-        @On(self.bot, "end")
-        def create_new_bot(*a):
-            self.bot = self.__create_bot()
         @On(self.bot, 'chat')
         def handleMsg(this, sender, message, *args):
             if self.local_enableChatLogging:
@@ -614,7 +626,7 @@ class Bot:
                     existing_messages = user['messages']
                     existing_messages.extend([f"{message}"])
                     self.chatDatabase.update({'messages': existing_messages}, User.username == sender)
-                self.__logging(f"💬 {sender}: {message}", chat=True)
+                self.__logging(f"{sender}: {message}", chat=True, icon="💬")
             
 
     def __equip_armor(self):
@@ -624,30 +636,17 @@ class Bot:
             return
 
     def __start_viewer(self):
-        self.mineflayerViewer(self.bot, {"port": self.local_viewer_port})
-        self.__logging("Viewer started on port %s" % self.local_viewer_port, info=True)
+        try:
+            self.mineflayerViewer(self.bot, {"port": self.local_viewer_port})
+            self.__logging(f"Viewer started on port {self.local_viewer_port}", info=True)
+        except:
+            self.__logging("There was an error while starting the viewer!", warning=True)
     
     def __log_players(self):
         # print(type(self.bot.players))
         # playerDatabase.insert_multiple(self.bot.players.valueOf())
         pass
             
-    def __item_By_Name(self, items, name):
-            item = None
-            for i in range(len(items)):
-                item = items[i]
-                if item and item['name'] == name:
-                    return item
-                return None
-            
-        
-    # Needs to be changed to {"item": item_count}
-    # def inventory(self):
-    #     inv = []
-    #     if self.bot and self.bot.inventory:
-    #         for item in self.bot.inventory.items():
-    #             inv.append(item.displayName)
-    #     return inv
     
     def chat(self, *message):
         self.bot.chat(' '.join(message))
@@ -714,6 +713,9 @@ class Bot:
             server = self.local_host
         data = requests.get(f"https://api.mcstatus.io/v2/status/java/{server}").json()
         return data
+    
+    def webhookSend(self, message:str, username:str = "OpenDeliveryBot", embed=None):
+        send_webhook(self.webhook, content=message, username=username, avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embed)
     
 createBot = Bot
         

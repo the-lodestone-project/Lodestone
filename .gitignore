@@ -6,9 +6,9 @@ package-lock.json
 old_code/*
 lodestone/api-test.py
 lodestone/test.py
-lodestone/__pycache__/
 lodestone/*.json
 .vscode/
 test.py
 connect2b2torgDatabase.json
-lodestone/__pycache__/bot.cpython-311.pyc
+lodestone/nmp-cache/
+lodestone/__pycache__/
