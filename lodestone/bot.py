@@ -29,111 +29,190 @@ if os.name == 'nt':
 else:
     filestruc = "/"
 
+__all__ = ['Bot', 'createBot']
+
 class GameState:
+    """
+    Stores information about the current game state. Should not initialize manually
+    """
     def __init__(self, proxy: Proxy):
         self.proxy = proxy
 
     @cprop()
-    def level_type(self): pass
+    def level_type(self) -> str:
+        "The world generation type. Posssible values are in `types.LevelType`"
 
     @cprop()
-    def dimension(self): pass
+    def dimension(self) -> str:
+        "The current dimension. Posssible values are in `types.Dimension`"
 
     @cprop()
-    def difficulty(self): pass
+    def difficulty(self) -> str:
+        "The current server difficulty. Posssible values are in `types.Difficulty`"
 
     @cprop()
-    def game_mode(self): pass
+    def game_mode(self) -> str:
+        "The current game mode. Posssible values are in `types.GameMode`"
 
     @cprop()
-    def hardcore(self): pass
+    def hardcore(self) -> bool:
+        "Whether the client is in hardcore mode or not"
 
     @cprop()
-    def max_players(self): pass
+    def max_players(self) -> int:
+        "The maximum number of players can be allowed on a server"
 
     @cprop()
-    def server_brand(self): pass
+    def server_brand(self) -> str:
+        "the current server brand. Posssible values are in `types.BrandChannel`"
 
     @cprop()
-    def min_y(self): pass
+    def min_y(self) -> int:
+        "The minimum Y level in the world"
 
     @cprop()
-    def height(self): pass
+    def height(self) -> int:
+        "The height of the world"
 
     @cprop(proxy_name="height")
-    def max_y(self): pass
+    def max_y(self) -> int:
+        "The height of the world"
 
 
 class TimeState:
+    """
+    Stores information about time. Should not initialize manually
+    """
     def __init__(self, proxy: Proxy):
         self.proxy = proxy
 
     @cprop()
-    def do_daylight_cycle(self): pass
+    def do_daylight_cycle(self) -> bool:
+        "Whether the server does daylight cycle or not"
 
     @cprop()
-    def big_time(self): pass
+    def big_time(self) -> int:
+        "Total ticks elapsed since day 0"
 
     @cprop()
-    def time(self): pass
+    def time(self) -> int:
+        "Total ticks elapsed since day 0. Inaccruate. Use `TimeState.big_time`"
 
     @cprop()
-    def time_of_day(self): pass
+    def time_of_day(self) -> int:
+        "The current time of day, in ticks. This is used in the `/time set` command"
 
     @cprop()
-    def day(self): pass
+    def day(self) -> int:
+        "The number of days in a world"
 
     @cprop()
-    def is_day(self): pass
+    def is_day(self) -> bool:
+        "Whether `TimeState.time_of_day` is within 13,000 and 23,000 (AKA whether it's daytime or not)"
 
     @cprop()
-    def moon_phase(self): pass
+    def moon_phase(self) -> int:
+        "Current moon phase. Ranges from 0 -> 7"
 
     @cprop()
-    def big_age(self): pass
+    def big_age(self) -> int:
+        "Total ticks elapsed since day 0"
 
     @cprop()
-    def age(self): pass
+    def age(self) -> int:
+        "Total ticks elapsed since day 0. Inaccurate. Use `TimeState.big_age`"
 
 
 class ExperienceState:
+    """
+    Stores information about XP. Should not initalize manually
+    """
     def __init__(self, proxy: Proxy):
         self.proxy = proxy
 
     @cprop()
-    def level(self): pass
+    def level(self) -> int:
+        "Full levels of experience"
 
     @cprop()
-    def points(self): pass
+    def points(self) -> int:
+        "Total experience points"
 
     @cprop()
-    def progress(self): pass
+    def progress(self) -> float:
+        "The progress to the next full level. Ranges from 0 -> 1 (0% -> 100%)"
+
+class SkinPartsState:
+    """
+    Represents the skin parts that are visible / not visible. Should not initalize manually
+    """
+    def __init__(self, proxy: Proxy):
+        self.proxy = proxy
+
+    @cprop()
+    def show_cape(self) -> bool:
+        "Whether the cape is shown"
+
+    @cprop()
+    def show_jacket(self) -> bool:
+        "Whether the jacket is shown"
+
+    @cprop()
+    def show_left_sleeve(self) -> bool:
+        "Whether the left sleeve is shown"
+
+    @cprop()
+    def show_right_sleeve(self) -> bool:
+        "Whether the right sleeve is shown"
+
+    @cprop()
+    def show_left_pants(self) -> bool:
+        "Whether the left pant is shown"
+
+    @cprop()
+    def show_right_pants(self) -> bool:
+        "Whether the right pant is shown"
+
+    @cprop()
+    def show_hat(self) -> bool:
+        "Whether the hat is shown"
 
 
 class SettingsState:
+    """
+    Represents the client settings that the server needs to know. Should not initialize manually
+    """
     def __init__(self, proxy: Proxy):
         self.proxy = proxy
 
     @cprop()
-    def chat(self): pass
+    def chat(self) -> str:
+        "The current chat settings. Possible values are in `types.ChatSetting`"
 
     @cprop()
-    def colors_enabled(self): pass
+    def colors_enabled(self) -> bool:
+        "Whether colors are recieved in chat"
 
     @cprop()
-    def view_distance(self): pass
+    def view_distance(self) -> str | int:
+        "The view distance of the client. Could be one of `types.ViewDistance` or an int"
 
     @cprop()
-    def difficulty(self): pass
+    def difficulty(self) -> str:
+        "The difficulty of the client. Possible values are in `types.Difficulty`"
+
+    @property
+    def skin_parts(self) -> SkinPartsState:
+        "The skin parts of the client."
+        return SkinPartsState(self.proxy.skin_parts)
 
     @cprop()
-    def skin_parts(self): pass
+    def enable_text_filtering(self) -> bool:
+        "Unused value. Default = False"
 
     @cprop()
-    def enable_text_filtering(self): pass
-
-    @cprop()
-    def enable_server_listing(self): pass
+    def enable_server_listing(self) -> bool:
+        "Whether the player should list in the Tablist or not"
 
 
 class Bot:
@@ -195,7 +274,7 @@ class Bot:
         self.local_defaultChatPatterns = defaultChatPatterns
         self.local_disableLogs = disableLogs
         self.local_enableChatLogging = enableChatLogging
-        self.local_skipChecks = skipChecks
+        self.local_skipChecks = skipChecks if not discordWebhook else False
         
         global logger
         self.logger = structlog.get_logger()
@@ -203,23 +282,23 @@ class Bot:
         self.console = Console()
         # [:2]
         self.apiMode = apiMode
-        if not skipChecks:
+        print(self.local_skipChecks)
+        if not self.local_skipChecks:
             self.nodeVersion, self.pipVersion, self.pythonVersion = self.__versionsCheck()
         if discordWebhook is not None:
             from discord import Webhook
             from discord import Embed
             self.Embed = Embed
             self.useDiscordForms = useDiscordForms
-            self.webhook = Webhook.from_url(f"{discordWebhook}")
-            embedVar = Embed(title="Successfully Connected To The Webhook!", description=f"**Great news! The bot has successfully connected to this channel's webhook. From now on, it will send all the logs and valuable data right here, keeping you informed about everything happening on the server.**\n\n **Versions:**\n* [**Node**](https://nodejs.org/)**:      {self.nodeVersion[:2]}**\n* [**Pip**](https://pypi.org/project/pip/)**:          {self.pipVersion}**\n* [**Python**](https://www.python.org/)**:  {self.pythonVersion}**\n\n **Links:**\n* [**GitHub**](https://github.com/SilkePilon/OpenDeliveryBot)\n* [**Report Bugs**](https://github.com/SilkePilon/OpenDeliveryBot/issues)\n* [**Web Interface**](https://github.com/SilkePilon/OpenDeliveryBot-react)", color=0x3498db)
+            embedVar = Embed(title="Successfully Connected To The Webhook!", description=f"**Great news! The bot has successfully connected to this channel's webhook. From now on, it will send all the logs and valuable data right here, keeping you informed about everything happening on the server.**\n\n **Versions:**\n* [**Node**](https://nodejs.org/)**:      {self.nodeVersion}**\n* [**Pip**](https://pypi.org/project/pip/)**:          {self.pipVersion}**\n* [**Python**](https://www.python.org/)**:  {self.pythonVersion}**\n\n **Links:**\n* [**GitHub**](https://github.com/SilkePilon/OpenDeliveryBot)\n* [**Report Bugs**](https://github.com/SilkePilon/OpenDeliveryBot/issues)\n* [**Web Interface**](https://github.com/SilkePilon/OpenDeliveryBot-react)", color=0x3498db)
             embedVar.timestamp = datetime.datetime.utcnow()
             embedVar.set_footer(text='\u200b', icon_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true")
             if useDiscordForms:
                 today = date.today()
-                send_webhook(self.webhook, content=f"{today}", thread_name=f"{today}", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embedVar)
+                send_webhook(discordWebhook, content=f"{today}", thread_name=f"{today}", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embedVar)
             else:
                 try:
-                    send_webhook(self.webhook, content="", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embedVar)
+                    send_webhook(discordWebhook, content="", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embedVar)
                 except:
                     self.logger.error(f"Detected that you are using a Forms channel but 'useDiscordForms' is set to False. Please change 'useDiscordForms' to True or provide a webhook url for a text channel.")
         self.discordWebhook = discordWebhook
@@ -292,10 +371,10 @@ class Bot:
                     embed.set_footer(text='\u200b', icon_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true")
                 if self.useDiscordForms:
                     today = date.today()
-                    self.webhook.send(content=f"{today}", thread=f"{today}", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embed)
+                    send_webhook(self.discordWebhook, content=f"{today}", thread=f"{today}", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embed)
                 else:
                     try:
-                        self.webhook.send(content=f"", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embed)
+                        send_webhook(self.discordWebhook, content=f"", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embed)
                     except:
                         self.logger.error(f"Detected that you are using a Forms channel but 'useDiscordForms' is set to False. Please change 'useDiscordForms' to True or provide a webhook url for a text channel.")
             if console:

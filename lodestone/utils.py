@@ -1,7 +1,10 @@
 import time
+import discord
+import aiohttp
 from javascript import require
 import json
 import structlog
+from functools import wraps
 from rich.console import Console
 import g4f
 import asyncio
@@ -64,37 +67,43 @@ def llm(input: str, data = ""):
 #         except:
 #             logger.warning(f"[LLM] Claude is not available. This may be because you reached your message limit")
 
+def convert_case(string, case = "pascal"):
+    match case:
+        case "snake":
+            new = []
+            for seq in string.split("_"):
+                new.append(seq.lower())
+            name = "_".join(new)
+        case "camel":
+            new = []
+            for seq in string.split("_"):
+                new.append(seq.title())
+            name = "".join(new)
+        case "pascal":
+            new = []
+            one = True
+            for seq in string.split("_"):
+                new.append(seq.lower() if one else seq.title())
+                one = False
+            name = "".join(new)
+        case _:
+            name = string
+    return name
+
 def cprop(cap = "pascal", proxy_name = ""):
     def decorator(func):
         @property
         def wrapped(self):
-            nonlocal proxy_name
-            if not proxy_name:
-                proxy_name = func.__name__
-                match cap:
-                    case "snake":
-                        new = []
-                        for seq in proxy_name.split("_"):
-                            new.append(seq.lower())
-                        proxy_name = "_".join(new)
-                    case "camel":
-                        new = []
-                        for seq in proxy_name.split("_"):
-                            new.append(seq.title())
-                        proxy_name = "".join(new)
-                    case "pascal":
-                        new = []
-                        one = True
-                        for seq in proxy_name.split("_"):
-                            new.append(seq.lower() if one else seq.title())
-                            one = False
-                        proxy_name = "".join(new)
-            return getattr(self.proxy, proxy_name)
+            name = proxy_name
+            if not name:
+                name = convert_case(func.__name__, cap)
+            return getattr(self.proxy, name)
         return wrapped
     return decorator
 
 def send_webhook(webhook, *args, **kwargs):
     async def send_webhook__(webhook, *args, **kwargs):
-        await webhook.send(*args, **kwargs)
+        async with aiohttp.ClientSession() as session:
+            await discord.Webhook.from_url(webhook, session=session).send(*args, **kwargs)
 
     return asyncio.run(send_webhook__(webhook, *args, **kwargs))
