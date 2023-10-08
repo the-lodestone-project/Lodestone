@@ -12,3 +12,4 @@ test.py
 connect2b2torgDatabase.json
 lodestone/nmp-cache/
 lodestone/__pycache__/
+lodestone_compass/.env
