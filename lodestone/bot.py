@@ -361,8 +361,7 @@ class Bot:
             # Remove periods
             node_version = node_version.replace('.', '')
             if int(node_version[:2]) >= 18:
-                if not self.local_disableLogs:
-                    self.logger.info(f"Detected Node version {node_version[:2]} witch is supported!")
+                pass
             else:
                 self.logger.warning(f"Detected node version {node_version[:2]} witch is NOT supported!\nThis may cause problems. Please update to node 18 or above!")
                 time.sleep(7)
@@ -379,16 +378,16 @@ class Bot:
             if match:
                 pip_version = match.group(1)
                 python_version = match.group(2)
-            if not self.local_disableLogs:
-                self.logger.info(f"Detected Pip version {pip_version} witch is supported!")
-                self.logger.info(f"Detected Python version {python_version} witch is supported!")
+            # if not self.local_disableLogs:
+            #     self.logger.info(f"Detected Pip version {pip_version} witch is supported!")
+            #     self.logger.info(f"Detected Python version {python_version} witch is supported!")
             return node_version, pip_version, python_version
 
     def __create_bot(self):
         if self.local_version == "auto" or self.local_version == "false":
             self.local_version = False
         else:
-            self.version = str(self.version)
+            self.version = str(self.local_version)
         localBot = self.mineflayer.createBot({
             'host': self.local_host,
             'port': self.local_port,
@@ -553,6 +552,7 @@ class Bot:
         
     def __load_plugins(self):
         self.mcData = require('minecraft-data')(self.bot.version)
+        self.Item = require("prismarine-item")(self.bot.registry)
         self.bot.loadPlugin(self.pathfinder.pathfinder)
         self.bot.loadPlugin(self.armorManager)
         self.bot.loadPlugin(self.autoeat)
