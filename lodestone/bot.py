@@ -273,7 +273,8 @@ class Bot:
         self.local_disableLogs = disableLogs
         self.local_enableChatLogging = enableChatLogging
         self.local_skipChecks = skipChecks if not discordWebhook else False
-        
+        self.local_discordWebhook = discordWebhook
+        self.local_disableViewer = disableViewer
         global logger
         self.logger = structlog.get_logger()
         logger = self.logger
