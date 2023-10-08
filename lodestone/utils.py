@@ -71,7 +71,7 @@ def cprop(cap = "pascal", proxy_name = ""):
         def wrapped(self):
             nonlocal proxy_name
             if not proxy_name:
-                proxy_name: str = func.__name__
+                proxy_name = func.__name__
                 match cap:
                     case "snake":
                         new = []

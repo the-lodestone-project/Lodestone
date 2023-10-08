@@ -171,31 +171,31 @@ class Bot:
         skipChecks: bool = False
     ):
         """Create the bot"""
-        self.host = host
-        self.auth = auth
-        self.port = port
-        self.version = version
-        self.password = password
-        self.check_timeout_interval = checkTimeoutInterval
-        self.armor_manager = armorManager
-        self.viewer_port = viewerPort
-        self.quit_on_low_health = quit_on_low_health
-        self.low_health_threshold = low_health_threshold
-        self.disableChatSigning = disableChatSigning
-        self.profilesFolder = profilesFolder
-        self.username = username
-        self.clientToken = clientToken
-        self.accessToken = accessToken
-        self.logErrors = logErrors
-        self.hideErrors = hideErrors
-        self.keepAlive = keepAlive
-        self.loadInternalPlugins = loadInternalPlugins
-        self.respawn = respawn
-        self.physicsEnabled = physicsEnabled
-        self.defaultChatPatterns = defaultChatPatterns
-        self.disableLogs = disableLogs
-        self.enableChatLogging = enableChatLogging
-        self.skipChecks = skipChecks
+        self.local_host = host
+        self.local_auth = auth
+        self.local_port = port
+        self.local_version = version
+        self.local_password = password
+        self.local_check_timeout_interval = checkTimeoutInterval
+        self.local_armor_manager = armorManager
+        self.local_viewer_port = viewerPort
+        self.local_quit_on_low_ealth = quit_on_low_health
+        self.local_low_ealth_threshold = low_health_threshold
+        self.local_disableChatSigning = disableChatSigning
+        self.local_profilesFolder = profilesFolder
+        self.local_username = username
+        self.local_clientToken = clientToken
+        self.local_accessToken = accessToken
+        self.local_logErrors = logErrors
+        self.local_hideErrors = hideErrors
+        self.local_keepAlive = keepAlive
+        self.local_loadInternalPlugins = loadInternalPlugins
+        self.local_respawn = respawn
+        self.local_physicsEnabled = physicsEnabled
+        self.local_defaultChatPatterns = defaultChatPatterns
+        self.local_disableLogs = disableLogs
+        self.local_enableChatLogging = enableChatLogging
+        self.local_skipChecks = skipChecks
         
         global logger
         self.logger = structlog.get_logger()
@@ -233,17 +233,18 @@ class Bot:
         self.repl = require('repl')
         self.statemachine = require("mineflayer-statemachine")
         self.pythonCommand = self.__checkPythonCommand()
-        with self.console.status("[bold green]Checking for updates...\n") as status:
-            status.update("[bold green]Updaing javascript librarys...\n")
-            os.system(f'{self.pythonCommand} -m javascript --update >/dev/null 2>&1')
-            status.update("[bold green]Updaing pip package...\n")
-            os.system(f'{self.pythonCommand} -m pip install -U opendeliverybot >/dev/null 2>&1')
-            time.sleep(3)
+        if not skipChecks:
+            with self.console.status("[bold green]Checking for updates...\n") as status:
+                status.update("[bold green]Updaing javascript librarys...\n")
+                os.system(f'{self.pythonCommand} -m javascript --update >/dev/null 2>&1')
+                status.update("[bold green]Updaing pip package...\n")
+                os.system(f'{self.pythonCommand} -m pip install -U opendeliverybot >/dev/null 2>&1')
+                time.sleep(3)
         self.logedin = False
         self.useReturn = useReturn
         self.msa_status = False
-        self.servername = f"{self.host}".lower().replace(".", "")
-        if self.enableChatLogging:
+        self.servername = f"{self.local_host}".lower().replace(".", "")
+        if self.local_enableChatLogging:
             self.chatDatabase = TinyDB(f"{self.servername}Database.json")
         self.script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
         self.bot = self.__create_bot()
@@ -268,7 +269,7 @@ class Bot:
     
         
     def __logging(self, message, icon="🤖", error=False, info=False, warning=False, chat=False, imageUrl:str="", console:bool= True, discord:bool=True):
-        if not self.disableLogs:
+        if not self.local_disableLogs:
             if self.useReturn:
                 self.logger.info(f"[{icon}] {message}")
             elif self.discordWebhook is not None and discord == True:
@@ -315,7 +316,7 @@ class Bot:
         return [n for n in fnmatch.filter(os.listdir(base), pattern) if
             os.path.isfile(os.path.join(base, n))]
         
-    def __waitForMsa(self, code, timeout=10):
+    def __waitForMsa(self, code, timeout=60 * 5):
         if os.name == 'nt':
             basePath = os.getenv('APPDATA')
         else:
@@ -360,7 +361,7 @@ class Bot:
             # Remove periods
             node_version = node_version.replace('.', '')
             if int(node_version[:2]) >= 18:
-                if not self.disableLogs:
+                if not self.local_disableLogs:
                     self.logger.info(f"Detected Node version {node_version[:2]} witch is supported!")
             else:
                 self.logger.warning(f"Detected node version {node_version[:2]} witch is NOT supported!\nThis may cause problems. Please update to node 18 or above!")
@@ -378,48 +379,45 @@ class Bot:
             if match:
                 pip_version = match.group(1)
                 python_version = match.group(2)
-            if not self.disableLogs:
+            if not self.local_disableLogs:
                 self.logger.info(f"Detected Pip version {pip_version} witch is supported!")
                 self.logger.info(f"Detected Python version {python_version} witch is supported!")
             return node_version, pip_version, python_version
 
     def __create_bot(self):
-        if self.version == "auto" or self.version == "false":
-            self.version = False
+        if self.local_version == "auto" or self.local_version == "false":
+            self.local_version = False
         else:
             self.version = str(self.version)
         localBot = self.mineflayer.createBot({
-            'host': self.host,
-            'port': self.port,
-            'username': self.username,
-            'password': self.password,
-            'auth': self.auth,
-            'version': self.version,
+            'host': self.local_host,
+            'port': self.local_port,
+            'username': self.local_username,
+            'password': self.local_password,
+            'auth': self.local_auth,
+            'version': self.local_version,
             'onMsaCode': self.__msa,
             'checkTimeoutInterval': 60 * 10000,
-            'disableChatSigning': self.disableChatSigning,
-            'profilesFolder': self.profilesFolder,
-            'logErrors': self.logErrors,
-            'hideErrors': self.hideErrors,
-            'keepAlive': self.keepAlive,
-            'loadInternalPlugins': self.loadInternalPlugins,
-            'respawn': self.respawn,
-            'physicsEnabled': self.physicsEnabled,
-            'defaultChatPatterns': self.defaultChatPatterns
+            'disableChatSigning': self.local_disableChatSigning,
+            'profilesFolder': self.local_profilesFolder,
+            'logErrors': self.local_logErrors,
+            'hideErrors': self.local_hideErrors,
+            'keepAlive': self.local_keepAlive,
+            'loadInternalPlugins': self.local_loadInternalPlugins,
+            'respawn': self.local_respawn,
+            'physicsEnabled': self.local_physicsEnabled,
+            'defaultChatPatterns': self.local_defaultChatPatterns
         })
         @On(localBot, "login")
         def on_login(*args):
             self.bot = localBot
             self.logedin = True
-            self.__logging(f"Connecting to {self.host}", info=True,
-                           imageUrl=f"https://eu.mc-api.net/v3/server/favicon/{self.host}")
+            self.__logging(f"Connecting to {self.local_host}", info=True,
+                           imageUrl=f"https://eu.mc-api.net/v3/server/favicon/{self.local_host}")
             self.__logging(f'Logged in as {self.bot.username}', info=True,
                            imageUrl=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
             self.__start_viewer()
             self.__setup_events()
-            self.__logging(
-                f'Cordinates: {int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}',
-                info=True)
             self.__load_plugins()
         return localBot
 
@@ -434,6 +432,9 @@ class Bot:
         # r.context.bot = self.bot
         # self.__auto_totem()
         self.__equip_armor()
+        self.__logging(
+            f'Cordinates: {int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}',
+        info=True)
 
     @cprop()
     def registry(self): pass
@@ -457,7 +458,7 @@ class Bot:
     def held_item(self): pass
 
     @cprop()
-    def using_held_item(self): pass
+    def using_eld_item(self): pass
 
     @property
     def game(self): return GameState(self.proxy.game)
@@ -603,7 +604,7 @@ class Bot:
             self.bot = self.__create_bot()
         @On(self.bot, 'chat')
         def handleMsg(this, sender, message, *args):
-            if self.enableChatLogging:
+            if self.local_enableChatLogging:
                 if not sender:
                     sender = "unknown"
                 if not self.chatDatabase.contains(User.username == sender):
@@ -623,8 +624,8 @@ class Bot:
             return
 
     def __start_viewer(self):
-        self.mineflayerViewer(self.bot, {"port": self.viewer_port})
-        self.__logging("Viewer started on port %s" % self.viewer_port, info=True)
+        self.mineflayerViewer(self.bot, {"port": self.local_viewer_port})
+        self.__logging("Viewer started on port %s" % self.local_viewer_port, info=True)
     
     def __log_players(self):
         # print(type(self.bot.players))
@@ -680,11 +681,11 @@ class Bot:
             return f"{int(self.entity.position.x)}, {int(self.entity.position.y)}, {int(self.entity.position.z)}"
 
     def chatHistory(self, username:str, server:str="") -> list:
-        if not self.enableChatLogging:
+        if not self.local_enableChatLogging:
             self.__logging(f"Chat logging is not enabled, set enableChatLogging=True in the bot config", warning=True)
             return []
         if server == "":
-            server = self.host
+            server = self.local_host
         if os.path.exists(f"{server}".lower().replace(".", "") + "Database.json"):
             serverHistory = TinyDB(f"{server}".lower().replace(".", "") + "Database.json")
             user = serverHistory.get(User.username == username)
@@ -697,7 +698,7 @@ class Bot:
             return []
         
     def clearLogs(self):
-        if not self.enableChatLogging:
+        if not self.local_enableChatLogging:
             self.__logging(f"Chat logging is not enabled, set enableChatLogging=True in the bot config", warning=True)
             return
         self.chatDatabase.truncate()
@@ -710,7 +711,7 @@ class Bot:
         
     def serverData(self, server:str=None) -> dict:
         if server is None:
-            server = self.host
+            server = self.local_host
         data = requests.get(f"https://api.mcstatus.io/v2/status/java/{server}").json()
         return data
     
