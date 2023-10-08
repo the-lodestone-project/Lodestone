@@ -2,8 +2,11 @@
 name = "lodestone"
 version = "0.0.8"
 description = "🤖 Create Minecraft bots with a powerful, stable, and high level Python API."
-authors = ["Silke pilon <silkepilon2009@gmail.com>", "HellishBro (README.js) <@812125215051743282> on Discord"]
-license = {file = "LICENSE.txt"}
+authors = [
+    { name = "Silke pilon", email = "silkepilon2009@gmail.com" },
+    { name = "HellishBro", email = "hellishbro@outlook.com" }
+]
+license = { file = "LICENSE.txt" }
 readme = "README.md"
 requires-python = ">=3.10"
 
