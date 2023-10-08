@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 import uvicorn
-import mineflayer
+import lodestone
 import time
 from javascript import require
 import json
@@ -50,7 +50,7 @@ def fastapi():
             msa.stop()
         except:
             pass
-        msa = mineflayer.createBot(host="og-network.net",username=email,version="1.19",apiMode=True)
+        msa = lodestone.createBot(host="og-network.net",username=email,version="1.19",apiMode=True)
         maxLoops = 0
         while msa.msa_status == False:
             if maxLoops >= 20:
