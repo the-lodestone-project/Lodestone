@@ -1,11 +1,11 @@
 [project]
 name = "lodestone"
-version = "0.0.10"
+version = "0.0.11"
 description = "🤖 Create Minecraft bots with a powerful, stable, and high level Python API."
 authors = [
     { name = "Silke pilon", email = "silkepilon2009@gmail.com" },
     { name = "HellishBro", email = "hellishbro@outlook.com" },
-    { name = "Levy", email = "https://github.com/Levy-Y" }
+    { name = "Levy", email = "Levy@example.com" }
 ]
 license = { file = "LICENSE.txt" }
 readme = "README.md"
