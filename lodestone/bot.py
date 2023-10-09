@@ -231,7 +231,7 @@ class Bot:
         username: str = "lodestone",
         useReturn: bool = False,
         discordWebhook: str = None,
-        useDiscordForms: bool = False,
+        useDiscordForums: bool = False,
         apiMode: bool = False,
         clientToken: str = None,
         accessToken: str = None,
@@ -284,14 +284,13 @@ class Bot:
         if not self.local_skipChecks:
             self.nodeVersion, self.pipVersion, self.pythonVersion = self.__versionsCheck()
         if self.local_discordWebhook is not None:
-            from discord import Webhook
             from discord import Embed
             self.Embed = Embed
-            self.useDiscordForms = useDiscordForms
+            self.useDiscordForums = useDiscordForums
             embedVar = Embed(title="Successfully Connected To The Webhook!", description=f"**Great news! The bot has successfully connected to this channel's webhook. From now on, it will send all the logs and valuable data right here, keeping you informed about everything happening on the server.**\n\n **Versions:**\n* [**Node**](https://nodejs.org/)**:      {self.nodeVersion}**\n* [**Pip**](https://pypi.org/project/pip/)**:          {self.pipVersion}**\n* [**Python**](https://www.python.org/)**:  {self.pythonVersion}**\n\n **Links:**\n* [**GitHub**](https://github.com/SilkePilon/OpenDeliveryBot)\n* [**Report Bugs**](https://github.com/SilkePilon/OpenDeliveryBot/issues)\n* [**Web Interface**](https://github.com/SilkePilon/OpenDeliveryBot-react)", color=0x3498db)
             embedVar.timestamp = datetime.datetime.utcnow()
             embedVar.set_footer(text='\u200b', icon_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true")
-            if useDiscordForms:
+            if useDiscordForums:
                 today = date.today()
                 send_webhook(discordWebhook, content=f"{today}", thread_name=f"{today}", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embedVar)
             else:
@@ -303,8 +302,8 @@ class Bot:
         self.mineflayer = require('mineflayer')
         self.pathfinder = require('mineflayer-pathfinder')
         self.goals = require('mineflayer-pathfinder').goals
-        self.mineflayerViewer = require('prismarine-viewer').mineflayer
-        self.Vec3 = require("vec3").Vec3
+        if not self.local_disableViewer:
+            self.mineflayerViewer = require('prismarine-viewer').mineflayer
         self.armorManager = require("mineflayer-armor-manager")
         self.autoeat = require('mineflayer-auto-eat').plugin
         self.repl = require('repl')
@@ -367,9 +366,9 @@ class Bot:
                     embed.set_footer(text=f'{self.bot.username}', icon_url=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
                 except:
                     embed.set_footer(text='\u200b', icon_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true")
-                if self.useDiscordForms:
+                if self.useDiscordForums:
                     today = date.today()
-                    send_webhook(self.discordWebhook, content=f"{today}", thread=f"{today}", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embed)
+                    send_webhook(self.discordWebhook, content=f"{today}", thread_name=f"{today}", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embed)
                 else:
                     try:
                         send_webhook(self.discordWebhook, content=f"", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embed)
