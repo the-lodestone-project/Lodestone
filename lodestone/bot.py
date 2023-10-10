@@ -214,40 +214,42 @@ class SettingsState:
 
 class Bot:
     def __init__(
-        self,
-        host: str,
-        *,
-        auth: str = "microsoft",
-        port: int = 25565,
-        version: str = "false",
-        password: str = "",
-        checkTimeoutInterval: int = 20,
-        armorManager: bool = False,
-        viewerPort: int = 5001,
-        quit_on_low_health: bool = True,
-        low_health_threshold: int = 10,
-        disableChatSigning: bool = False,
-        profilesFolder: str = "",
-        username: str = "lodestone",
-        useReturn: bool = False,
-        discordWebhook: str = None,
-        useDiscordForums: bool = False,
-        apiMode: bool = False,
-        clientToken: str = None,
-        accessToken: str = None,
-        logErrors: bool = True,
-        hideErrors: bool = True,
-        keepAlive: bool = True,
-        loadInternalPlugins: bool = True,
-        respawn: bool = True,
-        physicsEnabled: bool = True,
-        defaultChatPatterns: bool = True,
-        disableLogs: bool = False,
-        enableChatLogging: bool = False,
-        skipChecks: bool = False,
-        disableViewer: bool = False,
+            self,
+            host: str,
+            *,
+            auth: str = "microsoft",
+            port: int = 25565,
+            version: str = "false",
+            password: str = "",
+            checkTimeoutInterval: int = 20,
+            armorManager: bool = False,
+            viewerPort: int = 5001,
+            quit_on_low_health: bool = True,
+            low_health_threshold: int = 10,
+            disableChatSigning: bool = False,
+            profilesFolder: str = "",
+            username: str = "lodestone",
+            useReturn: bool = False,
+            discordWebhook: str = None,
+            useDiscordForums: bool = False,
+            apiMode: bool = False,
+            clientToken: str = None,
+            accessToken: str = None,
+            logErrors: bool = True,
+            hideErrors: bool = True,
+            keepAlive: bool = True,
+            loadInternalPlugins: bool = True,
+            respawn: bool = True,
+            physicsEnabled: bool = True,
+            defaultChatPatterns: bool = True,
+            disableLogs: bool = False,
+            enableChatLogging: bool = False,
+            skipChecks: bool = False,
+            disableViewer: bool = False,
+            stopBotOnDeath: bool = False,
     ):
         """Create the bot"""
+        self.stop_bot_on_death = stopBotOnDeath
         self.local_host = host
         self.local_auth = auth
         self.local_port = port
@@ -257,37 +259,37 @@ class Bot:
         self.local_armor_manager = armorManager
         self.local_viewer_port = viewerPort
         self.local_quit_on_low_ealth = quit_on_low_health
-        self.local_low_ealth_threshold = low_health_threshold
-        self.local_disableChatSigning = disableChatSigning
-        self.local_profilesFolder = profilesFolder
+        self.local_low_health_threshold = low_health_threshold
+        self.local_disable_chat_signing = disableChatSigning
+        self.local_profiles_folder = profilesFolder
         self.local_username = username
-        self.local_clientToken = clientToken
-        self.local_accessToken = accessToken
-        self.local_logErrors = logErrors
-        self.local_hideErrors = hideErrors
-        self.local_keepAlive = keepAlive
-        self.local_loadInternalPlugins = loadInternalPlugins
+        self.local_client_token = clientToken
+        self.local_access_token = accessToken
+        self.local_log_errors = logErrors
+        self.local_hide_errors = hideErrors
+        self.local_keep_alive = keepAlive
+        self.local_load_internal_plugins = loadInternalPlugins
         self.local_respawn = respawn
-        self.local_physicsEnabled = physicsEnabled
-        self.local_defaultChatPatterns = defaultChatPatterns
-        self.local_disableLogs = disableLogs
-        self.local_enableChatLogging = enableChatLogging
-        self.local_skipChecks = skipChecks if not discordWebhook else False
-        self.local_discordWebhook = discordWebhook
-        self.local_disableViewer = disableViewer
+        self.local_physics_enabled = physicsEnabled
+        self.local_default_chat_patterns = defaultChatPatterns
+        self.local_disable_logs = disableLogs
+        self.local_enable_chat_logging = enableChatLogging
+        self.local_skip_checks = skipChecks if not discordWebhook else False
+        self.local_discord_webhook = discordWebhook
+        self.local_disable_viewer = disableViewer
         global logger
         self.logger = structlog.get_logger()
         logger = self.logger
         self.console = Console()
         # [:2]
-        self.apiMode = apiMode
-        if not self.local_skipChecks:
+        self.api_mode = apiMode
+        if not self.local_skip_checks:
             self.nodeVersion, self.pipVersion, self.pythonVersion = self.__versionsCheck()
-        if self.local_discordWebhook is not None:
+        if self.local_discord_webhook is not None:
             from discord import Embed
             self.Embed = Embed
             self.useDiscordForums = useDiscordForums
-            embedVar = Embed(title="Successfully Connected To The Webhook!", description=f"**Great news! The bot has successfully connected to this channel's webhook. From now on, it will send all the logs and valuable data right here, keeping you informed about everything happening on the server.**\n\n **Versions:**\n* [**Node**](https://nodejs.org/)**:      {self.nodeVersion}**\n* [**Pip**](https://pypi.org/project/pip/)**:          {self.pipVersion}**\n* [**Python**](https://www.python.org/)**:  {self.pythonVersion}**\n\n **Links:**\n* [**GitHub**](https://github.com/SilkePilon/OpenDeliveryBot)\n* [**Report Bugs**](https://github.com/SilkePilon/OpenDeliveryBot/issues)\n* [**Web Interface**](https://github.com/SilkePilon/OpenDeliveryBot-react)", color=0x3498db)
+            embedVar = Embed(title="Successfully Connected to Webhook!", description=f"**Great news! The bot has successfully connected to this channel's webhook. From now on, it will send all the logs and valuable data right here, keeping you informed about everything happening on the server.**\n\n **Versions:**\n* [**Node**](https://nodejs.org/)**:      {self.nodeVersion}**\n* [**Pip**](https://pypi.org/project/pip/)**:          {self.pipVersion}**\n* [**Python**](https://www.python.org/)**:  {self.pythonVersion}**\n\n **Links:**\n* [**GitHub**](https://github.com/SilkePilon/OpenDeliveryBot)\n* [**Report Bugs**](https://github.com/SilkePilon/OpenDeliveryBot/issues)\n* [**Web Interface**](https://github.com/SilkePilon/OpenDeliveryBot-react)", color=0x3498db)
             embedVar.timestamp = datetime.datetime.utcnow()
             embedVar.set_footer(text='\u200b', icon_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true")
             if useDiscordForums:
@@ -302,7 +304,7 @@ class Bot:
         self.mineflayer = require('mineflayer')
         self.pathfinder = require('mineflayer-pathfinder')
         self.goals = require('mineflayer-pathfinder').goals
-        if not self.local_disableViewer:
+        if not self.local_disable_viewer:
             self.mineflayerViewer = require('prismarine-viewer').mineflayer
         self.armorManager = require("mineflayer-armor-manager")
         self.autoeat = require('mineflayer-auto-eat').plugin
@@ -316,14 +318,14 @@ class Bot:
                 status.update("[bold green]Updaing pip package...\n")
                 os.system(f'{self.pythonCommand} -m pip install -U lodestone >/dev/null 2>&1')
                 time.sleep(3)
-        self.logedin = False
-        self.useReturn = useReturn
+        self.logged_in = False
+        self.use_return = useReturn
         self.msa_status = False
-        self.servername = f"{self.local_host}".lower().replace(".", "")
-        if self.local_enableChatLogging:
-            self.chatDatabase = TinyDB(f"{self.servername}Database.json")
+        self.server_name = f"{self.local_host}".lower().replace(".", "")
+        if self.local_enable_chat_logging:
+            self.chatDatabase = TinyDB(f"{self.server_name}Database.json")
         self.script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
-        self.bot = self.__create_bot()
+        self.bot: Proxy = self.__create_bot()
         self.proxy = self.bot
         self.msa_data = False
         self.__start()
@@ -345,8 +347,8 @@ class Bot:
     
         
     def __logging(self, message, icon="🤖", error=False, info=False, warning=False, chat=False, imageUrl:str="", console:bool= True, discord:bool=True):
-        if not self.local_disableLogs:
-            if self.useReturn:
+        if not self.local_disable_logs:
+            if self.use_return:
                 self.logger.info(f"[{icon}] {message}")
             elif self.discordWebhook is not None and discord == True:
                 color = 0x3498db
@@ -392,52 +394,42 @@ class Bot:
         return [n for n in fnmatch.filter(os.listdir(base), pattern) if
             os.path.isfile(os.path.join(base, n))]
         
-    def __waitForMsa(self, code, timeout=60 * 5):
+    def __waitForMsa(self, timeout = 300): # 5 minutes
         if os.name == 'nt':
             basePath = os.getenv('APPDATA')
         else:
             basePath = Path().home()
-        if self.local_profilesFolder == "":
-            msa_file = Path(f"{basePath}/.minecraft/nmp-cache/")
-            msa_file = f"{msa_file}/{self.__findFiles(msa_file, '*_mca-cache.json')[0]}"
-            for _ in range(timeout):
-                time.sleep(1)
-                with open(msa_file) as check:
-                    if check.read() != "{}":
-                        self.logger.info("Logged in successfully!")
-                        return
-            raise TimeoutError(
-                f"Fetching for MSA code timed out. Timeout={timeout} seconds"
-            )
-        else:
-            msa_file = Path(f"{self.local_profilesFolder}")
-            msa_file = f"{msa_file}/{self.__findFiles(msa_file, '*_mca-cache.json')[0]}"
-            for _ in range(timeout):
-                time.sleep(1)
-                with open(msa_file) as check:
-                    if check.read() != "{}":
-                        self.logger.info("Logged in successfully!")
-                        return
-            raise TimeoutError(
-                f"Fetching for MSA code timed out. Timeout={timeout} seconds"
-            )
+        path = self.local_profiles_folder
+        if not path:
+            path = Path(f"{basePath}/.minecraft/nmp-cache/")
+        msa_file = path / self.__findFiles(path, '*_mca-cache.json')[0]
+        for _ in range(timeout):
+            time.sleep(1)
+            with open(msa_file) as check:
+                if check.read() != "{}":
+                    self.logger.info("Logged in successfully!")
+                    return
+        raise TimeoutError(
+            f"Fetching for MSA code timed out. Timeout={timeout} seconds"
+        )
 
     def __msa(self, *msa):
-        with self.console.status("[bold green]Waiting for login...\n") as status:
+        with self.console.status("[bold green]Waiting for login...\n"):
             self.msa_data = msa[0]
             self.msa_status = True
             self.__logging(message="It seems you are not logged in! Open your termianl for more information.",
                            error=True, console=False)
             self.logger.error(f"It seems you are not logged in, please go to https://microsoft.com/link and enter the following code: {self.msa_data['user_code']}")
-            self.__waitForMsa(code=self.msa_data['user_code'])
-            if self.apiMode:
+            # code=self.msa_data['user_code']
+            self.__waitForMsa()
+            if self.api_mode:
                 self.bot.end()
                 quit()
             self.msa_status = False
             # self.logger.info(f"{msa[0]['user_code']} MSA Code")
 
     def __versionsCheck(self):
-        with self.console.status("[bold green]Checking versions...\n") as status:
+        with self.console.status("[bold green]Checking versions...\n"):
             # Node
             result = subprocess.run(["node", "--version"], 
                                     stdout=subprocess.PIPE,
@@ -456,7 +448,8 @@ class Bot:
                 
                 
             # Pip
-            result = subprocess.run(["pip", "--version"], 
+            pip_ = 'pip' if self.__checkPythonCommand() == 'python' else 'pip3'
+            result = subprocess.run([pip_, "--version"],
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE,
                                     text=True)
@@ -466,7 +459,7 @@ class Bot:
             if match:
                 pip_version = match.group(1)
                 python_version = match.group(2)
-            # if not self.local_disableLogs:
+            # if not self.local_disable_logs:
             #     self.logger.info(f"Detected Pip version {pip_version} witch is supported!")
             #     self.logger.info(f"Detected Python version {python_version} witch is supported!")
             return node_version, pip_version, python_version
@@ -485,23 +478,23 @@ class Bot:
             'version': self.local_version,
             'onMsaCode': self.__msa,
             'checkTimeoutInterval': 60 * 10000,
-            'disableChatSigning': self.local_disableChatSigning,
-            'profilesFolder': self.local_profilesFolder,
-            'logErrors': self.local_logErrors,
-            'hideErrors': self.local_hideErrors,
-            'keepAlive': self.local_keepAlive,
-            'loadInternalPlugins': self.local_loadInternalPlugins,
+            'disableChatSigning': self.local_disable_chat_signing,
+            'profilesFolder': self.local_profiles_folder,
+            'logErrors': self.local_log_errors,
+            'hideErrors': self.local_hide_errors,
+            'keepAlive': self.local_keep_alive,
+            'loadInternalPlugins': self.local_load_internal_plugins,
             'respawn': self.local_respawn,
-            'physicsEnabled': self.local_physicsEnabled,
-            'defaultChatPatterns': self.local_defaultChatPatterns
+            'physicsEnabled': self.local_physics_enabled,
+            'defaultChatPatterns': self.local_default_chat_patterns
         })
         @On(localBot, "login")
         def on_login(*args):
             self.bot = localBot
-            self.logedin = True
+            self.logged_in = True
             self.__logging(f"Connected to {self.local_host}", info=True, imageUrl=f"https://eu.mc-api.net/v3/server/favicon/{self.local_host}")
             self.__logging(f'Logged in as {self.bot.username}', info=True, imageUrl=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
-            if not self.local_disableViewer:
+            if not self.local_disable_viewer:
                 self.__start_viewer()
             self.__setup_events()
             self.__load_plugins()
@@ -509,7 +502,7 @@ class Bot:
 
 
     def __start(self):
-        while not self.logedin:
+        while not self.logged_in:
             time.sleep(1) 
         # @On(self.bot, "login")
         # def on_login(*args):
@@ -653,12 +646,12 @@ class Bot:
     def __setup_events(self):
         @On(self.bot, "path_update")
         def path_update(_, r):
-            if not self.local_disableViewer:
+            if not self.local_disable_viewer:
                 path = [self.bot.entity.position.offset(0, 0.5, 0)]
                 for node in r['path']:
                     path.append({'x': node['x'], 'y': node['y'] + 0.5, 'z': node['z']})
                 self.bot.viewer.drawLine('path', path, 	0x0000FF)
-        if not self.local_disableViewer:
+        if not self.local_disable_viewer:
             @On(self.bot.viewer, "blockClicked")
             def on_block_clicked(_, block, face, button):
                 try:
@@ -673,26 +666,33 @@ class Bot:
         
         @On(self.bot, "death")
         def death(*args):
-            self.bot.end()
-            self.__logging("Bot died... stopping bot!", warning=True)
-            quit()
+            self.__logging("Bot died..." + " stopping bot!" * int(self.stop_bot_on_death), warning=True)
+            if self.stop_bot_on_death:
+                self.bot.end()
+                quit()
+
         @On(self.bot, "kicked")
         def kicked(this, reason, *a):
-            self.bot.end()
-            self.__logging("Kicked from server... stopping bot!", warning=True)
-            quit()
+            self.__logging("Kicked from server..." + " stopping bot!" * int(self.stop_bot_on_death) + f"\n\nReason: {reason}", warning=True)
+            if self.stop_bot_on_death:
+                self.bot.end()
+                quit()
+
         @On(self.bot, "autoeat_started")
         def autoeat_started(item, offhand, *a):
             self.__logging(f"Eating {item['name']} in {'offhand' if offhand else 'hand'}", info=True)
+
         @On(self.bot, "autoeat_finished")
         def autoeat_finished(item, offhand):
             self.__logging(f"Finished eating {item['name']} in {'offhand' if offhand else 'hand'}", info=True)
+
         @On(self.bot, "error")
         def error(_, error):
             self.__logging(error, error=True)
+
         @On(self.bot, 'chat')
         def handleMsg(this, sender, message, *args):
-            if self.local_enableChatLogging:
+            if self.local_enable_chat_logging:
                 if not sender:
                     sender = "unknown"
                 if not self.chatDatabase.contains(User.username == sender):
@@ -749,14 +749,14 @@ class Bot:
                 converted_args.extend(parsed)
             else:
                 converted_args.append(parsed)
-        self.chat(command, *converted_args)
+        self.chat('/' + command, *converted_args)
 
     def coordinates(self) -> str:
-        if self.logedin:
+        if self.logged_in:
             return f"{int(self.entity.position.x)}, {int(self.entity.position.y)}, {int(self.entity.position.z)}"
 
     def chatHistory(self, username:str, server:str="") -> list:
-        if not self.local_enableChatLogging:
+        if not self.local_enable_chat_logging:
             self.__logging(f"Chat logging is not enabled, set enableChatLogging=True in the bot config", warning=True)
             return []
         if server == "":
@@ -773,7 +773,7 @@ class Bot:
             return []
         
     def clearLogs(self):
-        if not self.local_enableChatLogging:
+        if not self.local_enable_chat_logging:
             self.__logging(f"Chat logging is not enabled, set enableChatLogging=True in the bot config", warning=True)
             return
         self.chatDatabase.truncate()
@@ -789,13 +789,5 @@ class Bot:
             server = self.local_host
         data = requests.get(f"https://api.mcstatus.io/v2/status/java/{server}").json()
         return data
-    
-    def webhookSend(self, message:str, username:str = "OpenDeliveryBot", embed=None):
-        send_webhook(self.discordWebhook, content=f"{message}", username=f"{username}", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true")
-        
-        
-        
+
 createBot = Bot
-        
-        
-        
