@@ -1,4 +1,6 @@
+from javascript.errors import JavaScriptError
 import lodestone
+
 import sys
 import math
 
@@ -14,8 +16,6 @@ bot = lodestone.Bot(
     password = sys.argv[4] if len(sys.argv) > 4 else ''
 )
 
-print(dir(bot))
-
 def loop(n):
     for i in range(n):
         position = bot.entity.position
@@ -25,9 +25,10 @@ def loop(n):
             math.cos(i) * 2
         ))
     bot.chat("My flight was amazing!")
+    bot.creative.stop_flying()
 
 @bot.on("chat")
-def chat(_, username, message):
+def chat(_, username, message, *args):
     if username == bot.username: return
     match message:
         case "loaded":
@@ -36,5 +37,9 @@ def chat(_, username, message):
         case "fly":
             bot.command("creative")
             bot.creative.start_flying()
-            loop(10)
+            try:
+                loop(10)
+            except JavaScriptError:
+                bot.chat("An error occurred!")
+                bot.creative.stop_flying()
 
