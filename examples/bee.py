@@ -1,55 +1,40 @@
 import lodestone
 import sys
+import math
 
 
 if len(sys.argv) < 3 or len(sys.argv) > 5:
     print("Usage : python bee.py <host> <port> [<name>] [<password>]")
     quit(1)
 
-bot = lodestone.createBot(
+bot = lodestone.Bot(
     host = sys.argv[1],
     port = int(sys.argv[2]),
     username = sys.argv[3] if len(sys.argv) > 3 else 'bee',
     password = sys.argv[4] if len(sys.argv) > 4 else ''
 )
 
-"""
-const mineflayer = require('mineflayer')
+print(dir(bot))
 
-if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node bee.js <host> <port> [<name>] [<password>]')
-  process.exit(1)
-}
+def loop(n):
+    for i in range(n):
+        position = bot.entity.position
+        bot.creative.fly_to(position.offset(
+            math.sin(i) * 2,
+            0.5,
+            math.cos(i) * 2
+        ))
+    bot.chat("My flight was amazing!")
 
-const bot = mineflayer.createBot({
-  host: process.argv[2],
-  port: parseInt(process.argv[3]),
-  username: process.argv[4] ? process.argv[4] : 'bee',
-  password: process.argv[5],
-  verbose: true
-})
+@bot.on("chat")
+def chat(_, username, message):
+    if username == bot.username: return
+    match message:
+        case "loaded":
+            bot.bot.waitForChunksToLoad()
+            bot.chat("Ready!")
+        case "fly":
+            bot.command("creative")
+            bot.creative.start_flying()
+            loop(10)
 
-// /gamemode creative bee
-
-async function loop (n) {
-  for (let i = 0; i <= n; i++) {
-    const { position } = bot.entity
-    await bot.creative.flyTo(position.offset(Math.sin(i) * 2, 0.5, Math.cos(i) * 2))
-  }
-  bot.chat('My flight was amazing !')
-}
-
-bot.on('chat', async (username, message) => {
-  if (username === bot.username) return
-  switch (message) {
-    case 'loaded':
-      await bot.waitForChunksToLoad()
-      bot.chat('Ready!')
-      break
-    case 'fly':
-      bot.creative.startFlying()
-      loop(10)
-      break
-  }
-})
-"""
