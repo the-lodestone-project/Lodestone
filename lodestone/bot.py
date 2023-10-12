@@ -211,6 +211,36 @@ class SettingsState:
     def enable_server_listing(self) -> bool:
         "Whether the player should list in the Tablist or not"
 
+class CreativeMode:
+    """
+    Provides some creative mode functionalities. Should not initalize manully
+    """
+    def __init__(self, proxy: Proxy):
+        self.proxy = proxy
+
+    @cprop()
+    def set_inventory_slot(self):
+        "Sets the inventory slot (returns AsyncJSFunction(slot: number, item: prismarine-item.Item))"
+    
+    @cprop()
+    def fly_to(self):
+        "Fly to a location (returns AsyncJSFunction(destination: vec3.Vec3))"
+    
+    @cprop()
+    def start_flying(self):
+        "Start flying (returns JSFunction())"
+
+    @cprop()
+    def stop_flying(self):
+        "Stop flying (returns JSFunction()"
+
+    def clear_slot(self, slot: int):
+        "Clears the slot"
+        self.set_inventory_slot(slot, None)
+
+    @cprop()
+    def clear_inventory(self):
+        "Clears the inventory (returns AsyncJSFunction())"
 
 class Bot:
     def __init__(
@@ -515,6 +545,18 @@ class Bot:
             f'Cordinates: {int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}',
         info=True)
 
+    def on(self, event: str):
+        """
+        Decorator for event registering
+
+        @bot.on('messagestr')
+        def chat(this, message, *args):
+            ...
+        """
+        def inner(function):
+            On(self.proxy, event)(function)
+        return inner
+
     @cprop()
     def registry(self): pass
 
@@ -541,6 +583,9 @@ class Bot:
 
     @property
     def game(self): return GameState(self.proxy.game)
+
+    @property
+    def creative(self): return CreativeMode(self.proxy.creative)
     
     @cprop()
     def physics_enabled(self): pass

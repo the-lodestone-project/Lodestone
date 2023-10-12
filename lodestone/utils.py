@@ -1,17 +1,13 @@
-import time
 import discord
 import aiohttp
-from javascript import require
-import json
 import structlog
-from functools import wraps
 from rich.console import Console
-import g4f
 import asyncio
 logger = structlog.get_logger()
 console = Console()
 
 def llm(input: str, data = ""):
+    import g4f
     _providers = [
         g4f.Provider.Bing,
         g4f.Provider.DeepAi,
@@ -31,7 +27,7 @@ def llm(input: str, data = ""):
                 messages=[{"role": "user", "content": f"question about provided data: {input} data: {data} USE THIS DATA TO AWNSER THE QUESTION, KEEP IT SHORT"}],
             )
             output.append({provider.__name__: response})
-        except Exception as e:
+        except Exception:
             logger.warning(f"[LLM] {provider.__name__} is not available.")
 
     async def run_all():
@@ -39,7 +35,7 @@ def llm(input: str, data = ""):
             run_provider(provider) for provider in _providers
         ]
         await asyncio.gather(*calls)
-    with console.status(f"[bold green][LLM] Please wait...\n") as status:
+    with console.status(f"[bold green][LLM] Please wait...\n"):
         asyncio.run(run_all())
         
     defualt = g4f.ChatCompletion.create(
