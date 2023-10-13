@@ -343,11 +343,10 @@ class Bot:
         self.pythonCommand = self.__checkPythonCommand()
         if not skipChecks:
             with self.console.status("[bold green]Checking for updates...\n") as status:
-                status.update("[bold green]Updaing javascript librarys...\n")
+                status.update("[bold green]Updating javascript librarys...\n")
                 os.system(f'{self.pythonCommand} -m javascript --update >/dev/null 2>&1')
-                status.update("[bold green]Updaing pip package...\n")
+                status.update("[bold green]Updating pip package...\n")
                 os.system(f'{self.pythonCommand} -m pip install -U lodestone >/dev/null 2>&1')
-                time.sleep(3)
         self.logged_in = False
         self.use_return = useReturn
         self.msa_status = False
