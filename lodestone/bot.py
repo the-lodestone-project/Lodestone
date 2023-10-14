@@ -332,8 +332,9 @@ class Bot:
             else:
                 try:
                     send_webhook(discordWebhook, content="", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embedVar)
-                except:
-                    self.logger.error(f"Detected that you are using a Forums channel but 'useDiscordForums' is set to False. Please change 'useDiscordForms' to True or provide a webhook url for a text channel.")
+                except Exception as e:
+                    print(e)
+                    self.logger.error(f"Detected that you are using a Forms channel but 'useDiscordForms' is set to False. Please change 'useDiscordForms' to True or provide a webhook url for a text channel.")
         self.discordWebhook = discordWebhook
         self.mineflayer = require('mineflayer')
         self.pathfinder = require('mineflayer-pathfinder')
@@ -407,8 +408,9 @@ class Bot:
                 else:
                     try:
                         send_webhook(self.discordWebhook, content=f"", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embed)
-                    except:
-                        self.logger.error(f"Detected that you are using a Forums channel but 'useDiscordForums' is set to False. Please change 'useDiscordForms' to True or provide a webhook url for a text channel.")
+                    except Exception as e:
+                        print(e)
+                        self.logger.error(f"Detected that you are using a Forms channel but 'useDiscordForms' is set to False. Please change 'useDiscordForms' to True or provide a webhook url for a text channel.")
             if console:
                 if error:
                     self.logger.error(f"[{icon}] {message}")
@@ -849,5 +851,11 @@ class Bot:
             server = self.local_host
         data = requests.get(f"https://api.mcstatus.io/v2/status/java/{server}").json()
         return data
-
+    
+    def webhookSend(self, message:str, username:str = "OpenDeliveryBot", embed=None):
+        send_webhook(self.discordWebhook, content=f"{message}", username=f"{username}", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true")
+    
+        
+        
+        
 createBot = Bot

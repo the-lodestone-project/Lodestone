@@ -97,9 +97,12 @@ def cprop(cap = "pascal", proxy_name = ""):
         return wrapped
     return decorator
 
+
+
+
 def send_webhook(webhook, *args, **kwargs):
     async def send_webhook__(webhook, *args, **kwargs):
-        async with aiohttp.ClientSession() as session:
-            await discord.Webhook.from_url(webhook, session=session).send(*args, **kwargs)
-
+        session = aiohttp.ClientSession()
+        await discord.Webhook.from_url(webhook, session=session).send(*args, **kwargs)
+        
     return asyncio.run(send_webhook__(webhook, *args, **kwargs))
