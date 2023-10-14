@@ -1,4 +1,4 @@
-from javascript import require, On
+from javascript import require, On, Once
 import datetime
 import structlog
 import os
@@ -17,14 +17,13 @@ try:
     from utils import cprop, send_webhook
 except ImportError:
     from .utils import cprop, send_webhook
+
 User = Query()
 filestruc = "/"
 logger = structlog.get_logger()
 
 if os.name == 'nt':
     filestruc = "\\"
-else:
-    filestruc = "/"
 
 __all__ = ['Bot', 'createBot']
 
@@ -277,8 +276,13 @@ class Bot:
             skipChecks: bool = False,
             disableViewer: bool = False,
             stopBotOnDeath: bool = False,
+            debugMode: bool = False
     ):
         """Create the bot"""
+        if debugMode:
+            os.environ["DEBUG"] = "minecraft-protocol"
+        else:
+            os.environ["DEBUG"] = ""
         self.stop_bot_on_death = stopBotOnDeath
         self.local_host = host
         self.local_auth = auth
@@ -329,7 +333,7 @@ class Bot:
                 try:
                     send_webhook(discordWebhook, content="", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embedVar)
                 except:
-                    self.logger.error(f"Detected that you are using a Forms channel but 'useDiscordForms' is set to False. Please change 'useDiscordForms' to True or provide a webhook url for a text channel.")
+                    self.logger.error(f"Detected that you are using a Forums channel but 'useDiscordForums' is set to False. Please change 'useDiscordForms' to True or provide a webhook url for a text channel.")
         self.discordWebhook = discordWebhook
         self.mineflayer = require('mineflayer')
         self.pathfinder = require('mineflayer-pathfinder')
@@ -404,7 +408,7 @@ class Bot:
                     try:
                         send_webhook(self.discordWebhook, content=f"", username="OpenDeliveryBot", avatar_url="https://github.com/SilkePilon/OpenDeliveryBot/blob/main/chestlogo.png?raw=true", embed=embed)
                     except:
-                        self.logger.error(f"Detected that you are using a Forms channel but 'useDiscordForms' is set to False. Please change 'useDiscordForms' to True or provide a webhook url for a text channel.")
+                        self.logger.error(f"Detected that you are using a Forums channel but 'useDiscordForums' is set to False. Please change 'useDiscordForms' to True or provide a webhook url for a text channel.")
             if console:
                 if error:
                     self.logger.error(f"[{icon}] {message}")
@@ -554,6 +558,18 @@ class Bot:
         """
         def inner(function):
             On(self.proxy, event)(function)
+        return inner
+
+    def once(self, event: str):
+        """
+        Decorator for event registering
+
+        @bot.once('login')
+        def login(*args):
+            ...
+        """
+        def inner(function):
+            Once(self.proxy, event)(function)
         return inner
 
     @cprop()
