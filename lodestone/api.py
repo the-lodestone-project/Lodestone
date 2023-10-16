@@ -18,8 +18,7 @@ def fastapi():
     print(Panel("Welcome to the Lodestone project!\n\nAPI docs are avable at: https://open-delivery-bot-documentation.vercel.app/", title="Welcome", expand=False, border_style="green"))
     
     logger.info("API running at http://localhost:5000/ (beta)")
-    
-    
+
     @app.middleware("http")
     async def add_process_time_header(request: Request, call_next):
         with console.status(f"[bold green][API] {request.method} {request.scope['path']} ...\n") as status:
@@ -45,7 +44,7 @@ def fastapi():
             msa.stop()
         except:
             pass
-        msa = lodestone.createBot(host="og-network.net",username=email,version="1.19",apiMode=True)
+        msa = lodestone.createBot(host="og-network.net", username=email, version="1.19", apiMode=True)
         maxLoops = 0
         while msa.msa_status == False:
             if maxLoops >= 20:
