@@ -9,12 +9,8 @@ if len(sys.argv) < 3 or len(sys.argv) > 5:
     print("Usage : python bee.py <host> <port> [<name>] [<password>]")
     quit(1)
 
-bot = lodestone.Bot(
-    host = sys.argv[1],
-    port = int(sys.argv[2]),
-    username = sys.argv[3] if len(sys.argv) > 3 else 'bee',
-    password = sys.argv[4] if len(sys.argv) > 4 else ''
-)
+bot = lodestone.Bot(host=sys.argv[1], port=int(sys.argv[2]), password=sys.argv[4] if len(sys.argv) > 4 else '',
+                    username=sys.argv[3] if len(sys.argv) > 3 else 'bee')
 
 def loop(n):
     for i in range(n):
