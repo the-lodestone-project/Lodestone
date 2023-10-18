@@ -10,10 +10,8 @@ def llm(input: str, data = ""):
     import g4f
     _providers = [
         g4f.Provider.Bing,
-        g4f.Provider.DeepAi,
         g4f.Provider.GptGo,
         g4f.Provider.Bard
-        
     ]
 
     output = []
@@ -38,19 +36,19 @@ def llm(input: str, data = ""):
     with console.status(f"[bold green][LLM] Please wait...\n"):
         asyncio.run(run_all())
         
-    defualt = g4f.ChatCompletion.create(
+    default = g4f.ChatCompletion.create(
         model=g4f.models.gpt_4,
         messages=[{"role": "user", "content": f"question about provided data: {input} data: {data} USE THIS DATA TO AWNSER THE QUESTION, KEEP IT SHORT"}],
     )  # alterative model setting
-    if "<!DOCTYPE html>" in defualt: 
-        logger.warning(f"[LLM] defualt is not available. Trying another...")
+    if "<!DOCTYPE html>" in default:
+        logger.warning(f"[LLM] default is not available. Trying another...")
         defualtnew = g4f.ChatCompletion.create(
             model=g4f.models.gpt_35_turbo,
             messages=[{"role": "user", "content": f"question about provided data: {input} data: {data} USE THIS DATA TO AWNSER THE QUESTION, KEEP IT SHORT"}],
         )  # alterative model setting
         output.append({"base": defualtnew})
     else:
-        output.append({"base": defualt})
+        output.append({"base": default})
     return output
 
 # def claude(input: str, cookie: str, data = "", conversation_id = ""):
@@ -70,12 +68,12 @@ def convert_case(string, case = "pascal"):
             for seq in string.split("_"):
                 new.append(seq.lower())
             name = "_".join(new)
-        case "camel":
+        case "pascal":
             new = []
             for seq in string.split("_"):
                 new.append(seq.title())
             name = "".join(new)
-        case "pascal":
+        case "camel":
             new = []
             one = True
             for seq in string.split("_"):
@@ -86,7 +84,7 @@ def convert_case(string, case = "pascal"):
             name = string
     return name
 
-def cprop(cap = "pascal", proxy_name = ""):
+def cprop(cap = "camel", proxy_name = ""):
     def decorator(func):
         @property
         def wrapped(self):
@@ -96,9 +94,6 @@ def cprop(cap = "pascal", proxy_name = ""):
             return getattr(self.proxy, name)
         return wrapped
     return decorator
-
-
-
 
 def send_webhook(webhook, *args, **kwargs):
     async def send_webhook__(webhook, *args, **kwargs):

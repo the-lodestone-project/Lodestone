@@ -8,12 +8,8 @@ if len(sys.argv) < 3 or len(sys.argv) > 5:
     print("Usage : python bee.py <host> <port> [<name>] [<password>]")
     quit(1)
 
-bot = lodestone.Bot(
-    host = sys.argv[1],
-    port = int(sys.argv[2]),
-    username = sys.argv[3] if len(sys.argv) > 3 else 'book',
-    password = sys.argv[4] if len(sys.argv) > 4 else ''
-)
+bot = lodestone.Bot(host=sys.argv[1], port=int(sys.argv[2]), password=sys.argv[4] if len(sys.argv) > 4 else '',
+                    username=sys.argv[3] if len(sys.argv) > 3 else 'book')
 
 pages = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
@@ -36,18 +32,6 @@ def transform_page(page):
     return ' '.join(transformed_words)
 
 transformed_pages = [transform_page(page) for page in pages]
-
-@bot.on("kicked")
-def kick(*args):
-    print(*args)
-
-@bot.on("end")
-def end(*args):
-    print(*args)
-
-@bot.on("error")
-def error(*args):
-    print(*args)
 
 @bot.on("chat")
 def chat(_, username, message, *args):
