@@ -44,7 +44,7 @@ def fastapi():
             msa.stop()
         except:
             pass
-        msa = lodestone.createBot(host="og-network.net", username=email, version="1.19", api_mode=True)
+        msa = lodestone.createBot(host="og-network.net", username=email, version="1.19", ls_api_mode=True)
         maxLoops = 0
         while msa.msa_status == False:
             if maxLoops >= 20:

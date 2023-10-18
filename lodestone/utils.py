@@ -68,12 +68,12 @@ def convert_case(string, case = "pascal"):
             for seq in string.split("_"):
                 new.append(seq.lower())
             name = "_".join(new)
-        case "camel":
+        case "pascal":
             new = []
             for seq in string.split("_"):
                 new.append(seq.title())
             name = "".join(new)
-        case "pascal":
+        case "camel":
             new = []
             one = True
             for seq in string.split("_"):
@@ -84,7 +84,7 @@ def convert_case(string, case = "pascal"):
             name = string
     return name
 
-def cprop(cap = "pascal", proxy_name = ""):
+def cprop(cap = "camel", proxy_name = ""):
     def decorator(func):
         @property
         def wrapped(self):
@@ -94,9 +94,6 @@ def cprop(cap = "pascal", proxy_name = ""):
             return getattr(self.proxy, name)
         return wrapped
     return decorator
-
-
-
 
 def send_webhook(webhook, *args, **kwargs):
     async def send_webhook__(webhook, *args, **kwargs):

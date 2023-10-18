@@ -1,27 +1,31 @@
 from javascript import require, On, Once
-import datetime
+from javascript.proxy import Proxy
+from rich.console import Console
+from discord import Embed
+from tinydb import TinyDB, Query
+import requests
 import structlog
+
+import datetime
 import os
 import sys
-import requests
 import time
 import fnmatch
 import re
 from datetime import date
 from pathlib import Path
-from javascript.proxy import Proxy
-from tinydb import TinyDB, Query
 import subprocess
-from rich.console import Console
+
 try:
     from utils import cprop, send_webhook
 except ImportError:
     from .utils import cprop, send_webhook
 
 User = Query()
-filestruc = "/"
+
 logger = structlog.get_logger()
 
+filestruc = "/"
 if os.name == 'nt':
     filestruc = "\\"
 
@@ -74,7 +78,6 @@ class GameState:
     def max_y(self) -> int:
         "The height of the world"
 
-
 class TimeState:
     """
     Stores information about time. Should not initialize manually
@@ -117,7 +120,6 @@ class TimeState:
     @cprop()
     def age(self) -> int:
         "Total ticks elapsed since day 0. Inaccurate. Use `TimeState.big_age`"
-
 
 class ExperienceState:
     """
@@ -172,7 +174,6 @@ class SkinPartsState:
     @cprop()
     def show_hat(self) -> bool:
         "Whether the hat is shown"
-
 
 class SettingsState:
     """
@@ -250,95 +251,102 @@ class Bot:
             port: int = 25565,
             version: str = "false",
             password: str = "",
-            check_timeout_interval: int = 20,
-            viewer_port: int = 5001,
-            quit_on_low_health: bool = True,
-            low_health_threshold: int = 10,
-            disable_chat_signing: bool = False,
-            profiles_folder: str = "",
-            username: str = "lodestone",
-            use_return: bool = False,
-            discord_webhook: str = None,
-            use_discord_forums: bool = False,
-            api_mode: bool = False,
-            client_token: str = None,
-            access_token: str = None,
-            log_errors: bool = True,
-            hide_errors: bool = True,
-            keep_alive: bool = True,
-            load_internal_plugins: bool = True,
             respawn: bool = True,
-            physics_enabled: bool = True,
-            default_chat_patterns: bool = True,
-            disable_logs: bool = False,
-            enable_chat_logging: bool = False,
-            skip_checks: bool = False,
-            disable_viewer: bool = False,
-            stop_bot_on_death: bool = False,
-            debug_mode: bool = False
+            disableChatSigning: bool = False,
+            profilesFolder: str = "",
+            username: str = "lodestone",
+            hideErrors: bool = True,
+            logErrors: bool = True,
+            keepAlive: bool = True,
+            loadInternalPlugins: bool = True,
+            physicsEnabled: bool = True,
+            defaultChatPatterns: bool = True,
+
+            ls_disable_logs: bool = False,
+            ls_enable_chat_logging: bool = False,
+            ls_skip_checks: bool = False,
+            ls_disable_viewer: bool = False,
+            ls_stop_bot_on_death: bool = False,
+            ls_debug_mode: bool = False,
+            ls_viewer_port: int = 5001,
+            ls_use_return: bool = False,
+            ls_discord_webhook: str = None,
+            ls_use_discord_forums: bool = False,
+            ls_api_mode: bool = False,
+
+            ls_plugins: list = None
     ):
-        """Create the bot"""
-        if debug_mode:
+        """
+        Create the bot. Parameters in camelCase are passed into mineflayer. Parameters starting with ls_ is Lodestone specific
+        """
+        if ls_debug_mode:
             os.environ["DEBUG"] = "minecraft-protocol"
         else:
             os.environ["DEBUG"] = ""
-        self.stop_bot_on_death = stop_bot_on_death
+
         self.local_host = host
         self.local_auth = auth
         self.local_port = port
         self.local_version = version
         self.local_password = password
-        self.local_viewer_port = viewer_port
-        self.local_disable_chat_signing = disable_chat_signing
-        self.local_profiles_folder = profiles_folder
+        self.local_disable_chat_signing = disableChatSigning
+        self.local_profiles_folder = profilesFolder
         self.local_username = username
-        self.local_log_errors = log_errors
-        self.local_hide_errors = hide_errors
-        self.local_keep_alive = keep_alive
-        self.local_load_internal_plugins = load_internal_plugins
+        self.local_hide_errors = hideErrors
+        self.local_log_errors = logErrors
+        self.local_keep_alive = keepAlive
+        self.local_load_internal_plugins = loadInternalPlugins
         self.local_respawn = respawn
-        self.local_physics_enabled = physics_enabled
-        self.local_default_chat_patterns = default_chat_patterns
-        self.local_disable_logs = disable_logs
-        self.local_enable_chat_logging = enable_chat_logging
-        self.local_skip_checks = skip_checks
-        self.local_disable_viewer = disable_viewer
+        self.local_physics_enabled = physicsEnabled
+        self.local_default_chat_patterns = defaultChatPatterns
 
-        self.discord_webhook = discord_webhook
+        self.viewer_port = ls_viewer_port
+        self.disable_logs = ls_disable_logs
+        self.enable_chat_logging = ls_enable_chat_logging
+        self.skip_checks = ls_skip_checks
+        self.disable_viewer = ls_disable_viewer
+        self.discord_webhook = ls_discord_webhook
+        self.stop_bot_on_death = ls_stop_bot_on_death
+        self.use_discord_forums = ls_use_discord_forums
+        self.api_mode = ls_api_mode
+        self.plugin_list = ls_plugins if ls_plugins else []
+
         self.console = Console()
-        self.api_mode = api_mode
-        if not self.local_skip_checks:
-            self.nodeVersion, self.pipVersion, self.pythonVersion = self.__versions_check()
+        self.extra_data = {}
+        self.loaded_plugins = {}
+
+        if not self.skip_checks:
+            self.node_version, self.pip_version, self.python_version = self.__versions_check()
         else:
-            self.nodeVersion, self.pipVersion, self.pythonVersion = "unknown", "unknown", "unknown"
+            self.node_version, self.pip_version, self.python_version = "unknown", "unknown", "unknown"
+
         if self.discord_webhook is not None:
-            from discord import Embed
-            self.use_discord_forums = use_discord_forums
             embed = Embed(
                 title="Successfully Connected to Webhook!",
                 description=f"""
-                **Great news!** The bot has successfully connected to this channel's webhook. From now on, it will send all the logs and valuable data right here, keeping you informed about everything happening on the server.
+                **Great news!** The bot has successfully connected to this channel's webhook.
+                From now on, it will send all the logs and valuable data right here, keeping you informed about everything happening on the server.
                 
                 **Versions: **
-                * [**Node**](https://nodejs.org/): {self.nodeVersion}
-                * [**Pip**](https://pypi.org/project/pip/): {self.pipVersion}
-                * [**Python**](https://www.python.org/): {self.pythonVersion}
+                * [**Node**](https://nodejs.org/): {self.node_version}
+                * [**Pip**](https://pypi.org/project/pip/): {self.pip_version}
+                * [**Python**](https://www.python.org/): {self.python_version}
                 
                 **Links: **
                 * [**GitHub**](https://github.com/SilkePilon/Lodestone)
                 * [**Report Bugs**](https://github.com/SilkePilon/Lodestone/issues)
-                * [**Web Interface**](https://github.com/SilkePilon/Lodestone-react)
+                * [**Web Interface**](https://github.com/SilkePilon/Mineflayer.py-react)
                 """,
                 color=0x3498db
             )
             embed.timestamp = datetime.datetime.utcnow()
             embed.set_footer(text='\u200b', icon_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true")
-            if use_discord_forums:
+            if ls_use_discord_forums:
                 today = date.today()
-                send_webhook(discord_webhook, content=f"{today}", thread_name=f"{today}", username="Lodestone", avatar_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
+                send_webhook(ls_discord_webhook, content=f"{today}", thread_name=f"{today}", username="Lodestone", avatar_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
             else:
                 try:
-                    send_webhook(discord_webhook, content="", username="Lodestone", avatar_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
+                    send_webhook(ls_discord_webhook, content="", username="Lodestone", avatar_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
                 except Exception as e:
                     print(e)
                     logger.error(f"Detected that you are using a Forums channel but 'useDiscordForums' is set to False. Please change 'useDiscordForums' to True or provide a webhook url for a text channel.")
@@ -346,31 +354,41 @@ class Bot:
         self.mineflayer = require('mineflayer')
         self.pathfinder = require('mineflayer-pathfinder')
         self.goals = require('mineflayer-pathfinder').goals
-        if not self.local_disable_viewer:
+        if not self.disable_viewer:
             self.mineflayer_viewer = require('prismarine-viewer').mineflayer
         self.armor_manager = require("mineflayer-armor-manager")
         self.auto_eat = require('mineflayer-auto-eat').plugin
         self.statemachine = require("mineflayer-statemachine")
         self.python_command = self.__check_python_command()
-        if not skip_checks:
+        if not ls_skip_checks:
             with self.console.status("[bold green]Checking for updates...\n") as status:
                 status.update("[bold green]Updating javascript librarys...\n")
                 os.system(f'{self.python_command} -m javascript --update >/dev/null 2>&1')
                 status.update("[bold green]Updating pip package...\n")
                 os.system(f'{self.python_command} -m pip install -U lodestone >/dev/null 2>&1')
         self.logged_in = False
-        self.use_return = use_return
+        self.use_return = ls_use_return
         self.msa_status = False
         self.server_name = f"{self.local_host}".lower().replace(".", "")
-        if self.local_enable_chat_logging:
+        if self.enable_chat_logging:
             self.chat_database = TinyDB(f"{self.server_name}Database.json")
         self.script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
         self.bot: Proxy = self.__create_bot()
         self.proxy = self.bot
         self.msa_data = False
         self.__start()
+
+        # loads plugins
+        for plugin in self.plugin_list:
+            self.load_plugin(plugin)
         
-        
+    def load_plugin(self, plugin: type):
+        """
+        Loads a singular plugin (A class object. Not initalized)
+        """
+        plugin_name = plugin.__name__
+        initialized_plugin = plugin(self)
+        self.loaded_plugins[plugin_name] = initialized_plugin
     
     def __check_python_command(self):
         try:
@@ -386,7 +404,7 @@ class Bot:
                 sys.exit(1)
 
     def __logging(self, message, icon="🤖", error=False, info=False, warning=False, chat=False, image_url="", console=True, discord=True):
-        if not self.local_disable_logs:
+        if not self.disable_logs:
             if self.use_return:
                 logger.info(f"[{icon}] {message}")
             elif self.discord_webhook and discord:
@@ -534,7 +552,7 @@ class Bot:
                            image_url=f"https://eu.mc-api.net/v3/server/favicon/{self.local_host}")
             self.__logging(f'Logged in as {self.bot.username}', info=True,
                            image_url=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
-            if not self.local_disable_viewer:
+            if not self.disable_viewer:
                 self.__start_viewer()
             self.__setup_events()
             self.__load_plugins()
@@ -572,6 +590,15 @@ class Bot:
         def inner(function):
             Once(self.proxy, event)(function)
         return inner
+
+    def emit(self, event: str, *params):
+        """
+        Emits an event which could be listened to
+
+        bot.emit('custom_chat', username, message)
+        """
+        self.bot.emit(event, *params)
+        self.__logging(f"Emitting event {repr(event)} with parameters {params}", info=True, discord=False)
 
     @cprop()
     def registry(self): pass
@@ -706,13 +733,13 @@ class Bot:
     def __setup_events(self):
         @self.on("path_update")
         def path_update(_, r):
-            if not self.local_disable_viewer:
+            if not self.disable_viewer:
                 path = [self.bot.entity.position.offset(0, 0.5, 0)]
                 for node in r['path']:
                     path.append({'x': node['x'], 'y': node['y'] + 0.5, 'z': node['z']})
                 self.bot.viewer.drawLine('path', path, 	0x0000FF)
 
-        if not self.local_disable_viewer:
+        if not self.disable_viewer:
             @On(self.bot.viewer, "blockClicked")
             def on_block_clicked(_, block, face, button):
                 try:
@@ -755,7 +782,7 @@ class Bot:
 
         @self.on("chat")
         def handleMsg(this, sender, message, *args):
-            if self.local_enable_chat_logging:
+            if self.enable_chat_logging:
                 if not sender:
                     sender = "unknown"
                 if not self.chat_database.contains(User.username == sender):
@@ -775,8 +802,8 @@ class Bot:
 
     def __start_viewer(self):
         try:
-            self.mineflayer_viewer(self.bot, {"port": self.local_viewer_port})
-            self.__logging(f"Viewer started on port {self.local_viewer_port}", info=True)
+            self.mineflayer_viewer(self.bot, {"port": self.viewer_port})
+            self.__logging(f"Viewer started on port {self.viewer_port}", info=True)
         except:
             self.__logging("There was an error while starting the viewer!", warning=True)
     
@@ -818,7 +845,7 @@ class Bot:
             return f"{int(self.entity.position.x)}, {int(self.entity.position.y)}, {int(self.entity.position.z)}"
 
     def chat_history(self, username: str, server="") -> list:
-        if not self.local_enable_chat_logging:
+        if not self.enable_chat_logging:
             self.__logging(f"Chat logging is not enabled, set enableChatLogging=True in the bot config", warning=True)
             return []
         if server == "":
@@ -835,7 +862,7 @@ class Bot:
             return []
         
     def clear_logs(self):
-        if not self.local_enable_chat_logging:
+        if not self.enable_chat_logging:
             self.__logging(f"Chat logging is not enabled, set enableChatLogging=True in the bot config", warning=True)
             return
         self.chat_database.truncate()
@@ -851,5 +878,35 @@ class Bot:
             server = self.local_host
         data = requests.get(f"https://api.mcstatus.io/v2/status/java/{server}").json()
         return data
+
+    def set_data(self, item, value):
+        """
+        Sets custom data that can be later accessed. Also returns data.
+
+        bot.set_data("hello", "world")
+        ... # some time consuming task later
+        print(bot.get_data("hello")) # should print "world"
+        """
+        self.extra_data[item] = value
+        return value
+
+    def get_data(self, item, default: object = None, compare: object = "nothing to compare to"):
+        """
+        Gets custom data that is set prior. Also take in an optional compare parameter to do assertion with the obtained data.
+        Default parameter for 'default' is None
+
+        ... # some other code
+        try:
+            print(bot.get_data("custom_health", 200))
+        except AssertionError:
+            print("Bot not at full health!")
+        """
+        result = self.extra_data.get(item, default)
+        if not compare == "nothing to compare to": # there's a comparison
+            if result != compare:
+                raise AssertionError(
+                    f"Incorrect value in custom data! Queried {repr(item)}={repr(result)}, instead expected {repr(item)}={repr(compare)}"
+                )
+        return result
 
 createBot = Bot

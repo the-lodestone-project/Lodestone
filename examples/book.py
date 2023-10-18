@@ -33,18 +33,6 @@ def transform_page(page):
 
 transformed_pages = [transform_page(page) for page in pages]
 
-@bot.on("kicked")
-def kick(*args):
-    print(*args)
-
-@bot.on("end")
-def end(*args):
-    print(*args)
-
-@bot.on("error")
-def error(*args):
-    print(*args)
-
 @bot.on("chat")
 def chat(_, username, message, *args):
     if username == bot.username: return

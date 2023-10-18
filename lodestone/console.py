@@ -78,7 +78,7 @@ def print_output(email, password, host, port, auth, version, check_timeout, view
         auth=auth,
         version=version,
         password=password,
-        enable_chat_logging=True,
+        ls_enable_chat_logging=True,
     )
 
 
