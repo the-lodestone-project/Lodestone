@@ -1,21 +1,13 @@
-from javascript import require, On, Once
-from javascript.proxy import Proxy
 from rich.console import Console
 from discord import Embed
 import structlog
 import datetime
-import os
 import sys
 import re
 import time
-from rich.progress import track
-from rich.progress import Progress
 from datetime import date
-import subprocess
 import os
 import platform
-import fileinput
-import progressbar
 import urllib.request
 import json
 import subprocess

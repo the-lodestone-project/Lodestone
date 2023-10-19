@@ -6,8 +6,12 @@ old_code/*
 lodestone/api-test.py
 lodestone/test.py
 .vscode/
-test.py
 lodestone/nmp-cache/
 lodestone_compass/.env
 *.pyc
 *.json
+venv/
+.github/
+.git/
+*/__pycache__/
+test-cache.txt

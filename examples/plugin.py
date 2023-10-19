@@ -5,7 +5,7 @@ import sys
 
 
 if len(sys.argv) < 3 or len(sys.argv) > 5:
-    print("Usage : python bee.py <host> <port> [<name>] [<password>]")
+    print(f"Usage : python {sys.argv[0]} <host> <port> [<name>] [<password>]")
     quit(1)
 
 bot = lodestone.Bot(host=sys.argv[1], port=int(sys.argv[2]), password=sys.argv[4] if len(sys.argv) > 4 else '',
