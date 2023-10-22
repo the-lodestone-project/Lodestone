@@ -15,6 +15,8 @@ import re
 from datetime import date
 from pathlib import Path
 import subprocess
+import typing
+from typing import Callable
 
 try:
     from utils import cprop, send_webhook
@@ -219,19 +221,19 @@ class CreativeMode:
         self.proxy = proxy
 
     @cprop()
-    def set_inventory_slot(self):
+    def set_inventory_slot(self) -> Callable[[int, Proxy], None]:
         "Sets the inventory slot (returns Function(slot: number, item: prismarine-item.Item))"
     
     @cprop()
-    def fly_to(self):
+    def fly_to(self) -> Callable[[Proxy], None]:
         "Fly to a location (returns Function(destination: vec3.Vec3))"
     
     @cprop()
-    def start_flying(self):
+    def start_flying(self) -> Callable[[], None]:
         "Start flying (returns Function())"
 
     @cprop()
-    def stop_flying(self):
+    def stop_flying(self) -> Callable[[], None]:
         "Stop flying (returns Function()"
 
     def clear_slot(self, slot: int):
@@ -239,7 +241,7 @@ class CreativeMode:
         self.set_inventory_slot(slot, None)
 
     @cprop()
-    def clear_inventory(self):
+    def clear_inventory(self) -> Callable[[], None]:
         "Clears the inventory (returns Function())"
 
 class Bot:
@@ -380,14 +382,16 @@ class Bot:
         for plugin in self.plugin_list:
             self.load_plugin(plugin)
 
-    def __getattr__(self, item):
-        """
-        Dummy method to keep the IDE happy
-        """
+    # RIP def __getattr__(self, name)
+    # You will be missed
 
     def load_plugin(self, plugin: type):
         """
-        Loads a singular plugin (A class object. Not initalized)
+        Loads a singular plugin (An uninitalized class object)
+
+        class Plugin:
+            def __init__(self, bot: lodestone.Bot):
+                print("Plugin Injected")
         """
         plugin_name = plugin.__name__
         initialized_plugin = plugin(self)
@@ -618,35 +622,35 @@ class Bot:
             wrapper.__doc__ = function.__doc__
 
             if target_name:
-                setattr(self.__class__, target_name, function)
+                setattr(self, target_name, function)
             else:
-                setattr(self.__class__, function.__name__, function)
+                setattr(self, function.__name__, function)
             return wrapper
         return inner
 
     @cprop()
-    def registry(self): pass
+    def registry(self) -> Proxy: pass
 
     @cprop()
-    def world(self): pass
+    def world(self) -> Proxy: pass
 
     @cprop()
-    def entity(self): pass
+    def entity(self) -> Proxy: pass
 
     @cprop()
-    def entities(self): pass
+    def entities(self) -> Proxy: pass
 
     @cprop()
-    def username(self): pass
+    def username(self) -> str: pass
 
     @cprop()
-    def spawn_point(self): pass
+    def spawn_point(self) -> Proxy: pass
 
     @cprop()
-    def held_item(self): pass
+    def held_item(self) -> Proxy: pass
 
     @cprop()
-    def using_eld_item(self): pass
+    def using_held_item(self) -> bool: pass
 
     @property
     def game(self): return GameState(self.proxy.game)
@@ -655,37 +659,28 @@ class Bot:
     def creative(self): return CreativeMode(self.proxy.creative)
     
     @cprop()
-    def physics_enabled(self): pass
+    def physics_enabled(self) -> bool: pass
     
     @cprop()
-    def player(self): pass
+    def player(self) -> Proxy: pass
     
     @cprop()
-    def players(self): pass
+    def players(self) -> Proxy: pass
     
     @cprop()
-    def tablist(self): pass
+    def tablist(self) -> Proxy: pass
 
     @cprop()
-    def physics_enabled(self): pass
+    def is_raining(self) -> bool: pass
 
     @cprop()
-    def player(self): pass
+    def rain_state(self) -> int: pass
 
     @cprop()
-    def players(self): pass
+    def thunder_state(self) -> int: pass
 
     @cprop()
-    def is_raining(self): pass
-
-    @cprop()
-    def rain_state(self): pass
-
-    @cprop()
-    def thunder_state(self): pass
-
-    @cprop()
-    def chat_patterns(self): pass
+    def chat_patterns(self) -> Proxy: pass
 
     @property
     def settings(self): return SettingsState(self.proxy.settings)
@@ -694,53 +689,64 @@ class Bot:
     def experience(self): return ExperienceState(self.proxy.experience)
 
     @cprop()
-    def health(self): pass
+    def health(self) -> int: pass
 
     @cprop()
-    def food(self): pass
+    def food(self) -> int: pass
 
     @cprop()
-    def food_saturation(self): pass
+    def food_saturation(self) -> int: pass
 
     @cprop()
-    def oxygen_level(self): pass
+    def oxygen_level(self) -> int: pass
 
     @cprop()
-    def physics(self): pass
+    def physics(self) -> Proxy: pass
 
     @cprop()
-    def firework_rocket_duration(self): pass
+    def firework_rocket_duration(self) -> int: pass
 
     @property
     def time(self): return TimeState(self.proxy.time)
 
     @cprop()
-    def quick_bar_slot(self): pass
+    def quick_bar_slot(self) -> int: pass
 
     @cprop()
-    def inventory(self): pass
+    def inventory(self) -> Proxy: pass
 
     @cprop()
-    def target_dig_block(self): pass
+    def target_dig_block(self) -> Proxy: pass
 
     @cprop()
-    def is_sleeping(self): pass
+    def is_sleeping(self) -> bool: pass
 
     @cprop()
-    def scoreboards(self): pass
+    def scoreboards(self) -> Proxy: pass
 
     @cprop()
-    def scoreboard(self): pass
+    def scoreboard(self) -> Proxy: pass
 
     @cprop()
-    def teams(self): pass
+    def teams(self) -> Proxy: pass
 
     @cprop()
-    def team_map(self): pass
+    def team_map(self) -> Proxy: pass
 
     @cprop()
-    def control_state(self): pass
-    
+    def control_state(self) -> Proxy: pass
+
+    @cprop()
+    def set_control_state(self) -> Callable[[str, bool], None]:
+        """
+        Returns Function(state: str, toggle: bool)
+        """
+
+    @cprop()
+    def clear_control_states(self) -> Callable[[], None]:
+        """
+        Returns Function()
+        """
         
     def __load_plugins(self):
         self.mc_data = require('minecraft-data')(self.bot.version)
@@ -773,9 +779,7 @@ class Bot:
                     self.bot.pathfinder.goto(self.pathfinder.goals.GoalNear(p.x, p.y, p.z, 1), timeout=60)
                 except:
                     self.log(f"Can't get to {p.x}, {p.y}, {p.z}", error=True)
-        
-        
-        
+
         @self.on("death")
         def death(*args):
             self.log("Bot died..." + " stopping bot!" * int(self.stop_bot_on_death), warning=True)
@@ -851,7 +855,6 @@ class Bot:
             return returns
         else:
             return arg
-
 
     def command(self, command: str, *args):
         converted_args = []

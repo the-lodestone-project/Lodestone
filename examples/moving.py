@@ -1,7 +1,7 @@
 import lodestone
 
 import sys
-import asyncio as aio
+import time
 
 
 class MovementPlugin:
@@ -14,70 +14,70 @@ class MovementPlugin:
         self.internal_bot = bot.bot
 
         @bot.add_method()
-        def forward(shelf, hold_time=1):
+        def forward(hold_time=1):
             """
             Holds the "W" key for hold_time seconds
             """
-            self.internal_bot.setControlState("forward", True)
-            aio.sleep(hold_time)
-            self.internal_bot.setControlState("forward", False)
+            self.bot.set_control_state("forward", True)
+            time.sleep(hold_time)
+            self.bot.set_control_state("forward", False)
 
         @bot.add_method()
-        def backward(shelf, hold_time=1):
+        def backward(hold_time=1):
             """
             Holds the "S" key for hold_time seconds
             """
-            self.internal_bot.setControlState("back", True)
-            aio.sleep(hold_time)
-            self.internal_bot.setControlState("back", False)
+            self.bot.set_control_state("back", True)
+            time.sleep(hold_time)
+            self.bot.set_control_state("back", False)
 
         @bot.add_method()
-        def left(shelf, hold_time=1):
+        def left(hold_time=1):
             """
             Holds the "A" key for hold_time seconds
             """
-            self.internal_bot.setControlState("left", True)
-            aio.sleep(hold_time)
-            self.internal_bot.setControlState("left", False)
+            self.bot.set_control_state("left", True)
+            time.sleep(hold_time)
+            self.bot.set_control_state("left", False)
 
         @bot.add_method()
-        def right(shelf, hold_time=1):
+        def right(hold_time=1):
             """
             Holds the "D" key for hold_time seconds
             """
-            self.internal_bot.setControlState("right", True)
-            aio.sleep(hold_time)
-            self.internal_bot.setControlState("right", False)
+            self.bot.set_control_state("right", True)
+            time.sleep(hold_time)
+            self.bot.set_control_state("right", False)
 
         @bot.add_method()
-        def jump(shelf):
+        def jump():
             """
             Make the bot jump
             """
-            self.internal_bot.setControlState("jump", True)
-            aio.sleep(0.2)
-            self.internal_bot.setControlState("jump", False)
+            self.bot.set_control_state("jump", True)
+            time.sleep(0.2)
+            self.bot.set_control_state("jump", False)
 
         @bot.add_method()
-        def start_sneak(shelf):
+        def start_sneak():
             """
             Make the bot start sneaking
             """
-            self.internal_bot.setControlState("sneak", True)
+            self.bot.set_control_state("sneak", True)
 
         @bot.add_method()
-        def stop_sneak(shelf):
+        def stop_sneak():
             """
             Make the bot stop sneaking
             """
-            self.internal_bot.setControlState("sneak", False)
+            self.bot.set_control_state("sneak", False)
 
         @bot.add_method()
-        def halt(shelf):
+        def halt():
             """
             Halts all movement
             """
-            self.internal_bot.clearControlStates()
+            self.bot.clear_control_states()
 
 
 if len(sys.argv) < 3 or len(sys.argv) > 5:
@@ -92,7 +92,7 @@ def loaded(_, plugin):
     bot.chat("Loaded Plugin!", plugin)
 
 @bot.on("chat")
-async def chat(_, username: str, message: str, *args):
+def chat(_, username: str, message: str, *args):
     if username == bot.username: return
     if message.count(" ") < 1: return
     cmd, *args = message.split()
