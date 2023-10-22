@@ -64,6 +64,7 @@ if import_:
 
 if import_ and len(sys.argv) > 1:
     info("Running", import_, "with arguments:", ", ".join(sys.argv[1:]))
+    with open("test-cache.txt", "w") as f:
+        f.write(import_ + "\n" + " ".join(sys.argv[1:]))
+    print("---------[ TESTING  INITIATED ]---------")
     __import__("examples." + import_)
-
-print("---------[ TESTING  INITIATED ]---------")

@@ -15,6 +15,8 @@ import re
 from datetime import date
 from pathlib import Path
 import subprocess
+import typing
+from typing import Callable
 
 try:
     from utils import cprop, send_webhook
@@ -219,19 +221,19 @@ class CreativeMode:
         self.proxy = proxy
 
     @cprop()
-    def set_inventory_slot(self):
+    def set_inventory_slot(self) -> Callable[[int, Proxy], None]:
         "Sets the inventory slot (returns Function(slot: number, item: prismarine-item.Item))"
     
     @cprop()
-    def fly_to(self):
+    def fly_to(self) -> Callable[[Proxy], None]:
         "Fly to a location (returns Function(destination: vec3.Vec3))"
     
     @cprop()
-    def start_flying(self):
+    def start_flying(self) -> Callable[[], None]:
         "Start flying (returns Function())"
 
     @cprop()
-    def stop_flying(self):
+    def stop_flying(self) -> Callable[[], None]:
         "Stop flying (returns Function()"
 
     def clear_slot(self, slot: int):
@@ -239,7 +241,7 @@ class CreativeMode:
         self.set_inventory_slot(slot, None)
 
     @cprop()
-    def clear_inventory(self):
+    def clear_inventory(self) -> Callable[[], None]:
         "Clears the inventory (returns Function())"
 
 class Bot:
@@ -272,9 +274,7 @@ class Bot:
             ls_use_return: bool = False,
             ls_discord_webhook: str = None,
             ls_use_discord_forums: bool = False,
-            ls_api_mode: bool = False,
-
-            ls_plugins: list = None
+            ls_api_mode: bool = False
     ):
         """
         Create the bot. Parameters in camelCase are passed into mineflayer. Parameters starting with ls_ is Lodestone specific
@@ -309,7 +309,7 @@ class Bot:
         self.stop_bot_on_death = ls_stop_bot_on_death
         self.use_discord_forums = ls_use_discord_forums
         self.api_mode = ls_api_mode
-        self.plugin_list = ls_plugins if ls_plugins else []
+        self.plugin_list = []
 
         self.console = Console()
         self.extra_data = {}
@@ -333,20 +333,20 @@ class Bot:
                 * [**Python**](https://www.python.org/): {self.python_version}
                 
                 **Links: **
-                * [**GitHub**](https://github.com/SilkePilon/Lodestone)
-                * [**Report Bugs**](https://github.com/SilkePilon/Lodestone/issues)
-                * [**Web Interface**](https://github.com/SilkePilon/Mineflayer.py-react)
+                * [**GitHub**](https://github.com/Project-Lodestone/Lodestone)
+                * [**Report Bugs**](https://github.com/Project-Lodestone/Lodestone/issues)
+                * [**Web Interface**](https://github.com/Project-Lodestone/Mineflayer.py-react)
                 """,
                 color=0x3498db
             )
             embed.timestamp = datetime.datetime.utcnow()
-            embed.set_footer(text='\u200b', icon_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true")
+            embed.set_footer(text='\u200b', icon_url="https://github.com/Project-Lodestone/Lodestone/blob/main/chestlogo.png?raw=true")
             if ls_use_discord_forums:
                 today = date.today()
-                send_webhook(ls_discord_webhook, content=f"{today}", thread_name=f"{today}", username="Lodestone", avatar_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
+                send_webhook(ls_discord_webhook, content=f"{today}", thread_name=f"{today}", username="Lodestone", avatar_url="https://github.com/Project-Lodestone/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
             else:
                 try:
-                    send_webhook(ls_discord_webhook, content="", username="Lodestone", avatar_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
+                    send_webhook(ls_discord_webhook, content="", username="Lodestone", avatar_url="https://github.com/Project-Lodestone/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
                 except Exception as e:
                     print(e)
                     logger.error(f"Detected that you are using a Forums channel but 'useDiscordForums' is set to False. Please change 'useDiscordForums' to True or provide a webhook url for a text channel.")
@@ -362,10 +362,10 @@ class Bot:
         self.python_command = self.__check_python_command()
         if not ls_skip_checks:
             with self.console.status("[bold green]Checking for updates...\n") as status:
-                status.update("[bold green]Updating javascript librarys...\n")
-                os.system(f'{self.python_command} -m javascript --update >/dev/null 2>&1')
+                status.update("[bold green]Updating javascript libraries...\n")
+                subprocess.run(f'{self.python_command} -m javascript --update', stdout=subprocess.DEVNULL, shell=True, input=b"\n")
                 status.update("[bold green]Updating pip package...\n")
-                os.system(f'{self.python_command} -m pip install -U lodestone >/dev/null 2>&1')
+                subprocess.run(f'{self.python_command} -m pip install -U lodestone', stdout=subprocess.DEVNULL, shell=True, input=b"\n")
         self.logged_in = False
         self.use_return = ls_use_return
         self.msa_status = False
@@ -381,14 +381,22 @@ class Bot:
         # loads plugins
         for plugin in self.plugin_list:
             self.load_plugin(plugin)
-        
+
+    # RIP def __getattr__(self, name)
+    # You will be missed
+
     def load_plugin(self, plugin: type):
         """
-        Loads a singular plugin (A class object. Not initalized)
+        Loads a singular plugin (An uninitalized class object)
+
+        class Plugin:
+            def __init__(self, bot: lodestone.Bot):
+                print("Plugin Injected")
         """
         plugin_name = plugin.__name__
         initialized_plugin = plugin(self)
         self.loaded_plugins[plugin_name] = initialized_plugin
+        self.emit("plugin_load", plugin_name)
     
     def __check_python_command(self):
         try:
@@ -399,11 +407,10 @@ class Bot:
                 subprocess.check_output(['python3', '--version']) 
                 return 'python3'
             except:
-                self.__logging(message='Python command not found, make sure python is installed!', error=True,
-                               discord=False)
+                self.log(message='Python command not found, make sure python is installed!', error=True, discord=False)
                 sys.exit(1)
 
-    def __logging(self, message, icon="🤖", error=False, info=False, warning=False, chat=False, image_url="", console=True, discord=True):
+    def log(self, message, icon="🤖", error=False, info=False, warning=False, chat=False, image_url="", console=True, discord=True):
         if not self.disable_logs:
             if self.use_return:
                 logger.info(f"[{icon}] {message}")
@@ -425,13 +432,13 @@ class Bot:
                 try:
                     embed.set_footer(text=f'{self.bot.username}', icon_url=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
                 except:
-                    embed.set_footer(text='\u200b', icon_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true")
+                    embed.set_footer(text='\u200b', icon_url="https://github.com/Project-Lodestone/Lodestone/blob/main/chestlogo.png?raw=true")
                 if self.use_discord_forums:
                     today = date.today()
-                    send_webhook(self.discord_webhook, content=f"{today}", thread_name=f"{today}", username="Lodestone", avatar_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
+                    send_webhook(self.discord_webhook, content=f"{today}", thread_name=f"{today}", username="Lodestone", avatar_url="https://github.com/Project-Lodestone/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
                 else:
                     try:
-                        send_webhook(self.discord_webhook, content=f"", username="Lodestone", avatar_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
+                        send_webhook(self.discord_webhook, content=f"", username="Lodestone", avatar_url="https://github.com/Project-Lodestone/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
                     except Exception as e:
                         print(e)
                         logger.error(f"Detected that you are using a Forums channel but 'useDiscordForums' is set to False. Please change 'useDiscordForums' to True or provide a webhook url for a text channel.")
@@ -476,8 +483,8 @@ class Bot:
         with self.console.status("[bold green]Waiting for login...\n"):
             self.msa_data = msa[0]
             self.msa_status = True
-            self.__logging(message="It seems you are not logged in! Open your terminal for more information.",
-                           error=True, console=False)
+            self.log(message="It seems you are not logged in! Open your terminal for more information.", error=True,
+                     console=False)
             logger.error(f"It seems you are not logged in, please go to https://microsoft.com/link and enter the following code: {self.msa_data['user_code']}")
             self.__wait_for_msa()
             if self.api_mode:
@@ -548,10 +555,10 @@ class Bot:
         def on_login(*args):
             self.bot = local_bot
             self.logged_in = True
-            self.__logging(f"Connected to {self.local_host}", info=True,
-                           image_url=f"https://eu.mc-api.net/v3/server/favicon/{self.local_host}")
-            self.__logging(f'Logged in as {self.bot.username}', info=True,
-                           image_url=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
+            self.log(f"Connected to {self.local_host}", info=True,
+                     image_url=f"https://eu.mc-api.net/v3/server/favicon/{self.local_host}")
+            self.log(f'Logged in as {self.bot.username}', info=True,
+                     image_url=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
             if not self.disable_viewer:
                 self.__start_viewer()
             self.__setup_events()
@@ -563,7 +570,7 @@ class Bot:
         while not self.logged_in:
             time.sleep(1)
         self.__equip_armor()
-        self.__logging(
+        self.log(
             f'Coordinates: {int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}',
             info=True)
 
@@ -598,31 +605,52 @@ class Bot:
         bot.emit('custom_chat', username, message)
         """
         self.bot.emit(event, *params)
-        self.__logging(f"Emitting event {repr(event)} with parameters {params}", info=True, discord=False)
+        self.log(f"Emitting event {repr(event)} with parameters {params}", info=True, discord=False)
+
+    def add_method(self, target_name=None):
+        """
+        Decorator for adding a method dynamically
+
+        @add_method()
+        def lobby(self, server="main"):
+            bot.command("lobby", server)
+        """
+        def inner(function):
+            def wrapper(*args, **kwargs):
+                function(*args, **kwargs)
+            wrapper.__name__ = function.__name__
+            wrapper.__doc__ = function.__doc__
+
+            if target_name:
+                setattr(self, target_name, function)
+            else:
+                setattr(self, function.__name__, function)
+            return wrapper
+        return inner
 
     @cprop()
-    def registry(self): pass
+    def registry(self) -> Proxy: pass
 
     @cprop()
-    def world(self): pass
+    def world(self) -> Proxy: pass
 
     @cprop()
-    def entity(self): pass
+    def entity(self) -> Proxy: pass
 
     @cprop()
-    def entities(self): pass
+    def entities(self) -> Proxy: pass
 
     @cprop()
-    def username(self): pass
+    def username(self) -> str: pass
 
     @cprop()
-    def spawn_point(self): pass
+    def spawn_point(self) -> Proxy: pass
 
     @cprop()
-    def held_item(self): pass
+    def held_item(self) -> Proxy: pass
 
     @cprop()
-    def using_eld_item(self): pass
+    def using_held_item(self) -> bool: pass
 
     @property
     def game(self): return GameState(self.proxy.game)
@@ -631,37 +659,28 @@ class Bot:
     def creative(self): return CreativeMode(self.proxy.creative)
     
     @cprop()
-    def physics_enabled(self): pass
+    def physics_enabled(self) -> bool: pass
     
     @cprop()
-    def player(self): pass
+    def player(self) -> Proxy: pass
     
     @cprop()
-    def players(self): pass
+    def players(self) -> Proxy: pass
     
     @cprop()
-    def tablist(self): pass
+    def tablist(self) -> Proxy: pass
 
     @cprop()
-    def physics_enabled(self): pass
+    def is_raining(self) -> bool: pass
 
     @cprop()
-    def player(self): pass
+    def rain_state(self) -> int: pass
 
     @cprop()
-    def players(self): pass
+    def thunder_state(self) -> int: pass
 
     @cprop()
-    def is_raining(self): pass
-
-    @cprop()
-    def rain_state(self): pass
-
-    @cprop()
-    def thunder_state(self): pass
-
-    @cprop()
-    def chat_patterns(self): pass
+    def chat_patterns(self) -> Proxy: pass
 
     @property
     def settings(self): return SettingsState(self.proxy.settings)
@@ -670,53 +689,64 @@ class Bot:
     def experience(self): return ExperienceState(self.proxy.experience)
 
     @cprop()
-    def health(self): pass
+    def health(self) -> int: pass
 
     @cprop()
-    def food(self): pass
+    def food(self) -> int: pass
 
     @cprop()
-    def food_saturation(self): pass
+    def food_saturation(self) -> int: pass
 
     @cprop()
-    def oxygen_level(self): pass
+    def oxygen_level(self) -> int: pass
 
     @cprop()
-    def physics(self): pass
+    def physics(self) -> Proxy: pass
 
     @cprop()
-    def firework_rocket_duration(self): pass
+    def firework_rocket_duration(self) -> int: pass
 
     @property
     def time(self): return TimeState(self.proxy.time)
 
     @cprop()
-    def quick_bar_slot(self): pass
+    def quick_bar_slot(self) -> int: pass
 
     @cprop()
-    def inventory(self): pass
+    def inventory(self) -> Proxy: pass
 
     @cprop()
-    def target_dig_block(self): pass
+    def target_dig_block(self) -> Proxy: pass
 
     @cprop()
-    def is_sleeping(self): pass
+    def is_sleeping(self) -> bool: pass
 
     @cprop()
-    def scoreboards(self): pass
+    def scoreboards(self) -> Proxy: pass
 
     @cprop()
-    def scoreboard(self): pass
+    def scoreboard(self) -> Proxy: pass
 
     @cprop()
-    def teams(self): pass
+    def teams(self) -> Proxy: pass
 
     @cprop()
-    def team_map(self): pass
+    def team_map(self) -> Proxy: pass
 
     @cprop()
-    def control_state(self): pass
-    
+    def control_state(self) -> Proxy: pass
+
+    @cprop()
+    def set_control_state(self) -> Callable[[str, bool], None]:
+        """
+        Returns Function(state: str, toggle: bool)
+        """
+
+    @cprop()
+    def clear_control_states(self) -> Callable[[], None]:
+        """
+        Returns Function()
+        """
         
     def __load_plugins(self):
         self.mc_data = require('minecraft-data')(self.bot.version)
@@ -748,37 +778,34 @@ class Bot:
                     p = block.position.offset(0, 1, 0)
                     self.bot.pathfinder.goto(self.pathfinder.goals.GoalNear(p.x, p.y, p.z, 1), timeout=60)
                 except:
-                    self.__logging(f"Can't get to {p.x}, {p.y}, {p.z}", error=True)
-        
-        
-        
+                    self.log(f"Can't get to {p.x}, {p.y}, {p.z}", error=True)
+
         @self.on("death")
         def death(*args):
-            self.__logging("Bot died..." + " stopping bot!" * int(self.stop_bot_on_death), warning=True)
+            self.log("Bot died..." + " stopping bot!" * int(self.stop_bot_on_death), warning=True)
             if self.stop_bot_on_death:
                 self.bot.end()
                 quit()
 
         @self.on("kick")
         def kicked(this, reason, *a):
-            self.__logging(
-                "Kicked from server..." + " stopping bot!" * int(self.stop_bot_on_death) + f"\n\nReason: {reason}",
-                warning=True)
+            self.log("Kicked from server..." + " stopping bot!" * int(self.stop_bot_on_death) + f"\n\nReason: {reason}",
+                     warning=True)
             if self.stop_bot_on_death:
                 self.bot.end()
                 quit()
 
         @self.on("autoeat_started")
         def autoeat_started(item, offhand, *a):
-            self.__logging(f"Eating {item['name']} in {'offhand' if offhand else 'hand'}", info=True)
+            self.log(f"Eating {item['name']} in {'offhand' if offhand else 'hand'}", info=True)
 
         @self.on("autoeat_finished")
         def autoeat_finished(item, offhand):
-            self.__logging(f"Finished eating {item['name']} in {'offhand' if offhand else 'hand'}", info=True)
+            self.log(f"Finished eating {item['name']} in {'offhand' if offhand else 'hand'}", info=True)
 
         @self.on("error")
         def error(_, error):
-            self.__logging(error, error=True)
+            self.log(error, error=True)
 
         @self.on("chat")
         def handleMsg(this, sender, message, *args):
@@ -792,7 +819,7 @@ class Bot:
                     existing_messages = user['messages']
                     existing_messages.extend([f"{message}"])
                     self.chat_database.update({'messages': existing_messages}, User.username == sender)
-                self.__logging(f"{sender}: {message}", icon="💬", chat=True)
+                self.log(f"{sender}: {message}", icon="💬", chat=True)
 
     def __equip_armor(self):
         try:
@@ -803,9 +830,9 @@ class Bot:
     def __start_viewer(self):
         try:
             self.mineflayer_viewer(self.bot, {"port": self.viewer_port})
-            self.__logging(f"Viewer started on port {self.viewer_port}", info=True)
+            self.log(f"Viewer started on port {self.viewer_port}", info=True)
         except:
-            self.__logging("There was an error while starting the viewer!", warning=True)
+            self.log("There was an error while starting the viewer!", warning=True)
     
     def __log_players(self):
         # print(type(self.bot.players))
@@ -829,7 +856,6 @@ class Bot:
         else:
             return arg
 
-
     def command(self, command: str, *args):
         converted_args = []
         for arg in args:
@@ -846,7 +872,7 @@ class Bot:
 
     def chat_history(self, username: str, server="") -> list:
         if not self.enable_chat_logging:
-            self.__logging(f"Chat logging is not enabled, set enableChatLogging=True in the bot config", warning=True)
+            self.log(f"Chat logging is not enabled, set enableChatLogging=True in the bot config", warning=True)
             return []
         if server == "":
             server = self.local_host
@@ -856,21 +882,21 @@ class Bot:
             if user:
                 return user['messages']
             else:
-                self.__logging(f"{username} has no chat history", warning=True)
+                self.log(f"{username} has no chat history", warning=True)
         else:
-            self.__logging(f"{server} has no database", warning=True)
+            self.log(f"{server} has no database", warning=True)
             return []
         
     def clear_logs(self):
         if not self.enable_chat_logging:
-            self.__logging(f"Chat logging is not enabled, set enableChatLogging=True in the bot config", warning=True)
+            self.log(f"Chat logging is not enabled, set enableChatLogging=True in the bot config", warning=True)
             return
         self.chat_database.truncate()
-        self.__logging("All databases are cleared!")
+        self.log("All databases are cleared!")
     
     def stop(self):
         self.bot.end()
-        self.__logging("Stopped bot!", warning=True)
+        self.log("Stopped bot!", warning=True)
         quit()
         
     def server_data(self, server:str=None) -> dict:
