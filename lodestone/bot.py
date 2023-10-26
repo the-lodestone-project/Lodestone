@@ -1,7 +1,6 @@
 from javascript import require, On, Once
 from javascript.proxy import Proxy
 from rich.console import Console
-from discord import Embed
 from tinydb import TinyDB, Query
 import requests
 import structlog
@@ -17,6 +16,7 @@ from pathlib import Path
 import subprocess
 import typing
 from typing import Callable
+from logger import logger
 
 try:
     from utils import cprop, send_webhook
@@ -25,7 +25,6 @@ except ImportError:
 
 User = Query()
 
-logger = structlog.get_logger()
 
 filestruc = "/"
 if os.name == 'nt':
@@ -274,7 +273,8 @@ class Bot:
             ls_use_return: bool = False,
             ls_discord_webhook: str = None,
             ls_use_discord_forums: bool = False,
-            ls_api_mode: bool = False
+            ls_api_mode: bool = False,
+            ls_plugin_list: [] = []
     ):
         """
         Create the bot. Parameters in camelCase are passed into mineflayer. Parameters starting with ls_ is Lodestone specific
@@ -309,11 +309,12 @@ class Bot:
         self.stop_bot_on_death = ls_stop_bot_on_death
         self.use_discord_forums = ls_use_discord_forums
         self.api_mode = ls_api_mode
-        self.plugin_list = []
+        self.plugin_list = ls_plugin_list
 
         self.console = Console()
         self.extra_data = {}
         self.loaded_plugins = {}
+        self.loaded_events = {}
 
         if not self.skip_checks:
             self.node_version, self.pip_version, self.python_version = self.__versions_check()
@@ -321,35 +322,7 @@ class Bot:
             self.node_version, self.pip_version, self.python_version = "unknown", "unknown", "unknown"
 
         if self.discord_webhook is not None:
-            embed = Embed(
-                title="Successfully Connected to Webhook!",
-                description=f"""
-                **Great news!** The bot has successfully connected to this channel's webhook.
-                From now on, it will send all the logs and valuable data right here, keeping you informed about everything happening on the server.
-                
-                **Versions: **
-                * [**Node**](https://nodejs.org/): {self.node_version}
-                * [**Pip**](https://pypi.org/project/pip/): {self.pip_version}
-                * [**Python**](https://www.python.org/): {self.python_version}
-                
-                **Links: **
-                * [**GitHub**](https://github.com/Project-Lodestone/Lodestone)
-                * [**Report Bugs**](https://github.com/Project-Lodestone/Lodestone/issues)
-                * [**Web Interface**](https://github.com/Project-Lodestone/Mineflayer.py-react)
-                """,
-                color=0x3498db
-            )
-            embed.timestamp = datetime.datetime.utcnow()
-            embed.set_footer(text='\u200b', icon_url="https://github.com/Project-Lodestone/Lodestone/blob/main/chestlogo.png?raw=true")
-            if ls_use_discord_forums:
-                today = date.today()
-                send_webhook(ls_discord_webhook, content=f"{today}", thread_name=f"{today}", username="Lodestone", avatar_url="https://github.com/Project-Lodestone/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
-            else:
-                try:
-                    send_webhook(ls_discord_webhook, content="", username="Lodestone", avatar_url="https://github.com/Project-Lodestone/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
-                except Exception as e:
-                    print(e)
-                    logger.error(f"Detected that you are using a Forums channel but 'useDiscordForums' is set to False. Please change 'useDiscordForums' to True or provide a webhook url for a text channel.")
+            pass # needs plugin
 
         self.mineflayer = require('mineflayer')
         self.pathfinder = require('mineflayer-pathfinder')
@@ -414,34 +387,6 @@ class Bot:
         if not self.disable_logs:
             if self.use_return:
                 logger.info(f"[{icon}] {message}")
-            elif self.discord_webhook and discord:
-                from discord import Embed
-                color = 0x3498db
-                if error:
-                    color = 0x992d22
-                elif info:
-                    color = 0x3498db
-                elif warning:
-                    color = 0xe67e22
-                elif chat:
-                    color = 0x2ecc71
-                embed = Embed(title="", description=f"**[{icon}] {message}**", color=color)
-                embed.timestamp = datetime.datetime.utcnow()
-                if image_url != "":
-                    embed.set_thumbnail(url=image_url)
-                try:
-                    embed.set_footer(text=f'{self.bot.username}', icon_url=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
-                except:
-                    embed.set_footer(text='\u200b', icon_url="https://github.com/Project-Lodestone/Lodestone/blob/main/chestlogo.png?raw=true")
-                if self.use_discord_forums:
-                    today = date.today()
-                    send_webhook(self.discord_webhook, content=f"{today}", thread_name=f"{today}", username="Lodestone", avatar_url="https://github.com/Project-Lodestone/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
-                else:
-                    try:
-                        send_webhook(self.discord_webhook, content=f"", username="Lodestone", avatar_url="https://github.com/Project-Lodestone/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
-                    except Exception as e:
-                        print(e)
-                        logger.error(f"Detected that you are using a Forums channel but 'useDiscordForums' is set to False. Please change 'useDiscordForums' to True or provide a webhook url for a text channel.")
             if console:
                 if error:
                     logger.error(f"[{icon}] {message}")
@@ -605,7 +550,11 @@ class Bot:
         bot.emit('custom_chat', username, message)
         """
         self.bot.emit(event, *params)
-        self.log(f"Emitting event {repr(event)} with parameters {params}", info=True, discord=False)
+        if len(params) == 1:
+            param_str = str(params[0]) 
+        else:
+            param_str = str(params).replace("('", "").replace("')", "")
+        self.log(f"Emitting event {repr(event)} with parameter(s) '{param_str}'", info=True, discord=False)
 
     def add_method(self, target_name=None):
         """

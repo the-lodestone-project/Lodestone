@@ -92,9 +92,15 @@ def cprop(cap = "camel", proxy_name = ""):
             if not name:
                 name = convert_case(func.__name__, cap)
             return getattr(self.proxy, name)
-        wrapped.__name__ = func.__name__
+        try:
+            wrapped.__name__ = func.__name__ 
+        except AttributeError:
+            pass # ignore if func is a property
         wrapped.__doc__ = func.__doc__
-        wrapped.__annotations__ = func.__annotations__
+        try:
+            wrapped.__annotations__ = func.__annotations__
+        except AttributeError:
+            pass # ignore if setting annotations fails
 
         return wrapped
     return decorator
