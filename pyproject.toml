@@ -25,6 +25,7 @@ dependencies = [
     "py-cord",
     "aiohttp",
     "python-dotenv",
+    "aiofiles",
 ]
 
 [project.urls]

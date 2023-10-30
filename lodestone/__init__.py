@@ -14,4 +14,3 @@ except ModuleNotFoundError:
     from javascript import On as Event
     from .plugins import plugins
     from .logger import logger
-    

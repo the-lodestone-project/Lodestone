@@ -718,16 +718,16 @@ class Bot:
                     path.append({'x': node['x'], 'y': node['y'] + 0.5, 'z': node['z']})
                 self.bot.viewer.drawLine('path', path, 	0x0000FF)
 
-        if not self.disable_viewer:
-            @On(self.bot.viewer, "blockClicked")
-            def on_block_clicked(_, block, face, button):
-                try:
-                    if button != 2:
-                        return
-                    p = block.position.offset(0, 1, 0)
-                    self.bot.pathfinder.goto(self.pathfinder.goals.GoalNear(p.x, p.y, p.z, 1), timeout=60)
-                except:
-                    self.log(f"Can't get to {p.x}, {p.y}, {p.z}", error=True)
+        # if not self.disable_viewer:
+            # @On(self.bot.viewer, "blockClicked")
+            # def on_block_clicked(_, block, face, button):
+            #     try:
+            #         if button != 2:
+            #             return
+            #         p = block.position.offset(0, 1, 0)
+            #         self.bot.pathfinder.goto(self.pathfinder.goals.GoalNear(p.x, p.y, p.z, 1), timeout=60)
+            #     except:
+            #         self.log(f"Can't get to {p.x}, {p.y}, {p.z}", error=True)
 
         @self.on("death")
         def death(*args):

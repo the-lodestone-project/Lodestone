@@ -15,3 +15,6 @@ venv/
 .git/
 */__pycache__/
 test-cache.txt
+lodestone/node_modules
+lodestone/test.ts
+lodestone/test_plugins.py
