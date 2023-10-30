@@ -75,8 +75,8 @@ class plugins:
             global mcData
             global Item
             Vec3  = require('vec3').Vec3
-            facingData = json.load(open('./facingData.json'))
-            interactable = json.load(open('./interactable.json'))
+            facingData = json.load(open('facingData.json'))
+            interactable = json.load(open('interactable.json'))
             schematic2schem = require('schematic2schem')
             path = require('path')
             fs = require('fs').promises

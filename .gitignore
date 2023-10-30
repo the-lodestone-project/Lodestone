@@ -9,7 +9,6 @@ lodestone/test.py
 lodestone/nmp-cache/
 lodestone_compass/.env
 *.pyc
-*.json
 venv/
 .github/
 .git/
@@ -18,3 +17,4 @@ test-cache.txt
 lodestone/node_modules
 lodestone/test.ts
 lodestone/test_plugins.py
+*Database.json
