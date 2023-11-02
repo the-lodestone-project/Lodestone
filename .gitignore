@@ -18,3 +18,4 @@ lodestone/node_modules
 lodestone/test.ts
 lodestone/test_plugins.py
 *Database.json
+lodestone/cache/
