@@ -1,0 +1,1007 @@
+{
+  "dispenser": {
+    "is3D": true,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "white_bed": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "orange_bed": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "magenta_bed": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "light_blue_bed": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "yellow_bed": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "lime_bed": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "pink_bed": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "gray_bed": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "light_gray_bed": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "cyan_bed": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "purple_bed": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "blue_bed": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "brown_bed": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "green_bed": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "red_bed": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "black_bed": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "sticky_piston": {
+    "is3D": true,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "piston": {
+    "is3D": true,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "wall_torch": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "oak_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "chest": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "furnace": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "oak_door": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "ladder": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "cobblestone_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "oak_wall_sign": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "spruce_wall_sign": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "birch_wall_sign": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "acacia_wall_sign": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "jungle_wall_sign": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "dark_oak_wall_sign": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "lever": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "iron_door": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "redstone_wall_torch": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "stone_button": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "soul_wall_torch": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "carved_pumpkin": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "jack_o_lantern": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "repeater": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "oak_trapdoor": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "spruce_trapdoor": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "birch_trapdoor": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "jungle_trapdoor": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "acacia_trapdoor": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "dark_oak_trapdoor": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "oak_fence_gate": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "brick_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "stone_brick_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "nether_brick_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "end_portal_frame": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "sandstone_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "ender_chest": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "tripwire_hook": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "spruce_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "birch_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "jungle_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "command_block": {
+    "is3D": true,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "oak_button": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "spruce_button": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "birch_button": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "jungle_button": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "acacia_button": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "dark_oak_button": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "skeleton_wall_skull": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "wither_skeleton_wall_skull": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "zombie_wall_head": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "player_wall_head": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "creeper_wall_head": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "dragon_wall_head": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "anvil": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "chipped_anvil": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "damaged_anvil": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "trapped_chest": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "comparator": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "hopper": {
+    "is3D": true,
+    "faceDirection": true,
+    "inverted": true
+  },
+  "quartz_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "dropper": {
+    "is3D": true,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "acacia_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "dark_oak_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "iron_trapdoor": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "prismarine_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "prismarine_brick_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "dark_prismarine_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "white_wall_banner": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "orange_wall_banner": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "magenta_wall_banner": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "light_blue_wall_banner": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "yellow_wall_banner": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "lime_wall_banner": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "pink_wall_banner": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "gray_wall_banner": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "light_gray_wall_banner": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "cyan_wall_banner": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "purple_wall_banner": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "blue_wall_banner": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "brown_wall_banner": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "green_wall_banner": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "red_wall_banner": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "black_wall_banner": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "red_sandstone_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "spruce_fence_gate": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "birch_fence_gate": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "jungle_fence_gate": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "acacia_fence_gate": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "dark_oak_fence_gate": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "spruce_door": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "birch_door": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "jungle_door": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "acacia_door": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "dark_oak_door": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "end_rod": {
+    "is3D": true,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "purpur_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "repeating_command_block": {
+    "is3D": true,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "chain_command_block": {
+    "is3D": true,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "observer": {
+    "is3D": true,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "shulker_box": {
+    "is3D": true,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "white_shulker_box": {
+    "is3D": true,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "orange_shulker_box": {
+    "is3D": true,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "magenta_shulker_box": {
+    "is3D": true,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "light_blue_shulker_box": {
+    "is3D": true,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "yellow_shulker_box": {
+    "is3D": true,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "lime_shulker_box": {
+    "is3D": true,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "pink_shulker_box": {
+    "is3D": true,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "gray_shulker_box": {
+    "is3D": true,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "light_gray_shulker_box": {
+    "is3D": true,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "cyan_shulker_box": {
+    "is3D": true,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "purple_shulker_box": {
+    "is3D": true,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "blue_shulker_box": {
+    "is3D": true,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "brown_shulker_box": {
+    "is3D": true,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "green_shulker_box": {
+    "is3D": true,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "red_shulker_box": {
+    "is3D": true,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "black_shulker_box": {
+    "is3D": true,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "white_glazed_terracotta": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "orange_glazed_terracotta": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "magenta_glazed_terracotta": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "light_blue_glazed_terracotta": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "yellow_glazed_terracotta": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "lime_glazed_terracotta": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "pink_glazed_terracotta": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "gray_glazed_terracotta": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "light_gray_glazed_terracotta": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "cyan_glazed_terracotta": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "purple_glazed_terracotta": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "blue_glazed_terracotta": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "brown_glazed_terracotta": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "green_glazed_terracotta": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "red_glazed_terracotta": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "black_glazed_terracotta": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "dead_tube_coral_wall_fan": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "dead_brain_coral_wall_fan": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "dead_bubble_coral_wall_fan": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "dead_fire_coral_wall_fan": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "dead_horn_coral_wall_fan": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "tube_coral_wall_fan": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "brain_coral_wall_fan": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "bubble_coral_wall_fan": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "fire_coral_wall_fan": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "horn_coral_wall_fan": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "polished_granite_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "smooth_red_sandstone_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "mossy_stone_brick_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "polished_diorite_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "mossy_cobblestone_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "end_stone_brick_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "stone_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "smooth_sandstone_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "smooth_quartz_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "granite_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "andesite_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "red_nether_brick_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "polished_andesite_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "diorite_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "loom": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "barrel": {
+    "is3D": true,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "smoker": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "blast_furnace": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "grindstone": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "lectern": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "stonecutter": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "bell": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "campfire": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "soul_campfire": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "crimson_trapdoor": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "warped_trapdoor": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "crimson_fence_gate": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "warped_fence_gate": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "crimson_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "warped_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "crimson_button": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "warped_button": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "crimson_door": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "warped_door": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "crimson_wall_sign": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "warped_wall_sign": {
+    "is3D": false,
+    "faceDirection": true,
+    "inverted": false
+  },
+  "bee_nest": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "beehive": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": false
+  },
+  "blackstone_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "polished_blackstone_brick_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "polished_blackstone_stairs": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  },
+  "polished_blackstone_button": {
+    "is3D": false,
+    "faceDirection": false,
+    "inverted": true
+  }
+}

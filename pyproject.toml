@@ -1,6 +1,6 @@
 [project]
 name = "lodestone"
-version = "0.0.22"
+version = "0.0.23"
 description = "🤖 Create Minecraft bots with a powerful, stable, and high level Python API."
 authors = [
     { name = "Silke Pilon", email = "silkepilon2009@gmail.com" },
@@ -25,6 +25,7 @@ dependencies = [
     "py-cord",
     "aiohttp",
     "python-dotenv",
+    "aiofiles",
 ]
 
 [project.urls]

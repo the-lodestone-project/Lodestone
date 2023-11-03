@@ -1,7 +1,6 @@
 from javascript import require, On, Once
 from javascript.proxy import Proxy
 from rich.console import Console
-from discord import Embed
 from tinydb import TinyDB, Query
 import requests
 import structlog
@@ -17,6 +16,7 @@ from pathlib import Path
 import subprocess
 import typing
 from typing import Callable
+from logger import logger
 
 try:
     from utils import cprop, send_webhook
@@ -25,7 +25,6 @@ except ImportError:
 
 User = Query()
 
-logger = structlog.get_logger()
 
 filestruc = "/"
 if os.name == 'nt':
@@ -263,7 +262,7 @@ class Bot:
             loadInternalPlugins: bool = True,
             physicsEnabled: bool = True,
             defaultChatPatterns: bool = True,
-
+            checkTimeoutInterval: int = 60 * 10000,
             ls_disable_logs: bool = False,
             ls_enable_chat_logging: bool = False,
             ls_skip_checks: bool = False,
@@ -274,7 +273,8 @@ class Bot:
             ls_use_return: bool = False,
             ls_discord_webhook: str = None,
             ls_use_discord_forums: bool = False,
-            ls_api_mode: bool = False
+            ls_api_mode: bool = False,
+            ls_plugin_list: [] = []
     ):
         """
         Create the bot. Parameters in camelCase are passed into mineflayer. Parameters starting with ls_ is Lodestone specific
@@ -309,11 +309,13 @@ class Bot:
         self.stop_bot_on_death = ls_stop_bot_on_death
         self.use_discord_forums = ls_use_discord_forums
         self.api_mode = ls_api_mode
-        self.plugin_list = []
+        self.plugin_list = ls_plugin_list
+        self.check_timeout_interval = checkTimeoutInterval
 
         self.console = Console()
         self.extra_data = {}
         self.loaded_plugins = {}
+        self.loaded_events = {}
 
         if not self.skip_checks:
             self.node_version, self.pip_version, self.python_version = self.__versions_check()
@@ -321,35 +323,7 @@ class Bot:
             self.node_version, self.pip_version, self.python_version = "unknown", "unknown", "unknown"
 
         if self.discord_webhook is not None:
-            embed = Embed(
-                title="Successfully Connected to Webhook!",
-                description=f"""
-                **Great news!** The bot has successfully connected to this channel's webhook.
-                From now on, it will send all the logs and valuable data right here, keeping you informed about everything happening on the server.
-                
-                **Versions: **
-                * [**Node**](https://nodejs.org/): {self.node_version}
-                * [**Pip**](https://pypi.org/project/pip/): {self.pip_version}
-                * [**Python**](https://www.python.org/): {self.python_version}
-                
-                **Links: **
-                * [**GitHub**](https://github.com/Project-Lodestone/Lodestone)
-                * [**Report Bugs**](https://github.com/Project-Lodestone/Lodestone/issues)
-                * [**Web Interface**](https://github.com/Project-Lodestone/Mineflayer.py-react)
-                """,
-                color=0x3498db
-            )
-            embed.timestamp = datetime.datetime.utcnow()
-            embed.set_footer(text='\u200b', icon_url="https://github.com/Project-Lodestone/Lodestone/blob/main/chestlogo.png?raw=true")
-            if ls_use_discord_forums:
-                today = date.today()
-                send_webhook(ls_discord_webhook, content=f"{today}", thread_name=f"{today}", username="Lodestone", avatar_url="https://github.com/Project-Lodestone/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
-            else:
-                try:
-                    send_webhook(ls_discord_webhook, content="", username="Lodestone", avatar_url="https://github.com/Project-Lodestone/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
-                except Exception as e:
-                    print(e)
-                    logger.error(f"Detected that you are using a Forums channel but 'useDiscordForums' is set to False. Please change 'useDiscordForums' to True or provide a webhook url for a text channel.")
+            pass # needs plugin
 
         self.mineflayer = require('mineflayer')
         self.pathfinder = require('mineflayer-pathfinder')
@@ -361,10 +335,10 @@ class Bot:
         self.statemachine = require("mineflayer-statemachine")
         self.python_command = self.__check_python_command()
         if not ls_skip_checks:
-            with self.console.status("[bold green]Checking for updates...\n") as status:
-                status.update("[bold green]Updating javascript libraries...\n")
+            with self.console.status("[bold]Checking for updates...\n") as status:
+                status.update("[bold]Updating javascript libraries...\n")
                 subprocess.run(f'{self.python_command} -m javascript --update', stdout=subprocess.DEVNULL, shell=True, input=b"\n")
-                status.update("[bold green]Updating pip package...\n")
+                status.update("[bold]Updating pip package...\n")
                 subprocess.run(f'{self.python_command} -m pip install -U lodestone', stdout=subprocess.DEVNULL, shell=True, input=b"\n")
         self.logged_in = False
         self.use_return = ls_use_return
@@ -414,34 +388,6 @@ class Bot:
         if not self.disable_logs:
             if self.use_return:
                 logger.info(f"[{icon}] {message}")
-            elif self.discord_webhook and discord:
-                from discord import Embed
-                color = 0x3498db
-                if error:
-                    color = 0x992d22
-                elif info:
-                    color = 0x3498db
-                elif warning:
-                    color = 0xe67e22
-                elif chat:
-                    color = 0x2ecc71
-                embed = Embed(title="", description=f"**[{icon}] {message}**", color=color)
-                embed.timestamp = datetime.datetime.utcnow()
-                if image_url != "":
-                    embed.set_thumbnail(url=image_url)
-                try:
-                    embed.set_footer(text=f'{self.bot.username}', icon_url=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
-                except:
-                    embed.set_footer(text='\u200b', icon_url="https://github.com/Project-Lodestone/Lodestone/blob/main/chestlogo.png?raw=true")
-                if self.use_discord_forums:
-                    today = date.today()
-                    send_webhook(self.discord_webhook, content=f"{today}", thread_name=f"{today}", username="Lodestone", avatar_url="https://github.com/Project-Lodestone/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
-                else:
-                    try:
-                        send_webhook(self.discord_webhook, content=f"", username="Lodestone", avatar_url="https://github.com/Project-Lodestone/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
-                    except Exception as e:
-                        print(e)
-                        logger.error(f"Detected that you are using a Forums channel but 'useDiscordForums' is set to False. Please change 'useDiscordForums' to True or provide a webhook url for a text channel.")
             if console:
                 if error:
                     logger.error(f"[{icon}] {message}")
@@ -461,40 +407,62 @@ class Bot:
             os.path.isfile(os.path.join(base, n))]
         
     def __wait_for_msa(self, timeout = 300): # 5 minutes
-        if os.name == 'nt':
-            base_path = os.getenv('APPDATA')
-        else:
-            base_path = Path().home()
-        path = self.local_profiles_folder
-        if not path:
-            path = Path(f"{base_path}/.minecraft/nmp-cache/")
-        msa_file = path / self.__find_files(path, '*_mca-cache.json')[0]
-        for _ in range(timeout):
-            time.sleep(1)
-            with open(msa_file) as check:
-                if check.read() != "{}":
-                    logger.info("Logged in successfully!")
-                    return
-        raise TimeoutError(
-            f"Fetching for MSA code timed out. Timeout={timeout} seconds"
-        )
+        # if os.name == 'nt':
+        #     base_path = os.getenv('APPDATA')
+        # else:
+        #     base_path = Path().home()
+        # path = self.local_profiles_folder
+        # if not path:
+        #     path = Path(f"{base_path}/.minecraft/nmp-cache/")
+        # if not str(path).endswith("/"):
+        #     path = str(path) + "/"
+        # msa_file = f"{path}{self.__find_files(path, '*_mca-cache.json')[0]}"
+        # if os.path.exists(f"{path}username.txt") == True:
+        #     last = open(f"{path}username.txt", "r")
+        #     if self.local_username != last.read():
+        #         logger.warning(f"You are already logged into {last.read()}!\nThis account will be overridden!")
+        #         with open(f"{path}{self.__find_files(path, '*_mca-cache.json')[0]}", "w") as one:
+        #             one.write("{}")
+        #         with open(f"{path}{self.__find_files(path, '*_live-cache.json')[0]}", "w") as two:
+        #             two.write("{}")
+        #         with open(f"{path}{self.__find_files(path, '*_xbl-cache.json')[0]}", "w") as three:
+        #             three.write("{}")
+        #     time.sleep(2)
+        # for _ in range(timeout):
+        #     time.sleep(1)
+        #     with open(msa_file, "r") as check:
+        #         if check.read() != "{}":
+        @self.on('login')
+        def await_login(*args):
+            logger.info("Logged in successfully!")
+            return
+                    # with open(f"{path}username.txt", "w") as last:
+                    #     last.write(self.local_username)
+                    #     last.close()
+                    # return
+                        
+            
+        # raise TimeoutError(
+        #     f"Fetching for MSA code timed out. Timeout={timeout} seconds"
+        # )
+      
 
     def __msa(self, *msa):
-        with self.console.status("[bold green]Waiting for login...\n"):
+        with self.console.status("[bold]Waiting for login...\n") as login_status:
             self.msa_data = msa[0]
             self.msa_status = True
             self.log(message="It seems you are not logged in! Open your terminal for more information.", error=True,
                      console=False)
-            logger.error(f"It seems you are not logged in, please go to https://microsoft.com/link and enter the following code: {self.msa_data['user_code']}")
+            msg = str(self.msa_data['message']).replace("\n", "")
+            logger.error(f"It seems you are not logged in, {msg}")
             self.__wait_for_msa()
             if self.api_mode:
                 self.bot.end()
                 quit()
             self.msa_status = False
-            # logger.info(f"{msa[0]['user_code']} MSA Code")
 
     def __versions_check(self):
-        with self.console.status("[bold green]Checking versions...\n"):
+        with self.console.status("[bold]Checking versions...\n"):
             # Node
             result = subprocess.run(["node", "--version"], 
                                     stdout=subprocess.PIPE,
@@ -540,7 +508,7 @@ class Bot:
             'auth': self.local_auth,
             'version': self.local_version,
             'onMsaCode': self.__msa,
-            'checkTimeoutInterval': 60 * 10000,
+            'checkTimeoutInterval': self.check_timeout_interval,
             'disableChatSigning': self.local_disable_chat_signing,
             'profilesFolder': self.local_profiles_folder,
             'logErrors': self.local_log_errors,
@@ -605,7 +573,11 @@ class Bot:
         bot.emit('custom_chat', username, message)
         """
         self.bot.emit(event, *params)
-        self.log(f"Emitting event {repr(event)} with parameters {params}", info=True, discord=False)
+        if len(params) == 1:
+            param_str = str(params[0]) 
+        else:
+            param_str = str(params).replace("('", "").replace("')", "")
+        self.log(f"Emitting event {repr(event)}", info=True, discord=False)
 
     def add_method(self, target_name=None):
         """
@@ -769,16 +741,16 @@ class Bot:
                     path.append({'x': node['x'], 'y': node['y'] + 0.5, 'z': node['z']})
                 self.bot.viewer.drawLine('path', path, 	0x0000FF)
 
-        if not self.disable_viewer:
-            @On(self.bot.viewer, "blockClicked")
-            def on_block_clicked(_, block, face, button):
-                try:
-                    if button != 2:
-                        return
-                    p = block.position.offset(0, 1, 0)
-                    self.bot.pathfinder.goto(self.pathfinder.goals.GoalNear(p.x, p.y, p.z, 1), timeout=60)
-                except:
-                    self.log(f"Can't get to {p.x}, {p.y}, {p.z}", error=True)
+        # if not self.disable_viewer:
+            # @On(self.bot.viewer, "blockClicked")
+            # def on_block_clicked(_, block, face, button):
+            #     try:
+            #         if button != 2:
+            #             return
+            #         p = block.position.offset(0, 1, 0)
+            #         self.bot.pathfinder.goto(self.pathfinder.goals.GoalNear(p.x, p.y, p.z, 1), timeout=60)
+            #     except:
+            #         self.log(f"Can't get to {p.x}, {p.y}, {p.z}", error=True)
 
         @self.on("death")
         def death(*args):
