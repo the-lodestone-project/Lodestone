@@ -16,7 +16,7 @@ from pathlib import Path
 import subprocess
 import typing
 from typing import Callable
-from logger import logger
+from lodestone.logger import logger
 
 try:
     from utils import cprop, send_webhook
