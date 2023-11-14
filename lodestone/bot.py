@@ -845,7 +845,8 @@ class Bot:
         """
     
         self.bot.end()
-        self.bot.viewer.close()
+        if not self.disable_viewer:
+            self.bot.viewer.close()
         self.log("Ended bot!", warning=True)
         return
         
