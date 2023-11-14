@@ -3,21 +3,15 @@ from javascript.proxy import Proxy
 from rich.console import Console
 from tinydb import TinyDB, Query
 import requests
-import structlog
-
-import datetime
 import os
 import sys
 import time
 import fnmatch
 import re
-from datetime import date
-from pathlib import Path
 import subprocess
-import typing
 from typing import Callable
 from lodestone.logger import logger
-
+from importlib.metadata import version as version_checker
 try:
     from utils import cprop, send_webhook
 except ImportError:
@@ -311,6 +305,8 @@ class Bot:
         self.api_mode = ls_api_mode
         self.plugin_list = ls_plugin_list
         self.check_timeout_interval = checkTimeoutInterval
+        
+        self.custom_commands = []
 
         self.console = Console()
         self.extra_data = {}
@@ -330,9 +326,6 @@ class Bot:
         self.goals = require('mineflayer-pathfinder').goals
         if not self.disable_viewer:
             self.mineflayer_viewer = require('prismarine-viewer').mineflayer
-        self.armor_manager = require("mineflayer-armor-manager")
-        self.auto_eat = require('mineflayer-auto-eat').plugin
-        self.statemachine = require("mineflayer-statemachine")
         self.python_command = self.__check_python_command()
         if not ls_skip_checks:
             with self.console.status("[bold]Checking for updates...\n") as status:
@@ -537,10 +530,10 @@ class Bot:
     def __start(self):
         while not self.logged_in:
             time.sleep(1)
-        self.__equip_armor()
         self.log(
             f'Coordinates: {int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}',
             info=True)
+        self.register_command("@!version", return_str=f"{version_checker('lodestone')}")
 
     def on(self, event: str):
         """
@@ -723,8 +716,6 @@ class Bot:
     def __load_plugins(self):
         self.mc_data = require('minecraft-data')(self.bot.version)
         self.bot.loadPlugin(self.pathfinder.pathfinder)
-        self.bot.loadPlugin(self.armor_manager)
-        self.bot.loadPlugin(self.auto_eat)
         self.movements = self.pathfinder.Movements(self.bot, self.mc_data)
         self.movements.canDig = False
 
@@ -741,17 +732,6 @@ class Bot:
                     path.append({'x': node['x'], 'y': node['y'] + 0.5, 'z': node['z']})
                 self.bot.viewer.drawLine('path', path, 	0x0000FF)
 
-        # if not self.disable_viewer:
-            # @On(self.bot.viewer, "blockClicked")
-            # def on_block_clicked(_, block, face, button):
-            #     try:
-            #         if button != 2:
-            #             return
-            #         p = block.position.offset(0, 1, 0)
-            #         self.bot.pathfinder.goto(self.pathfinder.goals.GoalNear(p.x, p.y, p.z, 1), timeout=60)
-            #     except:
-            #         self.log(f"Can't get to {p.x}, {p.y}, {p.z}", error=True)
-
         @self.on("death")
         def death(*args):
             self.log("Bot died..." + " stopping bot!" * int(self.stop_bot_on_death), warning=True)
@@ -766,14 +746,6 @@ class Bot:
             if self.stop_bot_on_death:
                 self.bot.end()
                 quit()
-
-        @self.on("autoeat_started")
-        def autoeat_started(item, offhand, *a):
-            self.log(f"Eating {item['name']} in {'offhand' if offhand else 'hand'}", info=True)
-
-        @self.on("autoeat_finished")
-        def autoeat_finished(item, offhand):
-            self.log(f"Finished eating {item['name']} in {'offhand' if offhand else 'hand'}", info=True)
 
         @self.on("error")
         def error(_, error):
@@ -793,27 +765,25 @@ class Bot:
                     self.chat_database.update({'messages': existing_messages}, User.username == sender)
                 self.log(f"{sender}: {message}", icon="💬", chat=True)
 
-    def __equip_armor(self):
-        try:
-            self.bot.armorManager.equipAll()
-        except:
-            return
-
     def __start_viewer(self):
         try:
             self.mineflayer_viewer(self.bot, {"port": self.viewer_port})
             self.log(f"Viewer started on port {self.viewer_port}", info=True)
         except:
             self.log("There was an error while starting the viewer!", warning=True)
-    
-    def __log_players(self):
-        # print(type(self.bot.players))
-        # playerDatabase.insert_multiple(self.bot.players.valueOf())
-        pass
             
     
     def chat(self, *message):
+        """
+        Send a message in the chat
+        """
         self.bot.chat(' '.join(message))
+        
+    def whisper(self, username, *message):
+        """
+        Send a whisper to a user with a message
+        """
+        self.bot.whisper(username, ' '.join(message))
 
     def command_safe(self, arg):
         if isinstance(arg, str) and arg.count(' '):
@@ -838,11 +808,11 @@ class Bot:
                 converted_args.append(parsed)
         self.chat('/' + command, *converted_args)
 
-    def coordinates(self) -> str:
-        if self.logged_in:
-            return f"{int(self.entity.position.x)}, {int(self.entity.position.y)}, {int(self.entity.position.z)}"
 
     def chat_history(self, username: str, server="") -> list:
+        """
+        Get all the chat history from a player in the database
+        """
         if not self.enable_chat_logging:
             self.log(f"Chat logging is not enabled, set enableChatLogging=True in the bot config", warning=True)
             return []
@@ -860,6 +830,9 @@ class Bot:
             return []
         
     def clear_logs(self):
+        """
+        Clear all the chat logs from the database
+        """
         if not self.enable_chat_logging:
             self.log(f"Chat logging is not enabled, set enableChatLogging=True in the bot config", warning=True)
             return
@@ -867,11 +840,20 @@ class Bot:
         self.log("All databases are cleared!")
     
     def stop(self):
+        """
+        Stop the bot and all running code
+        """
+    
         self.bot.end()
-        self.log("Stopped bot!", warning=True)
-        quit()
+        self.bot.viewer.close()
+        self.log("Ended bot!", warning=True)
+        return
         
     def server_data(self, server:str=None) -> dict:
+        """
+        Get all the data from a server.\n
+        if no server is provided the current server will be used
+        """
         if server is None:
             server = self.local_host
         data = requests.get(f"https://api.mcstatus.io/v2/status/java/{server}").json()
@@ -890,14 +872,16 @@ class Bot:
 
     def get_data(self, item, default: object = None, compare: object = "nothing to compare to"):
         """
-        Gets custom data that is set prior. Also take in an optional compare parameter to do assertion with the obtained data.
-        Default parameter for 'default' is None
-
-        ... # some other code
+        Gets custom data that is set prior. Also take in an optional compare parameter to do assertion with the obtained data.\n
+        Default parameter for 'default' is None\n
+        \n
+        ... # some other code\n
+        `
         try:
             print(bot.get_data("custom_health", 200))
         except AssertionError:
             print("Bot not at full health!")
+        `
         """
         result = self.extra_data.get(item, default)
         if not compare == "nothing to compare to": # there's a comparison
@@ -906,5 +890,44 @@ class Bot:
                     f"Incorrect value in custom data! Queried {repr(item)}={repr(result)}, instead expected {repr(item)}={repr(compare)}"
                 )
         return result
+    
+    def register_command(self, command_name:str, sender=None, return_str:str="This is a custom command", whisper:bool=True):
+        """
+        Registers a custom command that the bot listen to. Needs an `command_name`.\n
+        If you set the `sender` parameter the bot will only respond if the senders match.\n
+        You can pass an function with the `function` parameter.\n
+        Your custom function needs to accept these parameters:
+        `sender`, `message`, `args`
+        \n
+        ... # Code example\n
+        `bot.register_command("!hello", return_str="Hello there!")`
+        """
+        command_sender = sender
+        def decorator(func):
+            self.custom_commands.append({"command_name": command_name, "sender": sender, "return_str": return_str, "whisper": whisper})
+            @self.on("chat")
+            def handler(this, sender, message, *args):
+                if command_name in message:
+                    if command_sender != None:
+                        if not sender == command_sender:
+                            return
+                    if not return_str == "This is a custom command":
+                        if whisper:
+                            self.whisper(sender, return_str)
+                        else:
+                            self.chat(return_str)
+                    else:
+                        try:
+                            func(sender, message)
+                        except TypeError:
+                            self.log(f"Function {func.__name__} needs the following parameters: sender, message", error=True)
+            return func
+        if not return_str == "This is a custom command":
+            # Used as normal function
+            decorator(None)
+        return decorator
+            
+            
+            
 
 createBot = Bot
