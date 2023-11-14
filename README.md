@@ -28,11 +28,9 @@
 
 ## About 📬
 
-> <sub>TODO: rewrite this part</sub>
-
-Welcome to the Open Delivery Bot project! This open-source initiative empowers users to deploy a self-hosted delivery bot, offering an array of advanced functionalities. Our command-line interface (CLI) or remote web GUI allows effortless control and management, ensuring a seamless experience. 🤖
-
-Open Delivery Bot shines with its dynamic features, including pathfinding and optimized elytra flight, accelerating your delivery processes for utmost efficiency. Say goodbye to manual intervention and embrace automation! 📦
+Lodestone is an incredibly powerful and flexible framework for building Minecraft bots of all kinds.
+Whether you’re new to Minecraft bot development or a seasoned pro, Lodestone provides all the tools you need to bring your bot ideas to life.
+Let’s dive into how to get up and running with Lodestone.
 
 ## Features
 
