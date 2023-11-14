@@ -1,6 +1,6 @@
 import time
 from rich.console import Console
-import bot as lodestone
+import lodestone
 
 """
 Test different Minecraft/Lodestone versions by creating a bot and checking if it connects successfully.
