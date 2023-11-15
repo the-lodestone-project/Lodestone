@@ -7,6 +7,7 @@ from rich.console import Console
 import asyncio
 import ast
 import inspect
+from numba import jit
 from javascript import require
 import time
 import os
@@ -135,7 +136,7 @@ class plugins:
                     
                 # How many actions?
                 # print(len(self.actions))
-
+            
             def update_actions(self):
                 self.actions = []
                 cursor = Vec3(0,0,0)
@@ -161,7 +162,8 @@ class plugins:
 
             def get_item_for_state(self, state_id):
                 return self.items[state_id]
-
+            
+            
             def get_facing(self, state_id, facing):
                 if not facing: 
                     return {'facing': None, 'face_direction': False, 'is3D': False}
@@ -175,7 +177,8 @@ class plugins:
                     elif facing == 'west': facing = 'east'
                     elif facing == 'east': facing = 'west'
                 return {'facing': facing, 'face_direction': data['faceDirection'], 'is3D': data['is3D']}
-
+            
+            
             def get_shape_face_centers(self, shapes, direction, half=None):
                 faces = []
                 for shape in shapes:
@@ -190,7 +193,7 @@ class plugins:
                         if center.y >= 0.5: continue
                     faces.append(center)
                 return faces
-
+            
             def get_possible_directions(self, state_id, pos):
                 faces = [True] * 6
                 properties = self.properties[state_id]
@@ -256,7 +259,8 @@ class plugins:
                     self.actions.remove(action)
                 except:
                     pass
-
+            
+            
             def get_available_actions(self):
                 filtered_actions = [action for action in self.actions if action['type'] == 'dig' or len(self.get_possible_directions(action['state'], action['pos'])) > 0]
                 return filtered_actions
@@ -405,7 +409,7 @@ class plugins:
                         except:
                             delta = Vec3(0.5, 0.5, 0.5)
                         
-                        print(delta)
+
                         
                         if sneak: 
                             self.bot.set_control_state("sneak", True)
@@ -670,13 +674,11 @@ class plugins:
                     
                     
                     
-                    
-                    # loop = asyncio.new_event_loop()
-                    # asyncio.set_event_loop(loop)
-                    # loop.run_until_complete(self.builder(build=build_file, actions=actions, status=status))
-                    # loop.close()
                     print(os.environ["REQ_TIMEOUT"])
-                    self.builder(build=build_file, actions=actions, status=status)
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                    loop.run_until_complete(self.builder(build=build_file, actions=actions, status=status))
+                    # self.builder(build=build_file, actions=actions, status=status)
                     # task = asyncio.create_task(self.builder(build=build_file, actions=actions, status=status))
                     # await task
                     # _thread = threading.Thread(target=between_callback, args=("some text"))
