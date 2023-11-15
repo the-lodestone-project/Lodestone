@@ -3,25 +3,21 @@ from javascript.proxy import Proxy
 from rich.console import Console
 from tinydb import TinyDB, Query
 import requests
-import structlog
 
-import datetime
 import os
 import sys
 import time
 import fnmatch
 import re
-from datetime import date
-from pathlib import Path
 import subprocess
-import typing
 from typing import Callable
-from logger import logger
 
 try:
     from utils import cprop, send_webhook
+    from logger import logger
 except ImportError:
     from .utils import cprop, send_webhook
+    from .logger import logger
 
 User = Query()
 
@@ -274,7 +270,7 @@ class Bot:
             ls_discord_webhook: str = None,
             ls_use_discord_forums: bool = False,
             ls_api_mode: bool = False,
-            ls_plugin_list: [] = []
+            ls_plugin_list: [] = None
     ):
         """
         Create the bot. Parameters in camelCase are passed into mineflayer. Parameters starting with ls_ is Lodestone specific
@@ -309,7 +305,7 @@ class Bot:
         self.stop_bot_on_death = ls_stop_bot_on_death
         self.use_discord_forums = ls_use_discord_forums
         self.api_mode = ls_api_mode
-        self.plugin_list = ls_plugin_list
+        self.plugin_list = ls_plugin_list if ls_plugin_list else []
         self.check_timeout_interval = checkTimeoutInterval
 
         self.console = Console()
@@ -370,6 +366,17 @@ class Bot:
         plugin_name = plugin.__name__
         initialized_plugin = plugin(self)
         self.loaded_plugins[plugin_name] = initialized_plugin
+        method_list: list[Callable] = [getattr(initialized_plugin, func) for func in dir(initialized_plugin)
+                       if callable(getattr(initialized_plugin, func)) and not func.startswith("__")]
+
+        for method in method_list:
+            if "no_auto_add" in method.__doc__: continue
+            if method.__name__.startswith("on_"):
+                event_name = method.__name__.removeprefix("on_")
+                self.on(event_name)(method)
+            else:
+                self.add_method()(method)
+
         self.emit("plugin_load", plugin_name)
     
     def __check_python_command(self):
@@ -381,10 +388,10 @@ class Bot:
                 subprocess.check_output(['python3', '--version']) 
                 return 'python3'
             except:
-                self.log(message='Python command not found, make sure python is installed!', error=True, discord=False)
+                self.log(message='Python command not found, make sure python is installed!', error=True)
                 sys.exit(1)
 
-    def log(self, message, icon="🤖", error=False, info=False, warning=False, chat=False, image_url="", console=True, discord=True):
+    def log(self, message, icon="🤖", error=False, info=False, warning=False, chat=False, console=True):
         if not self.disable_logs:
             if self.use_return:
                 logger.info(f"[{icon}] {message}")
@@ -405,47 +412,6 @@ class Bot:
         """Return list of files matching pattern in base folder."""
         return [n for n in fnmatch.filter(os.listdir(base), pattern) if
             os.path.isfile(os.path.join(base, n))]
-        
-    def __wait_for_msa(self, timeout = 300): # 5 minutes
-        # if os.name == 'nt':
-        #     base_path = os.getenv('APPDATA')
-        # else:
-        #     base_path = Path().home()
-        # path = self.local_profiles_folder
-        # if not path:
-        #     path = Path(f"{base_path}/.minecraft/nmp-cache/")
-        # if not str(path).endswith("/"):
-        #     path = str(path) + "/"
-        # msa_file = f"{path}{self.__find_files(path, '*_mca-cache.json')[0]}"
-        # if os.path.exists(f"{path}username.txt") == True:
-        #     last = open(f"{path}username.txt", "r")
-        #     if self.local_username != last.read():
-        #         logger.warning(f"You are already logged into {last.read()}!\nThis account will be overridden!")
-        #         with open(f"{path}{self.__find_files(path, '*_mca-cache.json')[0]}", "w") as one:
-        #             one.write("{}")
-        #         with open(f"{path}{self.__find_files(path, '*_live-cache.json')[0]}", "w") as two:
-        #             two.write("{}")
-        #         with open(f"{path}{self.__find_files(path, '*_xbl-cache.json')[0]}", "w") as three:
-        #             three.write("{}")
-        #     time.sleep(2)
-        # for _ in range(timeout):
-        #     time.sleep(1)
-        #     with open(msa_file, "r") as check:
-        #         if check.read() != "{}":
-        @self.on('login')
-        def await_login(*args):
-            logger.info("Logged in successfully!")
-            return
-                    # with open(f"{path}username.txt", "w") as last:
-                    #     last.write(self.local_username)
-                    #     last.close()
-                    # return
-                        
-            
-        # raise TimeoutError(
-        #     f"Fetching for MSA code timed out. Timeout={timeout} seconds"
-        # )
-      
 
     def __msa(self, *msa):
         with self.console.status("[bold]Waiting for login...\n") as login_status:
@@ -455,7 +421,6 @@ class Bot:
                      console=False)
             msg = str(self.msa_data['message']).replace("\n", "")
             logger.error(f"It seems you are not logged in, {msg}")
-            self.__wait_for_msa()
             if self.api_mode:
                 self.bot.end()
                 quit()
@@ -523,10 +488,8 @@ class Bot:
         def on_login(*args):
             self.bot = local_bot
             self.logged_in = True
-            self.log(f"Connected to {self.local_host}", info=True,
-                     image_url=f"https://eu.mc-api.net/v3/server/favicon/{self.local_host}")
-            self.log(f'Logged in as {self.bot.username}', info=True,
-                     image_url=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
+            self.log(f"Connected to {self.local_host}", info=True)
+            self.log(f'Logged in as {self.bot.username}', info=True)
             if not self.disable_viewer:
                 self.__start_viewer()
             self.__setup_events()
@@ -577,7 +540,7 @@ class Bot:
             param_str = str(params[0]) 
         else:
             param_str = str(params).replace("('", "").replace("')", "")
-        self.log(f"Emitting event {repr(event)}", info=True, discord=False)
+        self.log(f"Emitting event {repr(event)}", info=True)
 
     def add_method(self, target_name=None):
         """
@@ -594,9 +557,9 @@ class Bot:
             wrapper.__doc__ = function.__doc__
 
             if target_name:
-                setattr(self, target_name, function)
+                setattr(self.__class__, target_name, function)
             else:
-                setattr(self, function.__name__, function)
+                setattr(self.__class__, function.__name__, function)
             return wrapper
         return inner
 

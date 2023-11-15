@@ -11,73 +11,64 @@ class MovementPlugin:
     def __init__(self, bot: lodestone.Bot):
         "The injection method"
         self.bot = bot
-        self.internal_bot = bot.bot
 
-        @bot.add_method()
-        def forward(hold_time=1):
-            """
-            Holds the "W" key for hold_time seconds
-            """
-            self.bot.set_control_state("forward", True)
-            time.sleep(hold_time)
-            self.bot.set_control_state("forward", False)
+    def forward(self, hold_time=1):
+        """
+        Holds the "W" key for hold_time seconds
+        """
+        self.bot.set_control_state("forward", True)
+        time.sleep(hold_time)
+        self.bot.set_control_state("forward", False)
 
-        @bot.add_method()
-        def backward(hold_time=1):
-            """
-            Holds the "S" key for hold_time seconds
-            """
-            self.bot.set_control_state("back", True)
-            time.sleep(hold_time)
-            self.bot.set_control_state("back", False)
+    def backward(self, hold_time=1):
+        """
+        Holds the "S" key for hold_time seconds
+        """
+        self.bot.set_control_state("back", True)
+        time.sleep(hold_time)
+        self.bot.set_control_state("back", False)
 
-        @bot.add_method()
-        def left(hold_time=1):
-            """
-            Holds the "A" key for hold_time seconds
-            """
-            self.bot.set_control_state("left", True)
-            time.sleep(hold_time)
-            self.bot.set_control_state("left", False)
+    def left(self, hold_time=1):
+        """
+        Holds the "A" key for hold_time seconds
+        """
+        self.bot.set_control_state("left", True)
+        time.sleep(hold_time)
+        self.bot.set_control_state("left", False)
 
-        @bot.add_method()
-        def right(hold_time=1):
-            """
-            Holds the "D" key for hold_time seconds
-            """
-            self.bot.set_control_state("right", True)
-            time.sleep(hold_time)
-            self.bot.set_control_state("right", False)
+    def right(self, hold_time=1):
+        """
+        Holds the "D" key for hold_time seconds
+        """
+        self.bot.set_control_state("right", True)
+        time.sleep(hold_time)
+        self.bot.set_control_state("right", False)
 
-        @bot.add_method()
-        def jump():
-            """
-            Make the bot jump
-            """
-            self.bot.set_control_state("jump", True)
-            time.sleep(0.2)
-            self.bot.set_control_state("jump", False)
+    def jump(self):
+        """
+        Make the bot jump
+        """
+        self.bot.set_control_state("jump", True)
+        time.sleep(0.2)
+        self.bot.set_control_state("jump", False)
 
-        @bot.add_method()
-        def start_sneak():
-            """
-            Make the bot start sneaking
-            """
-            self.bot.set_control_state("sneak", True)
+    def start_sneak(self):
+        """
+        Make the bot start sneaking
+        """
+        self.bot.set_control_state("sneak", True)
 
-        @bot.add_method()
-        def stop_sneak():
-            """
-            Make the bot stop sneaking
-            """
-            self.bot.set_control_state("sneak", False)
+    def stop_sneak(self):
+        """
+        Make the bot stop sneaking
+        """
+        self.bot.set_control_state("sneak", False)
 
-        @bot.add_method()
-        def halt():
-            """
-            Halts all movement
-            """
-            self.bot.clear_control_states()
+    def halt(self):
+        """
+        Halts all movement
+        """
+        self.bot.clear_control_states()
 
 
 if len(sys.argv) < 3 or len(sys.argv) > 5:
