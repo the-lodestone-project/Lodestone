@@ -700,6 +700,7 @@ class Bot:
     def __load_plugins(self):
         self.mc_data = require('minecraft-data')(self.bot.version)
         self.bot.loadPlugin(self.pathfinder.pathfinder)
+        self.bot.loadPlugin(require('mineflayer-collectblock').plugin)
         self.movements = self.pathfinder.Movements(self.bot, self.mc_data)
         self.bot.pathfinder.setMovements(self.movements)
     
@@ -953,6 +954,43 @@ class Bot:
             raise TypeError(
                 f"Cannot add custom command with callback of type {returns.__class__.__name__}!"
             )
+            
+    def collect_block(self, block:str, amount:int=1, max_distance:int=64):
+        """
+        Collect a block by name.\n
+        `amount` does not consider the amount the block gives once broken.
+        \n
+        ... # Code example\n
+        `bot.collect_block("oak_log", amount=20)`
+        """
+        # Get the correct block type
+        with self.console.status(f"[bold]Collecting {block}...") as status:
+            blockType = self.bot.registry.blocksByName[block]
+            if not blockType:
+                self.log("No blocks with that name.")
+                status.stop()
+                return
+            # Try and find that block type in the world
+            def find_block():
+                try:
+                    found_block = self.bot.findBlock({ 'matching': blockType.id, 'maxDistance': max_distance})
+                    # if "ore" in block:
+                    #     found_block = self.bot.collectBlock.findFromVein(found_block)
+                    return found_block
+                except:
+                    self.log(f"No {block} found nearby.")
+            for i in range(0, amount):
+                if i == 0: i = 1
+                current_block = find_block()
+                if not current_block:
+                    self.log(f"No {block} found nearby. Try increasing the `max_distance` pram")
+                    return
+                # Collect the block if we found one
+                try:
+                    self.bot.collectBlock.collect(current_block)
+                except:
+                    self.log(f"No {block} found nearby.")
+                status.update(f"[bold]Collecting {block}... ({i}/{amount})\n")
             
 
 createBot = Bot
