@@ -16,10 +16,10 @@ import dataclasses
 
 try:
     from logger import logger
-    from utils import cprop, send_webhook
+    from utils import cprop
 except ImportError:
     from .logger import logger
-    from .utils import cprop, send_webhook
+    from .utils import cprop
 
 User = Query()
 

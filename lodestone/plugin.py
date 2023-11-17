@@ -1,7 +1,6 @@
 import lodestone
 from discord import Embed
 import datetime
-import aiohttp
 from discord import SyncWebhook
 from rich.console import Console
 import asyncio
