@@ -967,7 +967,7 @@ class Bot:
         with self.console.status(f"[bold]Collecting {block}...") as status:
             blockType = self.bot.registry.blocksByName[block]
             if not blockType:
-                self.log("No blocks with that name.")
+                self.log("No blocks with that name.", error=True)
                 status.stop()
                 return
             # Try and find that block type in the world
@@ -978,19 +978,37 @@ class Bot:
                     #     found_block = self.bot.collectBlock.findFromVein(found_block)
                     return found_block
                 except:
-                    self.log(f"No {block} found nearby.")
+                    self.log(f"No {block} found nearby.", error=True)
             for i in range(0, amount):
                 if i == 0: i = 1
                 current_block = find_block()
                 if not current_block:
-                    self.log(f"No {block} found nearby. Try increasing the `max_distance` pram")
+                    self.log(f"No {block} found nearby. Try increasing the `max_distance` pram", warning=True)
                     return
                 # Collect the block if we found one
                 try:
                     self.bot.collectBlock.collect(current_block)
                 except:
-                    self.log(f"No {block} found nearby.")
+                    self.log(f"No {block} found nearby.", error=True)
                 status.update(f"[bold]Collecting {block}... ({i}/{amount})\n")
+    
+    def goto(self, x:int, z:int, y:int=0, timeout:int=600000000):
+        """
+        Go to x, y, z\n
+        `amount` does not consider the amount the block gives once broken.
+        \n
+        ... # Code example\n
+        `bot.collect_block("oak_log", amount=20)`
+        """
+        # Get the correct block type
+        with self.console.status(f"[bold]Moving to ({x}, {y}, {z})...") as status:
+            if y == 0: 
+                self.bot.bot.pathfinder.goto(self.bot.bot.pathfinder.goals.GoalNearXZ(int(x), int(z), 1), timeout=timeout)
+            else:
+                self.bot.bot.pathfinder.goto(self.bot.bot.pathfinder.goals.GoalNear(int(x), int(y), int(z), 1), timeout=timeout)
+            while self.bot.bot.pathfinder.isMoving:
+                time.sleep(1)
+            return
             
 
 createBot = Bot

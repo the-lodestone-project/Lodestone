@@ -5,23 +5,25 @@ from queue import PriorityQueue
 class Idkwhattocallthis:
     def __init__(self, bot: lodestone.bot):
         self.bot = bot
-        self.create_tree()
-        self.create_priority_queues()
-        self.add_tasks()
-        self.start()
+        self.__create_tree()
+        self.__create_priority_queues()
+        self.__add_tasks()
+        self.__start()
+        
     
-    class TreeTask:
-        def __init__(self, action, item_or_block, bot: lodestone.bot, craft_count=1):
-            self.action = action
-            self.bot = bot
-            self.craft_count = craft_count
+    
+    
+    class create_task:
+        def __init__(self, item_or_block, amount=1, obtain=None,craft=None):
+            self.obtain = obtain
+            self.craft = craft
+            self.bot = Idkwhattocallthis.bot
+            self.amount = amount
             self.item_or_block = item_or_block
             self.dependencies = []
             self.completed = False
             
-        def add_dependency(self, task, craft_count=1):
-            task.craft_count = craft_count
-            print(task.craft_count)
+        def add_dependency(self, task):
             self.dependencies.append(task)
 
         def is_available(self):
@@ -64,23 +66,8 @@ class Idkwhattocallthis:
                     self.bot.bot.chat(f"unknown item: {self.item_or_block}")
 
             
-            if self.action == "break":
-                # Get the correct block type
-                blockType = self.bot.bot.registry.blocksByName[self.item_or_block]
-                if not blockType:
-                    self.bot.bot.chat("I don't know any blocks with that name.")
-                    return
-                self.bot.bot.chat('Collecting the nearest ' + blockType.name)
-                # Try and find that block type in the world
-                def find_block():
-                    block = self.bot.bot.findBlock({ 'matching': blockType.id, 'maxDistance': 64})
-                    return block
-                block = find_block()
-                if not block:
-                    self.bot.bot.chat("I don't see that block nearby.")
-                    return
-                # Collect the block if we found one
-                self.bot.bot.collectBlock.collect(block)
+            if self.obtain:
+                self.bot.collect_block(f"{self.item_or_block}", amount=amount, max_distance=100)
             self.completed = True
 
         # Priority queues 
@@ -99,37 +86,37 @@ class Idkwhattocallthis:
             return self.queue.empty()
 
     
-    def create_tree(self):
+    def __create_tree(self):
         # Create sample tree
 
-        self.chop_wood = self.TreeTask(action="break", item_or_block="oak_log", bot=self.bot)
+        self.wood = self.create_task(obtain=True, item_or_block="oak_log", bot=self.bot, amount=1)
 
-        self.make_planks = self.TreeTask(action="craft", item_or_block="oak_planks", bot=self.bot)
+        self.make_planks = self.create_task(action="craft", item_or_block="oak_planks", bot=self.bot)
         self.make_planks.add_dependency(self.chop_wood)
 
-        self.make_stick = self.TreeTask(action="craft", item_or_block="stick", bot=self.bot)
+        self.make_stick = self.create_task(action="craft", item_or_block="stick", bot=self.bot)
         self.make_stick.add_dependency(self.make_planks)
 
-        self.make_pickaxe = self.TreeTask(action="craft", item_or_block="wooden_pickaxe", bot=self.bot)
+        self.make_pickaxe = self.create_task(action="craft", item_or_block="wooden_pickaxe", bot=self.bot)
         self.make_pickaxe.add_dependency(self.make_planks)
         self.make_pickaxe.add_dependency(self.make_stick)
 
     
-    def create_priority_queues(self):
+    def __create_priority_queues(self):
         # Create priority queues
 
         self.urgent_tasks = PriorityQueue()
         self.normal_tasks = PriorityQueue()
 
 
-    def add_tasks(self):
+    def __add_tasks(self):
         # Add tasks 
 
         # urgent_tasks.put(10, defend_task)
         self.normal_tasks.put((5, self.make_pickaxe))
 
 
-    def process_tasks(self):
+    def __process_tasks(self):
         if self.urgent_tasks.empty():
             task = self.normal_tasks.get()
         else:
@@ -139,7 +126,7 @@ class Idkwhattocallthis:
 
     # Gather function 
 
-    def gather(self, task: TreeTask):
+    def __gather(self, task: create_task):
         if task.is_available():
             task.complete()
             return
@@ -149,7 +136,7 @@ class Idkwhattocallthis:
         self.gather(task)
 
     # Main bot loop
-    def start(self):
+    def __start(self):
         while not self.normal_tasks.empty() or not self.urgent_tasks.empty():
-            self.process_tasks()
+            self.__process_tasks()
         print("DONE!")
