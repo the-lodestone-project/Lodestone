@@ -254,7 +254,7 @@ class CommandContext:
     full_message: Proxy
     bot: 'Bot'
 
-    def respond(self, *message, whisper = False, whisper_to: str = sender):
+    def respond(self, *message, whisper = False, whisper_to: str):
         """
         Respond to the command. Use whisper_to only if whisper is True
         """
@@ -431,11 +431,18 @@ class Bot:
                 else:
                     logger.info(f"[{icon}] {message}")
         
-    @staticmethod
-    def __find_files(base, pattern):
-        """Return list of files matching pattern in base folder."""
-        return [n for n in fnmatch.filter(os.listdir(base), pattern) if
-            os.path.isfile(os.path.join(base, n))]
+
+    def __msa(self, *msa):
+        with self.console.status("[bold]Waiting for login...\n") as login_status:
+            self.msa_data = msa[0]
+            self.msa_status = True
+            msg = str(self.msa_data['message']).replace("\n", "")
+            logger.error(f"It seems you are not logged in, {msg}")
+            self.__setup_events()
+            if self.api_mode:
+                self.bot.end()
+                quit()
+            self.msa_status = False
 
     def __versions_check(self):
         with self.console.status("[bold]Checking versions...\n"):
@@ -483,6 +490,7 @@ class Bot:
             'password': self.local_password,
             'auth': self.local_auth,
             'version': self.local_version,
+            'onMsaCode': self.__msa,
             'checkTimeoutInterval': self.check_timeout_interval,
             'disableChatSigning': self.local_disable_chat_signing,
             'profilesFolder': self.local_profiles_folder,
@@ -494,7 +502,6 @@ class Bot:
             'physicsEnabled': self.local_physics_enabled,
             'defaultChatPatterns': self.local_default_chat_patterns
         })
-        self.__setup_events()
         self.bot = local_bot
 
         return local_bot
@@ -506,7 +513,6 @@ class Bot:
         self.log(
             f'Coordinates: {int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}',
             info=True)
-        self.register_command("@!version", return_str=f"{version_checker('lodestone')}")
 
     def on(self, event: str):
         """
@@ -695,8 +701,6 @@ class Bot:
         self.mc_data = require('minecraft-data')(self.bot.version)
         self.bot.loadPlugin(self.pathfinder.pathfinder)
         self.movements = self.pathfinder.Movements(self.bot, self.mc_data)
-        self.movements.canDig = False
-
         self.bot.pathfinder.setMovements(self.movements)
     
     def __setup_events(self):
@@ -869,7 +873,7 @@ class Bot:
         self.extra_data[item] = value
         return value
 
-    def get_data(self, item, default: object = None, compare: object = type()):
+    def get_data(self, item, default: object = None, compare: object = "nothing to compare to"):
         """
         Gets custom data that is set prior. Also take in an optional compare parameter to do assertion with the obtained data.
         Default parameter for 'default' is None
@@ -883,7 +887,7 @@ class Bot:
         ```
         """
         result = self.extra_data.get(item, default)
-        if not compare == type(): # there's a comparison
+        if not compare == "nothing to compare to": # there's a comparison
             if result != compare:
                 raise AssertionError(
                     f"Incorrect value in custom data! Queried {repr(item)}={repr(result)}, instead expected {repr(item)}={repr(compare)}"
@@ -923,7 +927,7 @@ class Bot:
         if isinstance(returns, str):
             self.custom_commands[command_name] = {
                 "sender": command_sender,
-                "callback": lambda ctx: ctx.respond(returns, whisper=whisper)
+                "callback": lambda ctx: ctx.respond(returns, whisper=whisper, whisper_to=command_sender)
             }
         elif callable(returns):
             self.custom_commands[command_name] = {
