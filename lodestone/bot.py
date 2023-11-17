@@ -358,7 +358,6 @@ class Bot:
 
         self.mineflayer = require('mineflayer')
         self.pathfinder = require('mineflayer-pathfinder')
-        self.goals = require('mineflayer-pathfinder').goals
         if not self.disable_viewer:
             self.mineflayer_viewer = require('prismarine-viewer').mineflayer
         self.python_command = self.__check_python_command()
@@ -430,15 +429,21 @@ class Bot:
                     logger.info(f"[{icon}] {message}")
                 else:
                     logger.info(f"[{icon}] {message}")
-        
+    
+    def __wait_for_msa(self):
+        @self.once('login')
+        def await_login(*args):
+            logger.info("Logged in successfully!")
 
     def __msa(self, *msa):
         with self.console.status("[bold]Waiting for login...\n") as login_status:
             self.msa_data = msa[0]
             self.msa_status = True
+            self.log(message="It seems you are not logged in! Open your terminal for more information.", error=True,
+                     console=False)
             msg = str(self.msa_data['message']).replace("\n", "")
-            logger.error(f"It seems you are not logged in, {msg}")
-            self.__setup_events()
+            logger.error(f"It seems you are not logged in. {msg}")
+            self.__wait_for_msa()
             if self.api_mode:
                 self.bot.end()
                 quit()
@@ -503,11 +508,11 @@ class Bot:
             'defaultChatPatterns': self.local_default_chat_patterns
         })
         self.bot = local_bot
-
         return local_bot
 
 
     def __start(self):
+        self.__setup_events()
         while not self.logged_in:
             time.sleep(1)
         self.log(
@@ -707,7 +712,6 @@ class Bot:
     def __setup_events(self):
         @self.once("login")
         def on_login(*_):
-            logger.info("Logged in successfully!")
             self.logged_in = True
             self.log(f"Connected to {self.local_host}", info=True)
             self.log(f'Logged in as {self.bot.username}', info=True)
