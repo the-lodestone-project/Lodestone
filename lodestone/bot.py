@@ -2,6 +2,7 @@ from javascript import require, On, Once
 from javascript.proxy import Proxy
 from rich.console import Console
 from tinydb import TinyDB, Query
+
 import requests
 import os
 import sys
@@ -10,11 +11,14 @@ import fnmatch
 import re
 import subprocess
 from typing import Callable
-from lodestone.logger import logger
 from importlib.metadata import version as version_checker
+import dataclasses
+
 try:
+    from logger import logger
     from utils import cprop, send_webhook
 except ImportError:
+    from .logger import logger
     from .utils import cprop, send_webhook
 
 User = Query()
@@ -237,6 +241,28 @@ class CreativeMode:
     def clear_inventory(self) -> Callable[[], None]:
         "Clears the inventory (returns Function())"
 
+@dataclasses.dataclass
+class CommandContext:
+    """
+    Command Context for Bot Commands. Should not initialize manually
+    """
+    sender: str
+    command: str
+    full_command: str
+    arguments: list
+    time: float
+    full_message: Proxy
+    bot: 'Bot'
+
+    def respond(self, *message, whisper = False, whisper_to: str = sender):
+        """
+        Respond to the command. Use whisper_to only if whisper is True
+        """
+        if whisper:
+            self.bot.whisper(whisper_to, *message)
+        else:
+            self.bot.chat(*message)
+
 class Bot:
     def __init__(
             self,
@@ -268,7 +294,7 @@ class Bot:
             ls_discord_webhook: str = None,
             ls_use_discord_forums: bool = False,
             ls_api_mode: bool = False,
-            ls_plugin_list: [] = []
+            ls_plugin_list: [] = None
     ):
         """
         Create the bot. Parameters in camelCase are passed into mineflayer. Parameters starting with ls_ is Lodestone specific
@@ -303,10 +329,19 @@ class Bot:
         self.stop_bot_on_death = ls_stop_bot_on_death
         self.use_discord_forums = ls_use_discord_forums
         self.api_mode = ls_api_mode
-        self.plugin_list = ls_plugin_list
+        self.plugin_list = ls_plugin_list if ls_plugin_list else []
         self.check_timeout_interval = checkTimeoutInterval
-        
-        self.custom_commands = []
+
+        self.custom_command_prefix = "!"
+        self.custom_commands = {}
+        """
+        {
+            "cmd_name": {
+                "sender": sender or None,
+                "callback": Callable[[CommandContext], None]
+            }
+        }
+        """
 
         self.console = Console()
         self.extra_data = {}
@@ -349,6 +384,7 @@ class Bot:
         for plugin in self.plugin_list:
             self.load_plugin(plugin)
 
+
     # RIP def __getattr__(self, name)
     # You will be missed
 
@@ -356,9 +392,11 @@ class Bot:
         """
         Loads a singular plugin (An uninitalized class object)
 
+        ```python
         class Plugin:
             def __init__(self, bot: lodestone.Bot):
                 print("Plugin Injected")
+        ```
         """
         plugin_name = plugin.__name__
         initialized_plugin = plugin(self)
@@ -398,61 +436,6 @@ class Bot:
         """Return list of files matching pattern in base folder."""
         return [n for n in fnmatch.filter(os.listdir(base), pattern) if
             os.path.isfile(os.path.join(base, n))]
-        
-    def __wait_for_msa(self, timeout = 300): # 5 minutes
-        # if os.name == 'nt':
-        #     base_path = os.getenv('APPDATA')
-        # else:
-        #     base_path = Path().home()
-        # path = self.local_profiles_folder
-        # if not path:
-        #     path = Path(f"{base_path}/.minecraft/nmp-cache/")
-        # if not str(path).endswith("/"):
-        #     path = str(path) + "/"
-        # msa_file = f"{path}{self.__find_files(path, '*_mca-cache.json')[0]}"
-        # if os.path.exists(f"{path}username.txt") == True:
-        #     last = open(f"{path}username.txt", "r")
-        #     if self.local_username != last.read():
-        #         logger.warning(f"You are already logged into {last.read()}!\nThis account will be overridden!")
-        #         with open(f"{path}{self.__find_files(path, '*_mca-cache.json')[0]}", "w") as one:
-        #             one.write("{}")
-        #         with open(f"{path}{self.__find_files(path, '*_live-cache.json')[0]}", "w") as two:
-        #             two.write("{}")
-        #         with open(f"{path}{self.__find_files(path, '*_xbl-cache.json')[0]}", "w") as three:
-        #             three.write("{}")
-        #     time.sleep(2)
-        # for _ in range(timeout):
-        #     time.sleep(1)
-        #     with open(msa_file, "r") as check:
-        #         if check.read() != "{}":
-        @self.on('login')
-        def await_login(*args):
-            logger.info("Logged in successfully!")
-            return
-                    # with open(f"{path}username.txt", "w") as last:
-                    #     last.write(self.local_username)
-                    #     last.close()
-                    # return
-                        
-            
-        # raise TimeoutError(
-        #     f"Fetching for MSA code timed out. Timeout={timeout} seconds"
-        # )
-      
-
-    def __msa(self, *msa):
-        with self.console.status("[bold]Waiting for login...\n") as login_status:
-            self.msa_data = msa[0]
-            self.msa_status = True
-            self.log(message="It seems you are not logged in! Open your terminal for more information.", error=True,
-                     console=False)
-            msg = str(self.msa_data['message']).replace("\n", "")
-            logger.error(f"It seems you are not logged in, {msg}")
-            self.__wait_for_msa()
-            if self.api_mode:
-                self.bot.end()
-                quit()
-            self.msa_status = False
 
     def __versions_check(self):
         with self.console.status("[bold]Checking versions...\n"):
@@ -500,7 +483,6 @@ class Bot:
             'password': self.local_password,
             'auth': self.local_auth,
             'version': self.local_version,
-            'onMsaCode': self.__msa,
             'checkTimeoutInterval': self.check_timeout_interval,
             'disableChatSigning': self.local_disable_chat_signing,
             'profilesFolder': self.local_profiles_folder,
@@ -512,18 +494,9 @@ class Bot:
             'physicsEnabled': self.local_physics_enabled,
             'defaultChatPatterns': self.local_default_chat_patterns
         })
-        @On(local_bot, "login")
-        def on_login(*args):
-            self.bot = local_bot
-            self.logged_in = True
-            self.log(f"Connected to {self.local_host}", info=True,
-                     image_url=f"https://eu.mc-api.net/v3/server/favicon/{self.local_host}")
-            self.log(f'Logged in as {self.bot.username}', info=True,
-                     image_url=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
-            if not self.disable_viewer:
-                self.__start_viewer()
-            self.__setup_events()
-            self.__load_plugins()
+        self.__setup_events()
+        self.bot = local_bot
+
         return local_bot
 
 
@@ -539,9 +512,11 @@ class Bot:
         """
         Decorator for event registering
 
+        ```python
         @bot.on('messagestr')
-        def chat(this, message, *args):
+        def chat(_, message, *args):
             ...
+        ```
         """
         def inner(function):
             On(self.proxy, event)(function)
@@ -551,9 +526,11 @@ class Bot:
         """
         Decorator for event registering
 
+        ```python
         @bot.once('login')
         def login(*args):
             ...
+        ```
         """
         def inner(function):
             Once(self.proxy, event)(function)
@@ -563,22 +540,23 @@ class Bot:
         """
         Emits an event which could be listened to
 
+        ```python
         bot.emit('custom_chat', username, message)
+        ```
         """
         self.bot.emit(event, *params)
-        if len(params) == 1:
-            param_str = str(params[0]) 
-        else:
-            param_str = str(params).replace("('", "").replace("')", "")
         self.log(f"Emitting event {repr(event)}", info=True, discord=False)
 
     def add_method(self, target_name=None):
         """
-        Decorator for adding a method dynamically
+        Decorator for adding a method dynamically.
+        **IMPORTANT** You need the self argument! The self argument also points to your own plugin class, not the bot's
 
+        ```python
         @add_method()
         def lobby(self, server="main"):
-            bot.command("lobby", server)
+            self.bot.command("lobby", server)
+        ```
         """
         def inner(function):
             def wrapper(*args, **kwargs):
@@ -720,10 +698,18 @@ class Bot:
         self.movements.canDig = False
 
         self.bot.pathfinder.setMovements(self.movements)
-        self.windows = require('prismarine-windows')(self.bot.version)
-        self.Item = require('prismarine-item')(self.bot.version)
     
     def __setup_events(self):
+        @self.once("login")
+        def on_login(*_):
+            logger.info("Logged in successfully!")
+            self.logged_in = True
+            self.log(f"Connected to {self.local_host}", info=True)
+            self.log(f'Logged in as {self.bot.username}', info=True)
+            if not self.disable_viewer:
+                self.__start_viewer()
+            self.__load_plugins()
+
         @self.on("path_update")
         def path_update(_, r):
             if not self.disable_viewer:
@@ -733,18 +719,18 @@ class Bot:
                 self.bot.viewer.drawLine('path', path, 	0x0000FF)
 
         @self.on("death")
-        def death(*args):
-            self.log("Bot died..." + " stopping bot!" * int(self.stop_bot_on_death), warning=True)
+        def death(*_):
+            self.log("Bot died" + ". Stopping bot!" * int(self.stop_bot_on_death), warning=True)
             if self.stop_bot_on_death:
-                self.bot.end()
+                self.stop()
                 quit()
 
         @self.on("kick")
-        def kicked(this, reason, *a):
-            self.log("Kicked from server..." + " stopping bot!" * int(self.stop_bot_on_death) + f"\n\nReason: {reason}",
+        def kicked(_, reason, *__):
+            self.log("Kicked from server" + ". Stopping bot!" * int(self.stop_bot_on_death) + f"\n\nReason: {reason}",
                      warning=True)
             if self.stop_bot_on_death:
-                self.bot.end()
+                self.stop()
                 quit()
 
         @self.on("error")
@@ -752,7 +738,7 @@ class Bot:
             self.log(error, error=True)
 
         @self.on("chat")
-        def handleMsg(this, sender, message, *args):
+        def handleMsg(_, sender: str, message: str, *args):
             if self.enable_chat_logging:
                 if not sender:
                     sender = "unknown"
@@ -764,6 +750,16 @@ class Bot:
                     existing_messages.extend([f"{message}"])
                     self.chat_database.update({'messages': existing_messages}, User.username == sender)
                 self.log(f"{sender}: {message}", icon="💬", chat=True)
+
+            if message.startswith(self.custom_command_prefix):
+                command = message.removeprefix(self.custom_command_prefix)
+                commanded = self.custom_commands.get(command, None)
+                if commanded:
+                    if sender == commanded["sender"]:
+                        cmd, *params = command.split()
+                        commanded["callback"](CommandContext(
+                            sender, cmd, command, params, time.time(), args[1], self
+                        ))
 
     def __start_viewer(self):
         try:
@@ -852,7 +848,7 @@ class Bot:
         
     def server_data(self, server:str=None) -> dict:
         """
-        Get all the data from a server.\n
+        Get all the data from a server.
         if no server is provided the current server will be used
         """
         if server is None:
@@ -864,71 +860,95 @@ class Bot:
         """
         Sets custom data that can be later accessed. Also returns data.
 
+        ```python
         bot.set_data("hello", "world")
         ... # some time consuming task later
         print(bot.get_data("hello")) # should print "world"
+        ```
         """
         self.extra_data[item] = value
         return value
 
-    def get_data(self, item, default: object = None, compare: object = "nothing to compare to"):
+    def get_data(self, item, default: object = None, compare: object = type()):
         """
-        Gets custom data that is set prior. Also take in an optional compare parameter to do assertion with the obtained data.\n
-        Default parameter for 'default' is None\n
-        \n
-        ... # some other code\n
-        `
+        Gets custom data that is set prior. Also take in an optional compare parameter to do assertion with the obtained data.
+        Default parameter for 'default' is None
+
+        ```python
+        # other code
         try:
             print(bot.get_data("custom_health", 200))
         except AssertionError:
-            print("Bot not at full health!")
-        `
+            print("Bot is not at full health!")
+        ```
         """
         result = self.extra_data.get(item, default)
-        if not compare == "nothing to compare to": # there's a comparison
+        if not compare == type(): # there's a comparison
             if result != compare:
                 raise AssertionError(
                     f"Incorrect value in custom data! Queried {repr(item)}={repr(result)}, instead expected {repr(item)}={repr(compare)}"
                 )
         return result
-    
-    def register_command(self, command_name:str, sender=None, return_str:str="This is a custom command", whisper:bool=True):
+
+    def set_prefix(self, new_prefix="!"):
         """
-        Registers a custom command that the bot listen to. Needs an `command_name`.\n
-        If you set the `sender` parameter the bot will only respond if the senders match.\n
-        You can pass an function with the `function` parameter.\n
-        Your custom function needs to accept these parameters:
-        `sender`, `message`, `args`
-        \n
-        ... # Code example\n
-        `bot.register_command("!hello", return_str="Hello there!")`
+        Sets the bot's command prefix. This should not be empty as it will speed up responding to chat
+        """
+        self.custom_command_prefix = new_prefix
+
+    def register_command(self, command_name: str, sender = None, returns: str | Callable[[CommandContext], None] = None, whisper: bool = True):
+        """
+        Registers a custom command that the bot listen to. You can only register one callback to a command. Subsequent registers will overwrite the previous ones
+        If you set the `sender` parameter the bot will only respond if the senders match.
+        You can pass an function with the `returns` parameter. DO NOT CALL.
+        Your custom function needs to accept a context argument of type CommandContext.
+
+        Alternatively, you can use this as a decorator too!
+
+        ```python
+        ... # previous code
+        bot.register_command("hello", returns="Hello there!")
+        ```
+
+        ```python
+        ... # previous code
+        @bot.register_command("time")
+        def get_time(ctx):
+            current_time = datatime.datetime.now()
+            ctx.respond(f"It is now {current_time}", whisper=True)
+        ```
+
         """
         command_sender = sender
-        def decorator(func):
-            self.custom_commands.append({"command_name": command_name, "sender": sender, "return_str": return_str, "whisper": whisper})
-            @self.on("chat")
-            def handler(this, sender, message, *args):
-                if command_name in message:
-                    if command_sender != None:
-                        if not sender == command_sender:
-                            return
-                    if not return_str == "This is a custom command":
-                        if whisper:
-                            self.whisper(sender, return_str)
-                        else:
-                            self.chat(return_str)
-                    else:
-                        try:
-                            func(sender, message)
-                        except TypeError:
-                            self.log(f"Function {func.__name__} needs the following parameters: sender, message", error=True)
-            return func
-        if not return_str == "This is a custom command":
-            # Used as normal function
-            decorator(None)
-        return decorator
-            
-            
+        if isinstance(returns, str):
+            self.custom_commands[command_name] = {
+                "sender": command_sender,
+                "callback": lambda ctx: ctx.respond(returns, whisper=whisper)
+            }
+        elif callable(returns):
+            self.custom_commands[command_name] = {
+                "sender": command_sender,
+                "callback": returns
+            }
+        elif returns is None:
+            def inner(func):
+                def wrapper(ctx):
+                    func(ctx)
+
+                wrapper.__name__ = func.__name__
+                wrapper.__doc__ = func.__doc__
+                wrapper.__dict__ = func.__dict__
+
+                self.custom_commands[command_name] = {
+                    "sender": command_sender,
+                    "callback": func
+                }
+                return wrapper
+            return inner
+        else:
+            raise TypeError(
+                f"Cannot add custom command with callback of type {returns.__class__.__name__}!"
+            )
             
 
 createBot = Bot

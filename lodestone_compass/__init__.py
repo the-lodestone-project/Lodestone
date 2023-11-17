@@ -37,17 +37,28 @@ async def ping(ctx: Context):
 async def eval_js(ctx: Context):
     await ctx.send_modal(InputCode(ctx))
 
+@compass.slash_command(help="#general is a bit cluttered with contributors!")
+async def contributors_contribute(ctx: Context):
+    await ctx.respond(embed=Embed(
+        title="Contributors Contribute",
+        description="Guys let's keep project contribution discussion in <#1160305403217858660>!"
+    ))
+
 async def eval_js_internal(ctx: Context, code: str):
     try:
         console__ = []
         class Console:
             @staticmethod
+            def to_string(thing):
+                return str(thing)
+
+            @staticmethod
             def log(*things):
-                console__.append(" ".join(things))
+                console__.append(" ".join(Console.to_string(things)))
 
             @staticmethod
             def warn(*things):
-                console__.append("\x1b[43m" + " ".join(things))
+                console__.append("\x1b[43m" + " ".join(Console.to_string(things)))
 
             @staticmethod
             def clear():
@@ -56,15 +67,15 @@ async def eval_js_internal(ctx: Context, code: str):
 
             @staticmethod
             def debug(*objects):
-                Console.log(*objects)
+                Console.log(Console.to_string(objects))
 
             @staticmethod
             def info(*things):
-                console__.append("\x1b[46m" + " ".join(things))
+                console__.append("\x1b[46m" + " ".join(Console.to_string(things)))
 
             @staticmethod
             def error(*things):
-                console__.append("\x1b[41m" + " ".join(things))
+                console__.append("\x1b[41m" + " ".join(Console.to_string(things)))
 
         console = Console
 
@@ -83,11 +94,11 @@ async def eval_js_internal(ctx: Context, code: str):
     embed = Embed(
         title="**Evaluating Javascript!**",
         description=f"""
-        Evaluating:
-        ```javascript
+Evaluating:
+```javascript
 {code}
-        ```
-        """)
+```
+""")
     if error == "no errors":
         embed.add_field(name="result", value="```ansi\n" + (str(result) if result else " ") + "\n```", inline=False)
         embed.add_field(name="return type", value=type(result), inline=False)

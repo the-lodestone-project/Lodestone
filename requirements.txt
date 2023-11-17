@@ -11,3 +11,6 @@ requests
 py-cord
 aiohttp
 python-dotenv
+colorama
+aiofiles
+websockets
