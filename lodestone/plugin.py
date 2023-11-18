@@ -6,7 +6,6 @@ from rich.console import Console
 import asyncio
 import ast
 import inspect
-from numba import jit
 from javascript import require
 import time
 import os
@@ -19,6 +18,7 @@ import asyncio
 from rich.console import Console
 import aiofiles
 import urllib.request
+from importlib import reload
 class plugins:
     class discord:
         """
@@ -66,11 +66,10 @@ class plugins:
         """
         def __init__(self, bot: lodestone.Bot):
             "The injection method"
-            self.bot = bot
+            self.bot:lodestone.Bot = bot
             global Vec3
             global facingData
             global interactable
-            global schematic2schem
             global path
             global fs
             global Schematic
@@ -79,14 +78,13 @@ class plugins:
             Vec3  = require('vec3').Vec3
             facingData = json.load(urllib.request.urlopen("https://raw.githubusercontent.com/the-lodestone-project/Lodestone/main/lodestone/facingData.json"))
             interactable = json.load(urllib.request.urlopen("https://raw.githubusercontent.com/the-lodestone-project/Lodestone/main/lodestone/facingData.json"))
-            schematic2schem = require('schematic2schem')
             path = require('path')
             fs = require('fs').promises
             # const { builder, Build } = require('mineflayer-builder')
             Schematic = require('prismarine-schematic').Schematic
             mcData = require('minecraft-data')(bot.bot.version)
             Item = require('prismarine-item')(bot.bot.version)
-            self.console = Console()
+            self.console = Console(force_terminal=True)
             self.code = inspect.getsource(inspect.getmodule(self.__class__))
             self.tree = ast.parse(self.code)
             self.events = []
@@ -100,7 +98,7 @@ class plugins:
             plugins_loaded = list(bot.loaded_plugins.keys())
             plugins_loaded.append(self.__class__.__name__) # add the plugin to the list
             bot.emit('plugin_loaded', *plugins_loaded)
-            self.start()
+            self.bot.build_schematic:callable = self.start
         
     
         class Build:
@@ -290,166 +288,206 @@ class plugins:
                     closest = action
             return action
         
-        def builder(self, build: Build, actions, status):
-            layer = 1
-            while len(build.actions) > 0:
-                try:
-                    
-                    
-
-                    if len(actions) == 0:
-                        status.update("[bold]Ran out of actions. Getting some new ones!\n")
-                        actions = build.get_available_actions()
-                        layer += 1
-                        status.update(f"[bold]{len(actions)} available actions\n")
+        def builder(self, build: Build, actions):
+            with self.console.status("[bold]Loading schematic...") as status:
+                layer = 1
+                while len(build.actions) > 0:
+                    try:
+                        
                         
 
-                    
-                    def distance_squared(p1, p2):
-                        return (p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2 + (p1.z - p2.z) ** 2
+                        if len(actions) == 0:
+                            status.update("[bold]Ran out of actions. Getting some new ones!")
+                            actions = build.get_available_actions()
+                            layer += 1
+                            status.update(f"[bold]{len(actions)} available actions")
+                            
 
-                    # Assuming bot.entity.position is also a Vec3 object
-                    actions.sort(key=lambda a: distance_squared(Vec3(a['pos'].x + 0.5, a['pos'].y + 0.5, a['pos'].z + 0.5), self.bot.entity.position))
+                        
+                        def distance_squared(p1, p2):
+                            return (p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2 + (p1.z - p2.z) ** 2
 
-                    action = actions[0]
+                        # Assuming bot.entity.position is also a Vec3 object
+                        actions.sort(key=lambda a: distance_squared(Vec3(a['pos'].x + 0.5, a['pos'].y + 0.5, a['pos'].z + 0.5), self.bot.entity.position))
 
-                    
-                    
-                    status.update(f"[bold]Building schematic! |{len(actions)} for layer {layer}| |{len(build.actions)}| errors: {len(build.error_actions)}\n")
-                    
-                    if action["type"] == "place":
-
-                        item = build.get_item_for_state(action["state"])
-                        # try:
-                        #     print(f"Selecting {item.displayName}")
-                        # except:
-                        #     print(f"Got an error while trying to place block at {action['pos']}")
+                        action = actions[0]
+                        # if action["state"] == 11:
+                        #     try:
+                        #         actions.remove(action)
+                        #     except:
+                        #         pass
+                        #     build.remove_action(action)
+                        #     print("skipping action")
                         #     continue
                         
-                        properties = build.properties[action["state"]]
-                        half = properties["half"] if "half" in properties else properties["type"]
+                        
+                        status.update(f"[bold]Building schematic! ({len(actions)} for layer {layer}) ({len(build.actions)}) (errors: {len(build.error_actions)})")
+                        
+                        if action["type"] == "place":
 
-                        faces = build.get_possible_directions(action["state"], action["pos"])
-
-                        for face in faces:
-                            block = self.bot.bot.blockAt(action["pos"].plus(face))
-
-                        facing_data = build.get_facing(action["state"], properties["facing"])
-                        facing = facing_data["facing"]
-                        is3D = facing_data["is3D"]
-                        try:
-                            goal = self.bot.goals.GoalPlaceBlock(action["pos"], self.bot.world, {
-                                "faces": faces,
-                                "facing": facing,
-                                "facing3D": is3D,
-                                "half": half
-                            })
-                        except:
-                            try:
-                                actions.remove(action)
-                            except:
-                                pass
-                            build.remove_action(action)
-                            build.error_actions.append(action)
-                            print(f"Got an error while trying to place block at {action['pos']}")
-                            continue
-                        
-                        max_loops = 23
-                        
-                        
-                        # if not goal.isEnd(self.bot.entity.position.floored()):
-                        #     print("path 1")
-                        #     # mcbot.pathfinder.setMovements(mcbot.movements)
-                        #     while True:
-                        #         print("path 2")
-                        #         max_loops += 1
-                        #         if max_loops == 23:
-                        #             break
-                        #         try:
-                        
-                        self.bot.bot.pathfinder.goto(goal, timeout=1000)
-                            #         break
-                            #     except Exception as e:
-                            #         print(e)
-                            #         time.sleep(1)
-                            #         continue
-                            # if max_loops == 23:
-                            #     actions.remove(action)
-                            #     build.remove_action(action)
+                            item = build.get_item_for_state(action["state"])
+                            # try:
+                            #     print(f"Selecting {item.displayName}")
+                            # except:
                             #     print(f"Got an error while trying to place block at {action['pos']}")
                             #     continue
-                        try:
-                            self.equip_item(item.id) # equip after pathfinder
-                        except Exception as e:
-                            print(e)
-                            continue
-                        # TODO: faceAndRef = goal.get_face_and_ref(mcbot.entity.position.offset(0, 1.6, 0))
-                        
-                        faceAndRef = goal.getFaceAndRef(self.bot.bot.entity.position.floored().offset(0.5, 1.6, 0.5))
-                        if not faceAndRef:
+                            
+                            properties = build.properties[action["state"]]
+                            half = properties["half"] if "half" in properties else properties["type"]
+
+                            faces = build.get_possible_directions(action["state"], action["pos"])
+
+                            for face in faces:
+                                block = self.bot.bot.blockAt(action["pos"].plus(face))
+
+                            facing_data = build.get_facing(action["state"], properties["facing"])
+                            facing = facing_data["facing"]
+                            is3D = facing_data["is3D"]
                             try:
-                                actions.remove(action)
-                            except:
-                                pass
-                            build.remove_action(action)
-                            build.error_actions.append(action)
-                            print(f"Got an error while trying to place block at {action['pos']}")
-                            continue
+                                goal = self.bot.goals.GoalPlaceBlock(action["pos"], self.bot.world, {
+                                    "faces": faces,
+                                    "facing": facing,
+                                    "facing3D": is3D,
+                                    "half": half
+                                })
+                            except Exception as e:
                                 
-                        self.bot.bot.lookAt(faceAndRef.to, True)
-                        
-                        refBlock = self.bot.bot.blockAt(faceAndRef.ref)
-                        sneak = False
-                        if dict(interactable).get(refBlock.name) != None:
-                            sneak = True
-                        
-                        try:
-                            delta = faceAndRef.to.minus(faceAndRef.ref)
-                        except:
-                            delta = Vec3(0.5, 0.5, 0.5)
-                        
-
-                        
-                        if sneak: 
-                            self.bot.set_control_state("sneak", True)
-                        
-                        try:
-                            self.bot.bot.placeBlock(refBlock, faceAndRef.face.scaled(-1))
-                        except Exception as e:
-                            print(e)
+                                try:
+                                    actions.remove(action)
+                                except:
+                                    pass
+                                build.remove_action(action)
+                                build.error_actions.append(action)
+                                continue
+                            
+                            max_loops = 23
+                            
+                            
+                            # if not goal.isEnd(self.bot.entity.position.floored()):
+                            #     print("path 1")
+                            #     # mcbot.pathfinder.setMovements(mcbot.movements)
+                            #     while True:
+                            #         print("path 2")
+                            #         max_loops += 1
+                            #         if max_loops == 23:
+                            #             break
+                            #         try:
+                            self.bot.pathfinder.goto(goal, timeout=100000)
+                                #         break
+                                #     except Exception as e:
+                                #         
+                                #         time.sleep(1)
+                                #         continue
+                                # if max_loops == 23:
+                                #     actions.remove(action)
+                                #     build.remove_action(action)
+                                #     print(f"Got an error while trying to place block at {action['pos']}")
+                                #     continue
                             try:
-                                actions.remove(action)
+                                self.equip_item(item.id) # equip after pathfinder
+                            except Exception as e:
+                                
+                                try:
+                                    actions.remove(action)
+                                except:
+                                    pass
+                                build.remove_action(action)
+                                build.error_actions.append(action)
+                                continue
+                            # TODO: faceAndRef = goal.get_face_and_ref(mcbot.entity.position.offset(0, 1.6, 0))
+                            
+                            faceAndRef = goal.getFaceAndRef(self.bot.bot.entity.position.floored().offset(0.5, 1.6, 0.5))
+                            if not faceAndRef:
+                                try:
+                                    actions.remove(action)
+                                except:
+                                    pass
+                                build.remove_action(action)
+                                build.error_actions.append(action)
+                                continue
+                                    
+                            self.bot.bot.lookAt(faceAndRef.to, True)
+                            
+                            refBlock = self.bot.bot.blockAt(faceAndRef.ref)
+                            sneak = False
+                            if dict(interactable).get(refBlock.name) != None:
+                                sneak = True
+                            
+                            try:
+                                delta = faceAndRef.to.minus(faceAndRef.ref)
                             except:
+                                delta = Vec3(0.5, 0.5, 0.5)
+                            
+
+                            
+                            if sneak: 
+                                self.bot.set_control_state("sneak", True)
+                            
+                            try:
+                                self.bot.bot.placeBlock(refBlock, faceAndRef.face.scaled(-1))
+                            except Exception as e:
+                                
+                                try:
+                                    actions.remove(action)
+                                except:
+                                    pass
+                                build.remove_action(action)
+                                build.error_actions.append(action)
+                                continue
+
+                            if sneak: 
+                                self.bot.set_control_state("sneak", False)
+                        
+                            block = self.bot.bot.world.getBlock(action["pos"])
+                            if block.stateId != action["state"]:
                                 pass
-                            build.remove_action(action)
-                            build.error_actions.append(action)
-                            print(f"Got an error while trying to place block at {action['pos']}")
-                            continue
+                        
+                        
 
-                        if sneak: 
-                            self.bot.set_control_state("sneak", False)
-                    
-                        block = self.bot.bot.world.getBlock(action["pos"])
-                        if block.stateId != action["state"]:
+                        try:
+                            actions.remove(action)
+                        except:
                             pass
-                    
-                    
-
-                    try:
-                        actions.remove(action)
-                    except:
-                        pass
-                    build.remove_action(action)
-                except Exception as e:
-                    print(e)
-                    try:
-                        actions.remove(action)
-                    except:
-                        pass
-                    build.remove_action(action)
-                    build.error_actions.append(action)
-                    print(f"GOT A BIG ERROR {action['pos']}")
-                    continue
+                        build.remove_action(action)
+                        
+                        
+                    except Exception as e:
+                        
+                        try:
+                            actions.remove(action)
+                        except:
+                            pass
+                        build.remove_action(action)
+                        build.error_actions.append(action)
+                        continue
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
             while len(build.error_actions) > 0:
                 actions = build.error_actions
                 try:
@@ -457,10 +495,10 @@ class plugins:
                     
 
                     if len(actions) == 0:
-                        status.update("[bold]Ran out of actions. Getting some new ones!\n")
+                        status.update("[bold]Ran out of actions. Getting some new ones!")
                         actions = build.get_available_actions()
                         layer += 1
-                        status.update(f"[bold]{len(actions)} available actions\n")
+                        status.update(f"[bold]{len(actions)} available actions")
                         
 
                     
@@ -474,7 +512,7 @@ class plugins:
 
                     
                     
-                    status.update(f"[bold]Building schematic! |{len(actions)} for layer {layer}| |{len(build.actions)}|\n")
+                    status.update(f"[bold]Building schematic! |{len(actions)} for layer {layer}| |{len(build.actions)}|")
                     
                     if action["type"] == "place":
                         try:
@@ -503,7 +541,6 @@ class plugins:
                                     pass
                                 build.remove_action(action)
                                 build.error_actions.append(action)
-                                print(f"Got an error while trying to place block at {action['pos']}")
                                 continue
                             try:
                                 goal = self.bot.goals.GoalPlaceBlock(action["pos"], self.bot.world, {
@@ -512,14 +549,14 @@ class plugins:
                                     "facing3D": is3D,
                                     "half": half
                                 })
-                            except:
+                            except Exception as e:
+                                
                                 try:
                                     actions.remove(action)
                                 except:
                                     pass
                                 build.remove_action(action)
                                 build.error_actions.append(action)
-                                print(f"Got an error while trying to place block at {action['pos']}")
                                 continue
                             
                             max_loops = 23
@@ -545,11 +582,10 @@ class plugins:
                                     pass
                                 build.remove_action(action)
                                 build.error_actions.append(action)
-                                print(f"Got an error while trying to place block at {action['pos']}")
                                 continue
                                 #         break
                                 #     except Exception as e:
-                                #         print(e)
+                                #         
                                 #         time.sleep(1)
                                 #         continue
                                 # if max_loops == 23:
@@ -560,7 +596,13 @@ class plugins:
                             try:
                                 self.equip_item(item.id) # equip after pathfinder
                             except Exception as e:
-                                print(e)
+                                
+                                try:
+                                    actions.remove(action)
+                                except:
+                                    pass
+                                build.remove_action(action)
+                                build.error_actions.append(action)
                                 continue
                             # TODO: faceAndRef = goal.get_face_and_ref(mcbot.entity.position.offset(0, 1.6, 0))
                             
@@ -572,7 +614,6 @@ class plugins:
                                     pass
                                 build.remove_action(action)
                                 build.error_actions.append(action)
-                                print(f"Got an error while trying to place block at {action['pos']}")
                                 continue
                                     
                             self.bot.bot.lookAt(faceAndRef.to, True)
@@ -597,14 +638,13 @@ class plugins:
                             try:
                                 self.bot.bot.placeBlock(refBlock, faceAndRef.face.scaled(-1))
                             except Exception as e:
-                                print(e)
+                                
                                 try:
                                     actions.remove(action)
                                 except:
                                     pass
                                 build.remove_action(action)
                                 build.error_actions.append(action)
-                                print(f"Got an error while trying to place block at {action['pos']}")
                                 continue
 
                             if sneak: 
@@ -628,60 +668,52 @@ class plugins:
                     except:
                         pass
                     build.remove_action(action)
-                    time.sleep(0.1)
+                    time.sleep(1)
                 except Exception as e:
-                    print(e)
                     try:
                         actions.remove(action)
                     except:
                         pass
                     build.remove_action(action)
                     build.error_actions.append(action)
-                    print(f"GOT A BIG ERROR {action['pos']}")
                     continue
                 
         
         
         def start(self, file=""):
-            @self.bot.on('build_schematic')
-            def build_scematic(bot, file):
-                with self.console.status("[bold]Loading schematic...\n") as status:
-                        
-                    os.environ["REQ_TIMEOUT"] = f"{self.bot.check_timeout_interval}"
+            # @self.bot.on('build_schematic')
+            
+            with self.console.status("[bold]Loading schematic...") as status:
+                    
+                os.environ["REQ_TIMEOUT"] = f"{self.bot.check_timeout_interval}"
 
-                    
-                    schematic = Schematic.read(fs.readFile(path.resolve(f'{file}')), bot.version)
-                    # while not mcbot.bot.entity.onGround:
-                    #   wait(100)
+                
+                schematic = Schematic.read(fs.readFile(path.resolve(f'{file}')), self.bot.bot.version)
+                # while not mcbot.bot.entity.onGround:
+                #   wait(100)
 
-                    at = self.bot.entity.position.floored()
-                    print(f'Building at {at.x, at.y, at.z}')
-                    status.update("[bold]Generating actions...\n")
-                    build_file = self.Build(schematic, bot.world, at)
-                    status.update("[bold]Generarated actions\n")
-                    self.bot.movements.digCost = 10
+                at = self.bot.entity.position.floored()
+                print(f'Building at {at.x, at.y, at.z}')
+                status.update("[bold]Generating actions...")
+                build_file = self.Build(schematic, self.bot.world, at)
+                status.update("[bold]Generarated actions")
+                # self.bot.movements.digCost = 10
 
-                    self.bot.movements.maxDropDown = 256
-                    
+                # self.bot.movements.maxDropDown = 256
+                
 
-                    self.bot.pathfinder.searchRadius = 100
-                    self.bot.movements.scafoldingBlocks.push(self.bot.bot.registry.itemsByName.dirt.id)
-                    self.bot.movements.canPlace = False
-                    actions = build_file.get_available_actions()
-                    status.update(f"[bold]{len(actions)} available actions\n")
+                # self.bot.pathfinder.searchRadius = 100
+                # self.bot.movements.scafoldingBlocks.push(self.bot.bot.registry.itemsByName.dirt.id)
+                self.bot.movements.canDig = False
+                self.bot.movements.canOpenDoors = True
+                self.bot.pathfinder.setMovements(self.bot.movements)
+                actions = build_file.get_available_actions()
+                status.update(f"[bold]{len(actions)} available actions")
+                status.stop()
+                _thread = threading.Thread(target=self.builder, args=(build_file, actions))
+                _thread.start()
                     
                     
-                    
-                    
-                    print(os.environ["REQ_TIMEOUT"])
-                    loop = asyncio.new_event_loop()
-                    asyncio.set_event_loop(loop)
-                    loop.run_until_complete(self.builder(build=build_file, actions=actions, status=status))
-                    # self.builder(build=build_file, actions=actions, status=status)
-                    # task = asyncio.create_task(self.builder(build=build_file, actions=actions, status=status))
-                    # await task
-                    # _thread = threading.Thread(target=between_callback, args=("some text"))
-                    # _thread.start()
             
                 
 

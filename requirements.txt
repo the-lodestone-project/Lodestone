@@ -9,7 +9,6 @@ fuzzyfinder
 g4f
 requests
 py-cord
-aiohttp
 python-dotenv
 colorama
 aiofiles

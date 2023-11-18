@@ -42,8 +42,6 @@ class Idkwhattocallthis:
                     print("error")
                     exit()
                 self.bot.bot.pathfinder.goto(self.bot.pathfinder.goals.GoalNear(crafting_table.x, crafting_table.y, crafting_table.z, 1), timeout=600000000)
-                while self.bot.pathfinder.isMoving:
-                    time.sleep(1)
                 print(self.craft_count)
                 amount = int(self.craft_count)
                 item = self.bot.bot.registry.itemsByName[self.item_or_block]

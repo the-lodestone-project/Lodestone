@@ -357,7 +357,6 @@ class Bot:
             pass # needs plugin
 
         self.mineflayer = require('mineflayer')
-        self.pathfinder = require('mineflayer-pathfinder')
         if not self.disable_viewer:
             self.mineflayer_viewer = require('prismarine-viewer').mineflayer
         self.python_command = self.__check_python_command()
@@ -508,6 +507,7 @@ class Bot:
             'defaultChatPatterns': self.local_default_chat_patterns
         })
         self.bot = local_bot
+        self.__load_plugins()
         return local_bot
 
 
@@ -704,9 +704,14 @@ class Bot:
         
     def __load_plugins(self):
         self.mc_data = require('minecraft-data')(self.bot.version)
-        self.bot.loadPlugin(self.pathfinder.pathfinder)
+        self.__pathfinder = require('mineflayer-pathfinder').pathfinder
+        self.movements = require('mineflayer-pathfinder').Movements
+        self.goals = require('mineflayer-pathfinder').goals
+        
+        self.bot.loadPlugin(self.__pathfinder)
+        self.pathfinder = self.bot.pathfinder
         self.bot.loadPlugin(require('mineflayer-collectblock').plugin)
-        self.movements = self.pathfinder.Movements(self.bot, self.mc_data)
+        self.movements = self.movements(self.bot, self.mc_data)
         self.bot.pathfinder.setMovements(self.movements)
     
     def __setup_events(self):
@@ -717,7 +722,7 @@ class Bot:
             self.log(f'Logged in as {self.bot.username}', info=True)
             if not self.disable_viewer:
                 self.__start_viewer()
-            self.__load_plugins()
+            
 
         @self.on("path_update")
         def path_update(_, r):
@@ -906,66 +911,90 @@ class Bot:
         self.custom_command_prefix = new_prefix
 
     def register_command(self, command_name: str, sender = None, returns: str | Callable[[CommandContext], None] = None, whisper: bool = True):
-        """
-        Registers a custom command that the bot listen to. You can only register one callback to a command. Subsequent registers will overwrite the previous ones
-        If you set the `sender` parameter the bot will only respond if the senders match.
-        You can pass an function with the `returns` parameter. DO NOT CALL.
-        Your custom function needs to accept a context argument of type CommandContext.
+            """
+            Registers a custom command that the bot listens to.
 
-        Alternatively, you can use this as a decorator too!
+            Args:
+                command_name (str): The name of the command to register.
+                sender (Optional[str]): The sender of the command. If set, the bot will only respond if the senders match.
+                returns (Optional[Union[str, Callable[[CommandContext], None]]]): The return value or callback function for the command.
+                    - If a string is provided, the bot will respond with that string.
+                    - If a callable function is provided, the bot will execute that function.
+                whisper (bool): Indicates whether the bot should respond with a whisper. Default is True.
 
-        ```python
-        ... # previous code
-        bot.register_command("hello", returns="Hello there!")
-        ```
+            Returns:
+                None
 
-        ```python
-        ... # previous code
-        @bot.register_command("time")
-        def get_time(ctx):
-            current_time = datatime.datetime.now()
-            ctx.respond(f"It is now {current_time}", whisper=True)
-        ```
+            Examples:
+                You can register a command with a return value using the following syntax:
 
-        """
-        command_sender = sender
-        if isinstance(returns, str):
-            self.custom_commands[command_name] = {
-                "sender": command_sender,
-                "callback": lambda ctx: ctx.respond(returns, whisper=whisper, whisper_to=command_sender)
-            }
-        elif callable(returns):
-            self.custom_commands[command_name] = {
-                "sender": command_sender,
-                "callback": returns
-            }
-        elif returns is None:
-            def inner(func):
-                def wrapper(ctx):
-                    func(ctx)
+                ```python
+                bot.register_command("hello", returns="Hello there!")
+                ```
 
-                wrapper.__name__ = func.__name__
-                wrapper.__doc__ = func.__doc__
-                wrapper.__dict__ = func.__dict__
+                You can register a command with a callback function using the following syntax:
 
+                ```python
+                @bot.register_command("time")
+                def get_time(ctx):
+                    current_time = datetime.datetime.now()
+                    ctx.respond(f"It is now {current_time}", whisper=True)
+                ```
+
+                Alternatively, you can use the `register_command` method as a decorator.
+
+            Raises:
+                TypeError: If the callback parameter is of an unsupported type.
+
+            """
+            command_sender = sender
+            if isinstance(returns, str):
                 self.custom_commands[command_name] = {
                     "sender": command_sender,
-                    "callback": func
+                    "callback": lambda ctx: ctx.respond(returns, whisper=whisper, whisper_to=command_sender)
                 }
-                return wrapper
-            return inner
-        else:
-            raise TypeError(
-                f"Cannot add custom command with callback of type {returns.__class__.__name__}!"
-            )
+            elif callable(returns):
+                self.custom_commands[command_name] = {
+                    "sender": command_sender,
+                    "callback": returns
+                }
+            elif returns is None:
+                def inner(func):
+                    def wrapper(ctx):
+                        func(ctx)
+
+                    wrapper.__name__ = func.__name__
+                    wrapper.__doc__ = func.__doc__
+                    wrapper.__dict__ = func.__dict__
+
+                    self.custom_commands[command_name] = {
+                        "sender": command_sender,
+                        "callback": func
+                    }
+                    return wrapper
+                return inner
+            else:
+                raise TypeError(
+                    f"Cannot add custom command with callback of type {returns.__class__.__name__}!"
+                )
             
     def collect_block(self, block:str, amount:int=1, max_distance:int=64):
         """
-        Collect a block by name.\n
-        `amount` does not consider the amount the block gives once broken.
-        \n
-        ... # Code example\n
-        `bot.collect_block("oak_log", amount=20)`
+        Collect a block by name.
+
+        Args:
+            block (str): The name of the block to collect.
+            amount (int, optional): The number of blocks to collect. Defaults to 1.
+            max_distance (int, optional): The maximum distance to search for the block. Defaults to 64.
+
+        Returns:
+            None
+
+        Raises:
+            None
+
+        Example:
+            bot.collect_block("oak_log", amount=20)
         """
         # Get the correct block type
         with self.console.status(f"[bold]Collecting {block}...") as status:
@@ -996,23 +1025,51 @@ class Bot:
                     self.log(f"No {block} found nearby.", error=True)
                 status.update(f"[bold]Collecting {block}... ({i}/{amount})\n")
     
-    def goto(self, x:int, z:int, y:int=0, timeout:int=600000000):
+    def goto(self, x: int, z: int, y: int = 0, timeout: int = 600000000):
         """
-        Go to x, y, z\n
-        `amount` does not consider the amount the block gives once broken.
-        \n
-        ... # Code example\n
-        `bot.collect_block("oak_log", amount=20)`
+        Go to the specified coordinates (x, y, z).
+
+        Args:
+            x (int): The x-coordinate.
+            z (int): The z-coordinate.
+            y (int, optional): The y-coordinate. Defaults to 0.
+            timeout (int, optional): The timeout in milliseconds. Defaults to 600000000.
+
+        Returns:
+            None
+
+        Examples:
+            To move to the coordinates (10, 0, 20) with a timeout of 10 seconds:
+            >>> bot.goto(10, 20, timeout=10000)
         """
         # Get the correct block type
         with self.console.status(f"[bold]Moving to ({x}, {y}, {z})...") as status:
             if y == 0: 
-                self.bot.bot.pathfinder.goto(self.bot.bot.pathfinder.goals.GoalNearXZ(int(x), int(z), 1), timeout=timeout)
+                self.bot.pathfinder.goto(self.goals.GoalNearXZ(int(x), int(z), 1), timeout=timeout)
             else:
-                self.bot.bot.pathfinder.goto(self.bot.bot.pathfinder.goals.GoalNear(int(x), int(y), int(z), 1), timeout=timeout)
-            while self.bot.bot.pathfinder.isMoving:
-                time.sleep(1)
+                self.bot.pathfinder.goto(self.goals.GoalNear(int(x), int(y), int(z), 1), timeout=timeout)
             return
+        
+    def goto_entity(self, entity: str, timeout: int = 600000000):
+        """
+        Go to the specified entity.
+
+        Args:
+            entity (str): The name of the entity to go to.
+            timeout (int, optional): The timeout in milliseconds. Defaults to 600000000.
+
+        Returns:
+            None
+
+        Examples:
+            To move to the nearest chicken with a timeout of 10 seconds:
+            >>> bot.goto_entity("chicken", timeout=10000)
+        """
+        # Get the correct block type
+        with self.console.status(f"[bold]Moving to {entity}...") as status:
+            self.bot.bot.pathfinder.goto(self.bot.bot.pathfinder.goals.GoalNear(entity, 1), timeout=timeout)
+            return
+    
             
 
 createBot = Bot
