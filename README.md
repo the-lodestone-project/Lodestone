@@ -113,7 +113,7 @@ Mineflayer is a complex library that allows you to control Minecraft accounts th
 
 ## Discord
 
-https://discord.gg/z8yRexNc3U
+https://discord.gg/Fa7HZgkczz
 
 ## Credits
 
