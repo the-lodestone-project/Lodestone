@@ -433,6 +433,7 @@ class Bot:
         @self.once('login')
         def await_login(*args):
             logger.info("Logged in successfully!")
+            self.__load_plugins()
 
     def __msa(self, *msa):
         with self.console.status("[bold]Waiting for login...\n") as login_status:
@@ -487,27 +488,29 @@ class Bot:
             self.local_version = False
         else:
             self.version = str(self.local_version)
-        local_bot = self.mineflayer.createBot({
-            'host': self.local_host,
-            'port': self.local_port,
-            'username': self.local_username,
-            'password': self.local_password,
-            'auth': self.local_auth,
-            'version': self.local_version,
-            'onMsaCode': self.__msa,
-            'checkTimeoutInterval': self.check_timeout_interval,
-            'disableChatSigning': self.local_disable_chat_signing,
-            'profilesFolder': self.local_profiles_folder,
-            'logErrors': self.local_log_errors,
-            'hideErrors': self.local_hide_errors,
-            'keepAlive': self.local_keep_alive,
-            'loadInternalPlugins': self.local_load_internal_plugins,
-            'respawn': self.local_respawn,
-            'physicsEnabled': self.local_physics_enabled,
-            'defaultChatPatterns': self.local_default_chat_patterns
-        })
+        try:
+            local_bot = self.mineflayer.createBot({
+                'host': self.local_host,
+                'port': self.local_port,
+                'username': self.local_username,
+                'password': self.local_password,
+                'auth': self.local_auth,
+                'version': self.local_version,
+                'onMsaCode': self.__msa,
+                'checkTimeoutInterval': self.check_timeout_interval,
+                'disableChatSigning': self.local_disable_chat_signing,
+                'profilesFolder': self.local_profiles_folder,
+                'logErrors': self.local_log_errors,
+                'hideErrors': self.local_hide_errors,
+                'keepAlive': self.local_keep_alive,
+                'loadInternalPlugins': self.local_load_internal_plugins,
+                'respawn': self.local_respawn,
+                'physicsEnabled': self.local_physics_enabled,
+                'defaultChatPatterns': self.local_default_chat_patterns
+            })
+        except Exception as e:
+            raise Exception(f"Error while creating bot: {e}")
         self.bot = local_bot
-        self.__load_plugins()
         return local_bot
 
 
