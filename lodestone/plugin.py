@@ -1,5 +1,8 @@
 import lodestone
-from discord import Embed
+try:
+    from discord import Embed
+except:
+    pass
 import datetime
 try:
     from discord import SyncWebhook

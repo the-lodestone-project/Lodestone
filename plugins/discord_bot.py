@@ -1,6 +1,9 @@
 import lodestone
 import re
-from discord import SyncWebhook, Embed
+try:
+    from discord import SyncWebhook, Embed
+except:
+    pass
 import datetime
 from types import FunctionType
 

@@ -1,5 +1,8 @@
 from rich.console import Console
-from discord import Embed
+try:
+    from discord import Embed
+except:
+    pass
 import structlog
 import datetime
 import sys
@@ -149,7 +152,10 @@ class Server:
     def __logging(self, message, icon="💾", error=False, info=False, warning=False, chat=False, image_url="", console=True, discord=True):
         if not self.disable_logs:
             if self.discord_webhook and discord:
-                from discord import Embed
+                try:
+                    from discord import Embed
+                except:
+                    pass
                 color = 0x3498db
                 if error:
                     color = 0x992d22
