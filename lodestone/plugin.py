@@ -13,6 +13,7 @@ import os
 import math
 import threading
 import json
+import math
 from types import SimpleNamespace
 import asyncio
 from math import sqrt
@@ -610,6 +611,7 @@ class plugins:
             plugins_loaded = list(bot.loaded_plugins.keys())
             plugins_loaded.append(self.__class__.__name__) # add the plugin to the list
             bot.emit('plugin_loaded', *plugins_loaded)
+            self.building_up = False
             self.bot.build_cactus:callable = self.start
             
         def __equip_item(self, name):
@@ -645,48 +647,72 @@ class plugins:
                     
             
         def __build_up(self):
+            print(self.bot.bot.physics)
+            # self.bot.bot.physics.gravity = 0.06
+            
+            # self.bot.pathfinder.goto(self.bot.goals.GoalBlock(self.bot.entity.position))
             self.__equip_item('dirt')
+            
+            def getBlock(*args):
+                blockBelow = self.bot.bot.blockAt(self.bot.bot.entity.position.offset(0, -1, 0))
+                if blockBelow and blockBelow.name == "air":
+                    self.bot.bot.setControlState("jump", False)
+                    self.bot.bot.placeBlock(blockBelow, self.Vec3(0, 0.8, 0))
+                    self.bot.bot.removeListener("move", getBlock)
+            
+            
+            self.bot.bot.setControlState("jump", True)
+            self.bot.bot.on("move", getBlock)
+
+            
+            
             # referenceBlock = self.bot.bot.blockAt(self.bot.entity.position.offset(0, -1, 0))
-            # jumpY = math.floor(self.bot.entity.position.y) + 1.0
-            # self.bot.set_control_state('jump', True)
-            # @self.bot.once('move')
-            # def place_if_high_enough(*arg):
-            #     print("trying")
+            # jumpY = math.floor(self.bot.entity.position.y) + 1.1
+            # self.bot.bot.setControlState('jump', True)
+            # def placeIfHighEnough(*args):
             #     nonlocal tryCount
-            #     if self.bot.entity.position.y > jumpY:
+            #     if self.bot.bot.entity.position.y > jumpY:
             #         try:
             #             self.bot.bot.placeBlock(referenceBlock, self.Vec3(0, 1, 0))
-            #             self.bot.set_control_state('jump', False)
-            #             #bot.chat('Placing a block was successful')
+            #             self.bot.bot.setControlState('jump', False)
+            #             self.bot.bot.removeListener('move', placeIfHighEnough)
+            #             self.bot.chat('Placing a block was successful')
             #         except Exception as err:
             #             tryCount += 1
             #             if tryCount > 10:
-            #                 self.bot.chat(err.message)
-            #                 self.bot.set_control_state('jump', False)
-            
+            #                 print(err)
+            #                 self.bot.bot.setControlState('jump', False)
+            #                 self.bot.bot.removeListener('move', placeIfHighEnough)
+            # self.bot.bot.waitForTicks(50)
+            # self.bot.bot.on('move', placeIfHighEnough)
             # tryCount = 0
+
             
-            self.bot.set_control_state("jump", True)
-            # Wait until the bot is high enough
-            while True:
-                positionBelow = self.bot.entity.position.offset(0, -0.5, 0)
-                blockBelow = self.bot.bot.blockAt(positionBelow)
-                if blockBelow.name == "air":
-                    break
-                self.bot.bot.waitForTicks(1)
-            # Place a block
-            sourcePosition = self.bot.entity.position.offset(0, -1.5, 0)
-            sourceBlock = self.bot.bot.blockAt(sourcePosition)
-            faceVector = {"x": 0, "y": 1, "z": 0}
-            while True:
-                try:
-                    self.bot.bot.placeBlock(sourceBlock, faceVector)
-                    break
-                except:
-                    continue
-                
-            # Stop jump
-            self.bot.set_control_state("jump", False)
+
+            # placeIfHighEnough()
+
+
+                    
+            
+            # self.bot.bot.waitForTicks(50)
+            # self.allow_build = True
+            # self.__equip_item('dirt')
+            # self.bot.set_control_state('jump', True)
+            # @self.bot.on('move')
+            # def placeIfHighEnough(*args):
+            #     if self.allow_build:
+            #         print(self.bot.entity.velocity.y)
+            #         if self.bot.entity.velocity.y > -1:
+            #             referenceBlock = self.bot.bot.blockAt(self.bot.entity.position.offset(0, -1, 0))
+            #             if self.bot.bot.placeBlock(referenceBlock, self.Vec3(0, -1, 0)):
+            #                 self.bot.set_control_state('jump', False)
+            #                 self.allow_build = False
+            
+                        
+            
+            
+
+
             
             
         
@@ -775,43 +801,44 @@ class plugins:
             self.bot.bot.dig(self.bot.bot.blockAt(self.bot.entity.position.offset(0, -2, 0)), True)
             self.bot.bot.dig(self.bot.bot.blockAt(self.bot.entity.position.offset(0, -3, 0)), True)
             self.bot.bot.dig(self.bot.bot.blockAt(self.bot.entity.position.offset(0, -4, 0)), True)
-            time.sleep(1)
+            self.bot.bot.waitForTicks(50)
             self.__equip_item('sand')
+            
             self.bot.bot.placeBlock(self.bot.bot.blockAt(self.bot.entity.position.offset(0, -5, 0)), self.Vec3(0, 1, 0))
             self.__equip_item('cactus')
-            time.sleep(1)
+            self.bot.bot.waitForTicks(50)
             self.bot.bot.placeBlock(self.bot.bot.blockAt(self.bot.entity.position.offset(0, -4, 0)), self.Vec3(0, 1, 0))
         
         def __cactus(self, layers):
             with Progress(console=self.console) as progress:
-                task = progress.add_task(description="Building cactus farm...", total=9 * layers)
+                task = progress.add_task(description="Building cactus farm...", total=8 * layers)
                 for layer in range(0, layers):
                     self.__build_layer()
                     progress.update(task, advance=1)
-                    # time.sleep(2)
+                    self.bot.bot.waitForTicks(50)
                     self.__build_up()
                     progress.update(task, advance=1)
-                    # time.sleep(2)
+                    self.bot.bot.waitForTicks(50)
                     self.__build_up()
                     progress.update(task, advance=1)
-                    # time.sleep(2)
+                    self.bot.bot.waitForTicks(50)
                     self.__build_fence_dirt()
                     progress.update(task, advance=1)
-                    # time.sleep(2)
+                    self.bot.bot.waitForTicks(50)
                     self.__build_up()
                     progress.update(task, advance=1)
-                    # time.sleep(2)
+                    self.bot.bot.waitForTicks(50)
                     self.__place_dirt_layer()
                     progress.update(task, advance=1)
-                    # time.sleep(2)
+                    self.bot.bot.waitForTicks(50)
                     self.__build_up()
                     progress.update(task, advance=1)
-                    # time.sleep(2)
+                    self.bot.bot.waitForTicks(50)
                     self.__dig_layer()
                     progress.update(task, advance=1)
-                    # time.sleep(2)
+                    self.bot.bot.waitForTicks(50)
                     self.__place_last_cactus()
-                    # time.sleep(2)
+                    self.bot.bot.waitForTicks(50)
                     progress.update(task, advance=1)
             
             progress.stop_task(task)

@@ -1,4 +1,4 @@
-from javascript import require, On, Once
+from javascript import require, On, Once, off, once
 from javascript.proxy import Proxy
 from rich.console import Console
 from tinydb import TinyDB, Query
@@ -357,6 +357,7 @@ class Bot:
             pass # needs plugin
 
         self.mineflayer = require('mineflayer')
+        self.once_with_cleanup = require('mineflayer').promise_utils
         if not self.disable_viewer:
             self.mineflayer_viewer = require('prismarine-viewer').mineflayer
         self.python_command = self.__check_python_command()
@@ -433,7 +434,7 @@ class Bot:
         @self.once('login')
         def await_login(*args):
             logger.info("Logged in successfully!")
-            self.__load_plugins()
+            
 
     def __msa(self, *msa):
         with self.console.status("[bold]Waiting for login...\n") as login_status:
@@ -521,6 +522,7 @@ class Bot:
         self.log(
             f'Coordinates: {int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}',
             info=True)
+        self.__load_plugins()
 
     def on(self, event: str):
         """
@@ -535,6 +537,21 @@ class Bot:
         def inner(function):
             On(self.proxy, event)(function)
         return inner
+    
+    def off(self, event: str, function):
+        """
+        Decorator for event unregistering
+
+        ```python
+        @bot.off('messagestr')
+        def chat(_, message, *args):
+            ...
+        ```
+        """
+        print(function)
+        off(emitter=self.proxy, event=f"{event}", handler=function)
+        return
+    
 
     def once(self, event: str):
         """
@@ -1053,25 +1070,43 @@ class Bot:
                 self.bot.pathfinder.goto(self.goals.GoalNear(int(x), int(y), int(z), 1), timeout=timeout)
             return
         
-    def goto_entity(self, entity: str, timeout: int = 600000000):
-        """
-        Go to the specified entity.
-
-        Args:
-            entity (str): The name of the entity to go to.
-            timeout (int, optional): The timeout in milliseconds. Defaults to 600000000.
-
-        Returns:
-            None
-
-        Examples:
-            To move to the nearest chicken with a timeout of 10 seconds:
-            >>> bot.goto_entity("chicken", timeout=10000)
-        """
-        # Get the correct block type
-        with self.console.status(f"[bold]Moving to {entity}...") as status:
-            self.bot.bot.pathfinder.goto(self.bot.bot.pathfinder.goals.GoalNear(entity, 1), timeout=timeout)
+    def placeBlockWithOptions(self, referenceBlock, faceVector, options):
+        dest = referenceBlock.position.plus(faceVector)
+        oldBlock = self.bot.blockAt(dest)
+        self.bot._genericPlace(referenceBlock, faceVector, options)
+        newBlock = self.bot.blockAt(dest)
+        if oldBlock.type == newBlock.type:
+            @On(self.bot.world, f"blockUpdate:{dest}")
+            def block_update(oldBlock, newBlock):
+                print(newBlock)
+                print(oldBlock)
+                if not oldBlock or not newBlock or oldBlock.type != newBlock.type:
+                    return
+                else: 
+                    raise Exception(f"No block has been placed: the block is still {oldBlock.name}")
+        if not oldBlock and not newBlock:
             return
+        if oldBlock and oldBlock.type == newBlock.type:
+            raise Exception(f"No block has been placed: the block is still {oldBlock.name}")
+        else:
+            self.emit("blockPlaced", oldBlock, newBlock)
+
+    def placeBlock(self, referenceBlock, faceVector, no_checks=False):
+        if no_checks:
+            try:
+                dest = referenceBlock.position.plus(faceVector)
+                # self.bot.lookAt(referenceBlock)
+                oldBlock = self.bot.blockAt(dest)
+                self.bot._genericPlace(referenceBlock, faceVector, { "swingArm": "right" })
+                # self.bot.waitForTicks(ticks)
+                
+                newBlock = self.bot.blockAt(dest)
+                self.emit("blockPlaced", oldBlock, newBlock)
+                return True
+            except:
+                return False
+        else:
+            self.placeBlockWithOptions(referenceBlock, faceVector, { "swingArm": "right" })
     
             
 
