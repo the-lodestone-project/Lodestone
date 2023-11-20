@@ -1,7 +1,10 @@
 import lodestone
 from discord import Embed
 import datetime
-from discord import SyncWebhook
+try:
+    from discord import SyncWebhook
+except:
+    pass
 from rich.console import Console
 from rich.progress import Progress
 import asyncio

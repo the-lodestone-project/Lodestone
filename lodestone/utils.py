@@ -1,4 +1,3 @@
-import discord
 import requests
 import structlog
 from rich.console import Console
@@ -7,7 +6,10 @@ logger = structlog.get_logger()
 console = Console()
 
 def llm(input: str, data = ""):
-    import g4f
+    try:
+        import g4f
+    except:
+        pass
     _providers = [
         g4f.Provider.Bing,
         g4f.Provider.GptGo,
