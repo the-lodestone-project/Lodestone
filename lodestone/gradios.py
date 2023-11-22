@@ -1,7 +1,7 @@
 import gradio as gr
 import lodestone
 from lodestone import plugins
-
+import time
 
 global created
 created = False
@@ -50,6 +50,9 @@ def create(email, auth, host, port, version, viewer, plugin):
             elif new_plugin == "Cactus Farm Builder":
                 plugin_str += "Cactus Farm Builder, "
                 plugin_list.append(plugins.cactus)
+            elif new_plugin == "Discord Rich Presence":
+                plugin_str += "Discord Rich Presence, "
+                plugin_list.append(plugins.discordrp)
             else:
                 pass
     
@@ -147,27 +150,25 @@ def get_latest_chats():
 
 
 
+# def upload_file(files):
+#     global build_file
+#     file_paths = [file.name for file in files]
+#     build_file = file_paths
+#     print(file_paths)
+#     return file_paths
 
 
-
-
-
-
-
-
-def upload_file(files):
-    global build_file
-    file_paths = [file.name for file in files]
-    build_file = file_paths
-    print(file_paths)
-    return file_paths
-
-
-def build_schematic(files):
-    try:
-        bot.emit('build_schematic', f'{files.name}')
-    except:
-        print("not logged in!")
+def build_schematic(files, x, z):
+    if not x or not z or not files:
+        gr.Warning("not all fields are filled in!")
+        return
+    if 'bot' in locals() or 'bot' in globals():
+        bot.goto(x, z)
+        time.sleep(2)
+        bot.build_schematic(f'{files.name}')
+    else:
+        gr.Warning("You need to login first!")
+        
 
 
 with gr.Blocks(theme=gr.themes.Soft()) as ui:
@@ -180,11 +181,11 @@ with gr.Blocks(theme=gr.themes.Soft()) as ui:
                     email = gr.Textbox(placeholder="Notch", label="Username",info="Username to login with")
                     auth = gr.Dropdown(["microsoft", "offline"], value="microsoft", label="Authentication Method",info="Authentication method to login with")
                     host = gr.Textbox(placeholder="2b2t.org", label="Server Ip",info="Server ip to connect to")
-                    port = gr.Number(value=25565, label="Sever Port", info="Server port to connect to. Most servers use 25565")
+                    port = gr.Number(value=25565, label="Sever Port", info="Server port to connect to. Most servers use 25565",precision=0)
                     version = gr.Dropdown(["auto","1.20", "1.19", "1.18", "1.17", "1.16.4", "1.16", "1.15", "1.14", "1.13", "1.12", "1.11", "1.10", "1.9", "1.8"], value="auto", label="Version",info="Version to connect with. Use auto to automatically detect the version of the server")
                     with gr.Accordion("Optional Settings", open=False):
-                        viewer = gr.Number(value=5001, label="Viewer Port", info="Viewer port to display the bot's view")
-                        plugin = gr.Dropdown(["Schematic Builder", "Cactus Farm Builder"],multiselect=True, label="Plugins",info="Plugins to load on startup")
+                        viewer = gr.Number(value=5001, label="Viewer Port", info="Viewer port to display the bot's view",precision=0)
+                        plugin = gr.Dropdown(["Schematic Builder", "Cactus Farm Builder", "Discord Rich Presence"],multiselect=True, label="Plugins",info="Plugins to load on startup")
                     btn = gr.Button(value=get_bot_status,variant='primary')
                     
                     
@@ -227,13 +228,22 @@ with gr.Blocks(theme=gr.themes.Soft()) as ui:
         
     with gr.Tab("Plugins"):
         with gr.Tab("Schematic Builder"):
-            file_output = gr.File()
-            upload_button = gr.UploadButton("Click to Upload a schematic", file_count="single")
-            upload_button.upload(upload_file, upload_button, file_output)
-            build = gr.Button("Build schematic")
-            build.click(build_schematic, inputs=[file_output])
-    
+            # with gr.Row():
+            #     with gr.Column(scale=1, variant='panel'):
+            file_output = gr.File(file_types=[".schematic", ".nbt", ".schem"], label="Schematic File (.schematic .nbt .schem)",file_count="single")
+            with gr.Row(variant="panel"):
+                with gr.Column(scale=1, variant='panel'):
+                    x = gr.Number(label="X Coordinate",info="The X coord to build at", precision=0)
+                with gr.Column(scale=1, variant='panel'):
+                    z = gr.Number(label="Z Coordinate",info="The Z coord to build at", precision=0)
+            # upload_button = gr.UploadButton("Click to Upload a schematic", file_count="single")
+            # upload_button.upload(upload_file, upload_button, file_output)
+            build = gr.Button("Build schematic", variant='primary')
+            build.click(build_schematic, inputs=[file_output, x, z])
         with gr.Tab("Build Cactus Farm"):
+            gr.Markdown("")
+            
+        with gr.Tab("Discord Rich Presence"):
             gr.Markdown("")
             
     
@@ -266,5 +276,6 @@ with gr.Blocks(theme=gr.themes.Soft()) as ui:
                 all_data = gr.Textbox(value=get_all_data, label=f"All Data", every=5)
         # refresh_button.click(get_player_info, outputs=[health, food, experience])
 
-        
+if __name__ == "__main__":
+    ui.queue().launch(server_port=8000, show_api=False, share=False, quiet=True)
     
