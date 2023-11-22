@@ -6,7 +6,6 @@ import subprocess
 import time
 from rich.console import Console
 import lodestone
-from gradios import demo
 from dotenv import load_dotenv
 
 @click.command(context_settings={"ignore_unknown_options": True})
@@ -105,7 +104,7 @@ def run(console, test, host, port, args):
                 f.write(f"LODESTONE_USERNAME={username}\nLODESTONE_PASSWORD={password}")
                 print("Login details saved to .env file. You can change these at any time.")
         try:
-            demo.queue().launch(server_name=f"{host}", server_port=port, show_api=False, auth=(f'{os.environ["LODESTONE_USERNAME"]}', f'{os.environ["LODESTONE_PASSWORD"]}'), share=False, quiet=True)
+            lodestone.ui.queue().launch(server_name=f"{host}", server_port=port, show_api=False, auth=(f'{os.environ["LODESTONE_USERNAME"]}', f'{os.environ["LODESTONE_PASSWORD"]}'), share=False, quiet=True)
         except OSError:
             raise OSError(f"Port {port} is already in use!")
 

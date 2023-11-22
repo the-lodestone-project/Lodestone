@@ -6,6 +6,7 @@ try:
     from javascript import On as Event
     from lodestone.plugin import plugins
     from lodestone.logger import logger
+    from lodestone.gradios import ui
 except:
     from .bot import createBot, Bot
     from .utils import llm
@@ -14,3 +15,4 @@ except:
     from javascript import On as Event
     from .plugin import plugins
     from .logger import logger
+    from .gradios import ui
