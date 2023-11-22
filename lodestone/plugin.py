@@ -653,68 +653,23 @@ class plugins:
                     
             
         def __build_up(self):
-            print(self.bot.bot.physics)
-            # self.bot.bot.physics.gravity = 0.06
             
-            # self.bot.pathfinder.goto(self.bot.goals.GoalBlock(self.bot.entity.position))
+            old_pos = int(self.bot.entity.position.y)
             self.__equip_item('dirt')
-            
-            def getBlock(*args):
-                blockBelow = self.bot.bot.blockAt(self.bot.bot.entity.position.offset(0, -1, 0))
-                if blockBelow and blockBelow.name == "air":
+            @self.bot.on("physicsTick")
+            def run(*arg):  
+                if self.bot.get_data("tower") == 1:
+                    if int(self.bot.entity.position.y) == int(old_pos) + 1:
+                        self.bot.bot.waitForTicks(50)
+                        if int(self.bot.entity.position.y) == int(old_pos) + 1:
+                            self.bot.set_data("tower", 0)
+                    self.bot.bot.setControlState("jump", True)
+                    eferenceBlock = self.bot.bot.blockAt(self.bot.bot.entity.position.offset(0, -1, 0))
+                    placeBlockVar = self.bot.bot._genericPlace(eferenceBlock, self.Vec3(0,1,0), { "swingArm": "right" })
+                else:
                     self.bot.bot.setControlState("jump", False)
-                    self.bot.bot.placeBlock(blockBelow, self.Vec3(0, 0.8, 0))
-                    self.bot.bot.removeListener("move", getBlock)
             
-            
-            self.bot.bot.setControlState("jump", True)
-            self.bot.bot.on("move", getBlock)
-
-            
-            
-            # referenceBlock = self.bot.bot.blockAt(self.bot.entity.position.offset(0, -1, 0))
-            # jumpY = math.floor(self.bot.entity.position.y) + 1.1
-            # self.bot.bot.setControlState('jump', True)
-            # def placeIfHighEnough(*args):
-            #     nonlocal tryCount
-            #     if self.bot.bot.entity.position.y > jumpY:
-            #         try:
-            #             self.bot.bot.placeBlock(referenceBlock, self.Vec3(0, 1, 0))
-            #             self.bot.bot.setControlState('jump', False)
-            #             self.bot.bot.removeListener('move', placeIfHighEnough)
-            #             self.bot.chat('Placing a block was successful')
-            #         except Exception as err:
-            #             tryCount += 1
-            #             if tryCount > 10:
-            #                 print(err)
-            #                 self.bot.bot.setControlState('jump', False)
-            #                 self.bot.bot.removeListener('move', placeIfHighEnough)
-            # self.bot.bot.waitForTicks(50)
-            # self.bot.bot.on('move', placeIfHighEnough)
-            # tryCount = 0
-
-            
-
-            # placeIfHighEnough()
-
-
-                    
-            
-            # self.bot.bot.waitForTicks(50)
-            # self.allow_build = True
-            # self.__equip_item('dirt')
-            # self.bot.set_control_state('jump', True)
-            # @self.bot.on('move')
-            # def placeIfHighEnough(*args):
-            #     if self.allow_build:
-            #         print(self.bot.entity.velocity.y)
-            #         if self.bot.entity.velocity.y > -1:
-            #             referenceBlock = self.bot.bot.blockAt(self.bot.entity.position.offset(0, -1, 0))
-            #             if self.bot.bot.placeBlock(referenceBlock, self.Vec3(0, -1, 0)):
-            #                 self.bot.set_control_state('jump', False)
-            #                 self.allow_build = False
-            
-                        
+            self.bot.set_data("tower", 1)
             
             
 

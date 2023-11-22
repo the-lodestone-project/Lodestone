@@ -437,18 +437,19 @@ class Bot:
             
 
     def __msa(self, *msa):
-        with self.console.status("[bold]Waiting for login...\n") as login_status:
-            self.msa_data = msa[0]
-            self.msa_status = True
-            self.log(message="It seems you are not logged in! Open your terminal for more information.", error=True,
-                     console=False)
-            msg = str(self.msa_data['message']).replace("\n", "")
-            logger.error(f"It seems you are not logged in. {msg}")
-            self.__wait_for_msa()
-            if self.api_mode:
-                self.bot.end()
-                quit()
-            self.msa_status = False
+        self.msa_data = msa[0]
+        self.msa_status = True
+        self.log(message="It seems you are not logged in! Open your terminal for more information.", error=True,
+                    console=False)
+        msg = str(self.msa_data['message']).replace("\n", "")
+        logger.error(f"It seems you are not logged in. {msg}")
+        
+        
+        self.__wait_for_msa()
+        if self.api_mode:
+            self.bot.end()
+            quit()
+        self.msa_status = False
 
     def __versions_check(self):
         with self.console.status("[bold]Checking versions...\n"):
@@ -770,6 +771,9 @@ class Bot:
         @self.on("error")
         def error(_, error):
             self.log(error, error=True)
+            if error == "Authentication failed, timed out":
+                self.stop()
+                quit()
 
         @self.on("chat")
         def handleMsg(_, sender: str, message: str, *args):

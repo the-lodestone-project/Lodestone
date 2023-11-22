@@ -19,3 +19,4 @@ lodestone/test.ts
 lodestone/test_plugins.py
 *Database.json
 lodestone/cache/
+lodestone/.env
