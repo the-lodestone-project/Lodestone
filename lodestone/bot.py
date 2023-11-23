@@ -13,7 +13,7 @@ import subprocess
 from typing import Callable
 from importlib.metadata import version as version_checker
 import dataclasses
-
+import threading
 try:
     from logger import logger
     from utils import cprop
@@ -263,7 +263,16 @@ class CommandContext:
         else:
             self.bot.chat(*message)
 
-class Bot:
+
+
+def threaded(fn):
+    def wrapper(*args, **kwargs):
+        thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
+        thread.start()
+        return thread
+    return wrapper
+
+class Bot(threading.Thread):
     def __init__(
             self,
             host: str,
@@ -299,6 +308,7 @@ class Bot:
         """
         Create the bot. Parameters in camelCase are passed into mineflayer. Parameters starting with ls_ is Lodestone specific
         """
+        threading.Thread.__init__(self, daemon=True)
         if ls_debug_mode:
             os.environ["DEBUG"] = "minecraft-protocol"
         else:
@@ -484,7 +494,7 @@ class Bot:
                 pip_version = match.group(1)
                 python_version = match.group(2)
             return node_version, pip_version, python_version
-
+    
     def __create_bot(self):
         if self.local_version == "auto" or self.local_version == "false":
             self.local_version = False
