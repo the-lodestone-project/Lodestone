@@ -107,7 +107,7 @@ def run(console, test, host, port, args):
         
         if not os.path.isfile("favicon.ico"):
             img_data = requests.get("https://github.com/the-lodestone-project/Lodestone/raw/main/assets/favicon.png").content
-            with open('favicon.png.jpg', 'wb') as handler:
+            with open('favicon.png.png', 'wb') as handler:
                 handler.write(img_data)
         
         
