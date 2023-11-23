@@ -1,5 +1,5 @@
 import gradio as gr
-import bot as lodestone
+import lodestone
 from lodestone import plugins
 import time
 
