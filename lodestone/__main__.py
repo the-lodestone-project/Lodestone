@@ -7,6 +7,7 @@ import time
 from rich.console import Console
 import lodestone
 from dotenv import load_dotenv
+import requests
 
 @click.command(context_settings={"ignore_unknown_options": True})
 @click.option("--console", "-c", default=False, is_flag=True, help="Force the app to use the console")
@@ -103,8 +104,15 @@ def run(console, test, host, port, args):
             with open(".env", "w") as f:
                 f.write(f"LODESTONE_USERNAME={username}\nLODESTONE_PASSWORD={password}")
                 print("Login details saved to .env file. You can change these at any time.")
+        
+        if not os.path.isfile("favicon.ico"):
+            img_data = requests.get("https://github.com/the-lodestone-project/Lodestone/raw/main/assets/favicon.png").content
+            with open('favicon.png.jpg', 'wb') as handler:
+                handler.write(img_data)
+        
+        
         try:
-            lodestone.ui.queue().launch(server_name=f"{host}", server_port=port, show_api=False, auth=(f'{os.environ["LODESTONE_USERNAME"]}', f'{os.environ["LODESTONE_PASSWORD"]}'), share=False, quiet=True)
+            lodestone.ui.queue().launch(server_name=f"{host}", server_port=port, show_api=False, auth=(f'{os.environ["LODESTONE_USERNAME"]}', f'{os.environ["LODESTONE_PASSWORD"]}'), share=False, quiet=True, favicon_path="favicon.png")
         except OSError:
             raise OSError(f"Port {port} is already in use!")
 
