@@ -357,6 +357,14 @@ class Bot(threading.Thread):
         self.extra_data = {}
         self.loaded_plugins = {}
         self.loaded_events = {}
+        
+        
+        
+        _ = require("mineflayer")
+        _ = require("prismarine-viewer")
+        _ = require("mineflayer-collectblock")
+        _ = require("minecraft-data")
+        _ = require("mineflayer-pathfinder")
 
         if not self.skip_checks:
             self.node_version, self.pip_version, self.python_version = self.__versions_check()
