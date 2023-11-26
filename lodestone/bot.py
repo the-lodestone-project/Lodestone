@@ -369,7 +369,7 @@ class Bot(threading.Thread):
         self.mineflayer = require('mineflayer')
         self.once_with_cleanup = require('mineflayer').promise_utils
         if not self.disable_viewer:
-            self.mineflayer_viewer = require('prismarine-viewer').mineflayer
+            self.mineflayer_viewer = require('prismarine-viewer')
         self.python_command = self.__check_python_command()
         if not ls_skip_checks:
             with self.console.status("[bold]Checking for updates...\n") as status:
@@ -811,9 +811,14 @@ class Bot(threading.Thread):
 
     def __start_viewer(self):
         try:
-            self.mineflayer_viewer(self.bot, {"port": self.viewer_port})
+            self.mineflayer_viewer.mineflayer(self.bot, {"port": self.viewer_port})
+            # _ = require("node-canvas-webgl")
+            # @self.once("spawn")
+            # def ___start_viewer(*args):
+            #     self.mineflayer_viewer.headless(self.bot, { "output": f"127.0.0.1:{self.viewer_port}", "frames": 200, "width": 512, "height": 512 })
             self.log(f"Viewer started on port {self.viewer_port}", info=True)
-        except:
+        except Exception as e:
+            print(e)
             self.log("There was an error while starting the viewer!", warning=True)
             
     
@@ -1031,35 +1036,41 @@ class Bot(threading.Thread):
             bot.collect_block("oak_log", amount=20)
         """
         # Get the correct block type
-        with self.console.status(f"[bold]Collecting {block}...") as status:
-            blockType = self.bot.registry.blocksByName[block]
-            if not blockType:
-                self.log("No blocks with that name.", error=True)
-                status.stop()
-                return
-            # Try and find that block type in the world
-            def find_block():
-                try:
-                    found_block = self.bot.findBlock({ 'matching': blockType.id, 'maxDistance': max_distance})
-                    # if "ore" in block:
-                    #     found_block = self.bot.collectBlock.findFromVein(found_block)
-                    return found_block
-                except:
-                    self.log(f"No {block} found nearby.", error=True)
-            for i in range(0, amount):
-                if i == 0: i = 1
-                current_block = find_block()
-                if not current_block:
-                    self.log(f"No {block} found nearby. Try increasing the `max_distance` pram", warning=True)
+        self.collected = 0
+        def collect():
+            try:
+                self.collected = 0 
+                blockType = self.bot.registry.blocksByName[block]
+                if not blockType:
                     return
-                # Collect the block if we found one
+                blocks = self.bot.findBlocks({
+                    'matching': blockType.id,
+                    'maxDistance': 64,
+                    'count': amount
+                })
+                if len(blocks.valueOf()) == 0:
+                    self.chat("I don't see that block nearby.")
+                    return
+                targets = []
+                for i in range(min(len(blocks.valueOf()), amount)):
+                    targets.append(self.bot.blockAt(blocks[i]))
+                self.chat(f"Found {len(targets)}")
                 try:
-                    self.bot.collectBlock.collect(current_block)
-                except:
-                    self.log(f"No {block} found nearby.", error=True)
-                status.update(f"[bold]Collecting {block}... ({i}/{amount})\n")
+                    self.bot.collectBlock.collect(targets, timeout=10000)
+                    # All blocks have been collected.
+                    self.chat('Done')
+                except Exception as err:
+                    # An error occurred, report it.
+                    print(err)
+            except Exception as err:
+                print(err)
+        task = threading.Thread(target=collect)
+        task.start()
+        task.join()
+        
+        
     
-    def goto(self, x: int, z: int, y: int = 0, timeout: int = 600000000):
+    def goto(self, x: int, y: int, z: int, timeout: int = 600000000):
         """
         Go to the specified coordinates (x, y, z).
 
@@ -1078,7 +1089,7 @@ class Bot(threading.Thread):
         """
         # Get the correct block type
         with self.console.status(f"[bold]Moving to ({x}, {y}, {z})...") as status:
-            if y == 0: 
+            if y == None:
                 self.bot.pathfinder.goto(self.goals.GoalNearXZ(int(x), int(z), 1), timeout=timeout)
             else:
                 self.bot.pathfinder.goto(self.goals.GoalNear(int(x), int(y), int(z), 1), timeout=timeout)

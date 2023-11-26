@@ -7,19 +7,32 @@ global created
 created = False
 global chat_history
 chat_history = []
+global plugin_list
+plugin_list = []
+
+
+css = """
+.error {
+  color: red
+}
+"""
+
 
 
 def get_bot_status():
-    if 'bot' in locals() or 'bot' in globals():
+    if 'bot' in globals():
         return "Stop Bot"
     else:
         return "Start/Stop Bot"
-    
+
+def change_tab():
+    return gr.Tabs.update(selected=1)
+
 
 
 def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip_checks):
     try:
-        if 'bot' in locals() or 'bot' in globals():
+        if 'bot' in globals():
             def stop_bot():
                 try:
                     global bot
@@ -40,8 +53,6 @@ def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip
     
     
     global bot
-    
-    plugin_list = []
     plugin_str = ""
     if plugin:
         plugin_str += "Plugins: "
@@ -75,7 +86,7 @@ def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip
     )
     
     @bot.on('messagestr')
-    def chat(this, message, messagePosition, jsonMsg, sender, *args):
+    def chat_history_add(this, message, messagePosition, jsonMsg, sender, *args):
         message = str(message).replace("\n","")
         if str(sender).lower() == "none":
             chat_history.append(f"{message}")
@@ -92,7 +103,7 @@ def create(email, auth, host, port, version, viewer, plugin, enable_viewer, skip
 
 def create_multiple(email, auth, host, port, version, amount):
     try:
-        if 'bot' in locals() or 'bot' in globals():
+        if 'bot' in globals():
             def stop_bot():
                 try:
                     global bot
@@ -144,33 +155,33 @@ def create_multiple(email, auth, host, port, version, amount):
 
 
 def get_username():
-    try:
+    if 'bot' in globals():
         return bot.username
-    except:
+    else:
         return "None"
 
 
 
 def get_player_health():
-    try:
+    if 'bot' in globals():
         return bot.health
-    except:
+    else:
         return "Unknown"
 
 def get_player_food():
-    try:
+    if 'bot' in globals():
         return bot.food
-    except:
+    else:
         return "Unknown"
     
 def get_player_experience():
-    try:
+    if 'bot' in globals():
         return bot.experience.level
-    except:
+    else:
         return "Unknown"
     
 def get_player_difficulty():
-    try:
+    if 'bot' in globals():
         
         if bot.settings.difficulty == 0:
             return "peaceful"
@@ -181,21 +192,21 @@ def get_player_difficulty():
         elif bot.settings.difficulty == 3:
             return "hard"
     
-    except:
+    else:
         return "Unknown"
     
 
 def get_all_data():
-    try:
+    if 'bot' in globals():
         return bot.player
-    except:
+    else:
         return "Unknown"
 
 
 
 
 def get_latest_chats():
-    try:
+    if 'bot' in globals():
         if len(chat_history) > 30:
             chat_history.clear()
             return "No chat messages yet!"
@@ -203,7 +214,7 @@ def get_latest_chats():
         for i in chat_history[-9:]:
             string += i + "\n"
         return string
-    except:
+    else:
         return "No chat messages yet!"
 
 
@@ -220,7 +231,7 @@ def build_schematic(files, x, z):
     if not x or not z or not files:
         gr.Warning("not all fields are filled in!")
         return
-    if 'bot' in locals() or 'bot' in globals():
+    if 'bot' in globals():
         bot.goto(x, z)
         time.sleep(2)
         bot.build_schematic(f'{files.name}')
@@ -233,71 +244,69 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
     with gr.Tab("Bot Settings"):
         # gr.Markdown(requests.get('https://raw.githubusercontent.com/the-lodestone-project/Lodestone/main/README.md').text)
         # gr.Image("https://github.com/the-lodestone-project/Lodestone/blob/main/assets/logo.png?raw=true", min_width=2000)
-        with gr.Row():
-            with gr.Column(scale=1, variant='panel'):
-                with gr.Tab("Signle Bot"):
-                    email = gr.Textbox(placeholder="Notch", label="Username",info="Username to login with")
-                    auth = gr.Dropdown(["microsoft", "offline"], value="microsoft", label="Authentication Method",info="Authentication method to login with")
-                    host = gr.Textbox(placeholder="2b2t.org", label="Server Ip",info="Server ip to connect to")
-                    port = gr.Number(value=25565, label="Sever Port", info="Server port to connect to. Most servers use 25565",precision=0)
-                    version = gr.Dropdown(["auto","1.20", "1.19", "1.18", "1.17", "1.16.4", "1.16", "1.15", "1.14", "1.13", "1.12", "1.11", "1.10", "1.9", "1.8"], value="auto", label="Version",info="Version to connect with. Use auto to automatically detect the version of the server")
-                    with gr.Accordion("Optional Settings", open=False):
-                        enable_viewer = gr.Checkbox(value=True, label="Enable Viewer", info="Enable the viewer to see the bot's view",interactive=True)
-                        skip_checks = gr.Checkbox(value=True, label="Skip Checks/Updates", info="Skip checks to speed up the bot",interactive=True)
-                        viewer = gr.Number(value=5001, label="Viewer Port", info="Viewer port to display the bot's view",precision=0)
-                        plugin = gr.Dropdown(["Schematic Builder", "Cactus Farm Builder", "Discord Rich Presence"],multiselect=True, label="Plugins",info="Plugins to load on startup")
-                    btn = gr.Button(value=get_bot_status,variant='primary')
-                    
-                    
-                    
-                    
-                    out_username = gr.Textbox(value="", label="Logged in as")
-                    info = gr.Textbox(value="", label="Info")
-                    
-                    btn.click(create, inputs=[email, auth, host, port, version, viewer, plugin, enable_viewer, skip_checks], outputs=[out_username, info, btn], show_progress="minimal")
-                # with gr.Tab("Parameters"):
-                #     def live_view():
-                #         try:
-                #             if bot.viewer_port:
-                #                 port = bot.viewer_port
-                #             else:
-                #                 port = 5001
-                #         except:
-                #             port = 5001
-                #         return f'<iframe src="http://localhost:{port}" style="width:50vw; height:50vh;">Your browser doesnt support iframes</iframe>'
-                #     gr.HTML(f'<iframe src="http://localhost:{port}" style="width:50vw; height:50vh;">Your browser doesnt support iframes</iframe>')
-                #     pass
-                with gr.Tab("Multiple Bot"):
-                    email = gr.Textbox(placeholder="Notch", label="Username Prefix",info="Username prefix. The bot will login with this prefix and a number after it")
-                    auth = gr.Dropdown(["offline"], value="offline", label="Authentication Method",info="Authentication method to login with")
-                    host = gr.Textbox(placeholder="2b2t.org", label="Server Ip",info="Server ip to connect to")
-                    port = gr.Number(value=25565, label="Sever Port", info="Server port to connect to. Most servers use 25565",precision=0)
-                    version = gr.Dropdown(["auto","1.20", "1.19", "1.18", "1.17", "1.16.4", "1.16", "1.15", "1.14", "1.13", "1.12", "1.11", "1.10", "1.9", "1.8"], value="auto", label="Version",info="Version to connect with. Use auto to automatically detect the version of the server")
-                    amount = gr.Slider(minimum=1, maximum=50, step=1, label="Amount", info="Amount of bots to create", interactive=True)
-                    with gr.Accordion("Optional Settings", open=False):
-                        enable_viewer = gr.Checkbox(value=False, label="Enable Viewer", info="Enable the viewer to see the bot's view",interactive=False)
-                        viewer = gr.Number(value=5001, label="Viewer Port", info="Viewer port to display the bot's view",precision=0, interactive=False)
-                        # plugin = gr.Dropdown(["Schematic Builder", "Cactus Farm Builder", "Discord Rich Presence"],multiselect=True, label="Plugins",info="Plugins to load on startup")
-                    btn = gr.Button(value=get_bot_status,variant='primary')
-                    
-                    
-                    
-                    
-                    out_username = gr.Textbox(value="", label="Bot count")
-                    info = gr.Textbox(value="", label="Info")
-                    
-                    btn.click(create_multiple, inputs=[email, auth, host, port, version, amount], outputs=[out_username, info, btn], show_progress="minimal")
+        with gr.Tab("Signle Bot"):
+            email = gr.Textbox(placeholder="Notch", label="Username",info="Username to login with")
+            auth = gr.Dropdown(["microsoft", "offline"], value="microsoft", label="Authentication Method",info="Authentication method to login with")
+            host = gr.Textbox(placeholder="2b2t.org", label="Server Ip",info="Server ip to connect to")
+            port = gr.Number(value=25565, label="Sever Port", info="Server port to connect to. Most servers use 25565",precision=0)
+            version = gr.Dropdown(["auto","1.20", "1.19", "1.18", "1.17", "1.16.4", "1.16", "1.15", "1.14", "1.13", "1.12", "1.11", "1.10", "1.9", "1.8"], value="auto", label="Version",info="Version to connect with. Use auto to automatically detect the version of the server")
+            with gr.Accordion("Optional Settings", open=False):
+                enable_viewer = gr.Checkbox(value=True, label="Enable Viewer", info="Enable the viewer to see the bot's view",interactive=True)
+                skip_checks = gr.Checkbox(value=True, label="Skip Checks/Updates", info="Skip checks to speed up the bot",interactive=True)
+                viewer = gr.Number(value=5001, label="Viewer Port", info="Viewer port to display the bot's view",precision=0)
+                plugin = gr.Dropdown(["Schematic Builder", "Cactus Farm Builder", "Discord Rich Presence"],multiselect=True, label="Plugins",info="Plugins to load on startup")
+            btn = gr.Button(value=get_bot_status,variant='primary')
+            
+            
+            
+            
+            out_username = gr.Textbox(value="", label="Logged in as")
+            info = gr.Textbox(value="", label="Info")
+            
+            btn.click(create, inputs=[email, auth, host, port, version, viewer, plugin, enable_viewer, skip_checks], outputs=[out_username, info, btn], show_progress="minimal")
+        # with gr.Tab("Parameters"):
+        #     def live_view():
+        #         try:
+        #             if bot.viewer_port:
+        #                 port = bot.viewer_port
+        #             else:
+        #                 port = 5001
+        #         except:
+        #             port = 5001
+        #         return f'<iframe src="http://localhost:{port}" style="width:50vw; height:50vh;">Your browser doesnt support iframes</iframe>'
+        #     gr.HTML(f'<iframe src="http://localhost:{port}" style="width:50vw; height:50vh;">Your browser doesnt support iframes</iframe>')
+        #     pass
+        with gr.Tab("Multiple Bot"):
+            email = gr.Textbox(placeholder="Notch", label="Username Prefix",info="Username prefix. The bot will login with this prefix and a number after it")
+            auth = gr.Dropdown(["offline"], value="offline", label="Authentication Method",info="Authentication method to login with")
+            host = gr.Textbox(placeholder="2b2t.org", label="Server Ip",info="Server ip to connect to")
+            port = gr.Number(value=25565, label="Sever Port", info="Server port to connect to. Most servers use 25565",precision=0)
+            version = gr.Dropdown(["auto","1.20", "1.19", "1.18", "1.17", "1.16.4", "1.16", "1.15", "1.14", "1.13", "1.12", "1.11", "1.10", "1.9", "1.8"], value="auto", label="Version",info="Version to connect with. Use auto to automatically detect the version of the server")
+            amount = gr.Slider(minimum=1, maximum=50, step=1, label="Amount", info="Amount of bots to create", interactive=True)
+            with gr.Accordion("Optional Settings", open=False):
+                enable_viewer = gr.Checkbox(value=False, label="Enable Viewer", info="Enable the viewer to see the bot's view",interactive=False)
+                viewer = gr.Number(value=5001, label="Viewer Port", info="Viewer port to display the bot's view",precision=0, interactive=False)
+                # plugin = gr.Dropdown(["Schematic Builder", "Cactus Farm Builder", "Discord Rich Presence"],multiselect=True, label="Plugins",info="Plugins to load on startup")
+            btn = gr.Button(value=get_bot_status,variant='primary')
+            
+            
+            
+            
+            out_username = gr.Textbox(value="", label="Bot count")
+            info = gr.Textbox(value="", label="Info")
+            
+            btn.click(create_multiple, inputs=[email, auth, host, port, version, amount], outputs=[out_username, info, btn], show_progress="minimal")
         
     with gr.Tab("Chat"):
-        chatbot = gr.Textbox(value=get_latest_chats,every=5,label="Chat History (Updated every 5 seconds)")
-        msg = gr.Textbox(label="Message to send",placeholder="Hello world!",elem_id="msg")
-        clear = gr.ClearButton([msg, chatbot],value="Clear Chat History")
+        chat = gr.TextArea(value=get_latest_chats,every=5,label="Chat History (Updated every 5 seconds)",lines=10)
+        msg = gr.Textbox(label="Message to send",placeholder="Hello world!")
+        clear = gr.ClearButton([msg, chat],value="Clear Chat History")
 
         def respond(message):
-            try:
+            if 'bot' in globals():
                 bot.chat(message)
                 return ""
-            except:
+            else:
                 return ""
         
         def delete():
@@ -307,53 +316,76 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
         msg.submit(respond, inputs=[msg],outputs=[msg])
         
     with gr.Tab("Plugins"):
-        with gr.Tab("Schematic Builder"):
+        with gr.Accordion("Schematic Builder", open=False):
+            
+            def check():
+                if not plugins.schematic in plugin_list:
+                    return "The Schematic Builder plugin is not loaded"
+                else:
+                    return "pluginloaded"
+               
+            gr.Textbox(value=check, every=30, show_label=False)
             # with gr.Row():
-            #     with gr.Column(scale=1, variant='panel'):
+            #     with gr.Column(scale=1, ):
             file_output = gr.File(file_types=[".schematic", ".nbt", ".schem"], label="Schematic File (.schematic .nbt .schem)",file_count="single")
-            with gr.Row(variant="panel"):
-                with gr.Column(scale=1, variant='panel'):
+            with gr.Row():
+                with gr.Column(scale=1, ):
                     x = gr.Number(label="X Coordinate",info="The X coord to build at", precision=0)
-                with gr.Column(scale=1, variant='panel'):
+                with gr.Column(scale=1, ):
                     z = gr.Number(label="Z Coordinate",info="The Z coord to build at", precision=0)
             # upload_button = gr.UploadButton("Click to Upload a schematic", file_count="single")
             # upload_button.upload(upload_file, upload_button, file_output)
             build = gr.Button("Build schematic", variant='primary')
             build.click(build_schematic, inputs=[file_output, x, z])
-        with gr.Tab("Build Cactus Farm"):
+            
+            
+        with gr.Accordion("Build Cactus Farm", open=False):
             gr.Markdown("")
             
-        with gr.Tab("Discord Rich Presence"):
-            # state=f"{self.bot.local_host} - {self.bot.bot.version}",
-            #             details=f"{self.bot.username}",
-            #             large_image=(f"https://mc-heads.net/avatar/{self.bot.username}/180/nohelm.png"), 
-            #             large_text=f"{self.bot.username}",
-            #             small_image=(f"https://eu.mc-api.net/v3/server/favicon/{self.bot.local_host}"), small_text=f"{self.bot.local_host} on {self.bot.bot.version}",
-            #             start=time.time(),
+        with gr.Accordion("Auto Farm", open=False):
+            with gr.Row():
+                with gr.Column(scale=1, ):
+                    crop_type = gr.Dropdown(["wheat_seeds", "wheat", "beetroot_seeds", "beetroot", "carrot", "potato", "poisonous_potato", "melon", "melon_slice", "melon_seeds", "melon_stem", "attached_melon_stem", "pumpkin", "carved_pumpkin", "pumpkin_seeds", "pumpkin_stem", "attached_pumpkin_stem", "torchflower_seeds", "torchflower_crop", "torchflower", "pitcher_pod", "pitcher_crop", "pitcher_plant", "farmland", "bamboo", "cocoa_beans", "sugar_cane", "sweet_berries", "cactus", "mushrooms", "kelp", "sea_pickle", "nether_wart", "chorus_fruit", "fungus", "glow_berries"], label="Crop Type",info="The Crop type to farm", interactive=True)
+                with gr.Column(scale=1, ):
+                    seed_name = gr.Dropdown(["wheat_seeds", "wheat", "beetroot_seeds", "beetroot", "carrot", "potato", "poisonous_potato", "melon", "melon_slice", "melon_seeds", "melon_stem", "attached_melon_stem", "pumpkin", "carved_pumpkin", "pumpkin_seeds", "pumpkin_stem", "attached_pumpkin_stem", "torchflower_seeds", "torchflower_crop", "torchflower", "pitcher_pod", "pitcher_crop", "pitcher_plant", "farmland", "bamboo", "cocoa_beans", "sugar_cane", "sweet_berries", "cactus", "mushrooms", "kelp", "sea_pickle", "nether_wart", "chorus_fruit", "fungus", "glow_berries"], label="Seed Name",info="The Seed name to plant back", interactive=True)
+                with gr.Column(scale=1, ):
+                    harvest_name = gr.Dropdown(["wheat_seeds", "wheat", "beetroot_seeds", "beetroot", "carrot", "potato", "poisonous_potato", "melon", "melon_slice", "melon_seeds", "melon_stem", "attached_melon_stem", "pumpkin", "carved_pumpkin", "pumpkin_seeds", "pumpkin_stem", "attached_pumpkin_stem", "torchflower_seeds", "torchflower_crop", "torchflower", "pitcher_pod", "pitcher_crop", "pitcher_plant", "farmland", "bamboo", "cocoa_beans", "sugar_cane", "sweet_berries", "cactus", "mushrooms", "kelp", "sea_pickle", "nether_wart", "chorus_fruit", "fungus", "glow_berries"], label="Harvest Name",info="The block name to harvest", interactive=True)
+                
+            with gr.Row():
+                with gr.Column(scale=1, ):
+                    x = gr.Number(label="X Coordinate",info="The X coord to build at", precision=0)
+                with gr.Column(scale=1, ):
+                    z = gr.Number(label="Z Coordinate",info="The Z coord to build at", precision=0)
             
-            def get_time():
-                return time.time()
+            with gr.Row():
+                with gr.Column(scale=1, ):
+                    x = gr.Number(label="X Coordinate",info="The X coord to build at", precision=0)
+                with gr.Column(scale=1, ):
+                    z = gr.Number(label="Z Coordinate",info="The Z coord to build at", precision=0)
+            with gr.Accordion("Optional Settings", open=False):
+                gr.Markdown("Optional Settings")
+            start_farm = gr.Button("Start auto Farming", variant='primary')
             
-            with gr.Row(variant="panel"):
-                with gr.Column(scale=1, variant='panel'):
+        with gr.Accordion("Discord Rich Presence", open=False):        
+            with gr.Row():
+                with gr.Column(scale=1, ):
                     state = gr.Textbox(label="State",info="The state to display")
-                with gr.Column(scale=1, variant='panel'):
+                with gr.Column(scale=1, ):
                     details = gr.Textbox(label="Details",info="The details to display")
-                with gr.Column(scale=1, variant='panel'):
+                with gr.Column(scale=1, ):
                     large_image = gr.Textbox(label="Large Image (url)",info="The large image to display")
-                with gr.Column(scale=1, variant='panel'):
+                with gr.Column(scale=1, ):
                     large_text = gr.Textbox(label="Large Text",info="The large text to display")
-                with gr.Column(scale=1, variant='panel'):
+                with gr.Column(scale=1, ):
                     small_image = gr.Textbox(label="Small Image (url)",info="The small image to display")
-                with gr.Column(scale=1, variant='panel'):
+                with gr.Column(scale=1, ):
                     small_text = gr.Textbox(label="Small Text",info="The small text to display")
             
             def update_presence_def(state="No state provided", details="No details Provided", large_image=None, large_text=None, small_image=None, small_text=None):
                 print(details)
-                try:
+                if 'bot' in globals():
                     bot.discordrp(state=state, details=details, start=time.time())
-                except Exception as e:
-                    print(e)
+                else:
                     pass
             
             update_presence = gr.Button("Update Presence", variant='primary')
@@ -363,10 +395,10 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
     with gr.Tab("Movements"):
         with gr.Tab("Basic Movements"):
             with gr.Row():
-                with gr.Column(scale=1, variant='panel'):
+                with gr.Column(scale=1, ):
                     jump = gr.Button("Start Jumping")
                     jump = gr.Button("Stop Jumping")
-                with gr.Column(scale=1, variant='panel'):
+                with gr.Column(scale=1, ):
                     jump = gr.Button("Start walking forward")
                     jump = gr.Button("Stop walking forward")
         with gr.Tab("Follow Player/Entity"):
@@ -417,5 +449,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="The Lodestone Project") as ui:
                 difficulty = gr.Textbox(value=platform.system, label=f"System Type")
         # refresh_button.click(get_player_info, outputs=[health, food, experience])
 if __name__ == "__main__":
-    ui.queue().launch(server_port=8000, show_api=False, share=False, quiet=True)
+    ui.queue().launch(server_port=8000, show_api=False, quiet=True)
+
+    # gr.themes.builder()
     

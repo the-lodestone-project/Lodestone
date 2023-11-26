@@ -112,7 +112,7 @@ def run(console, test, host, port, args):
         
         
         try:
-            lodestone.ui.queue().launch(server_name=f"{host}", server_port=port, show_api=False, auth=(f'{os.environ["LODESTONE_USERNAME"]}', f'{os.environ["LODESTONE_PASSWORD"]}'), share=False, quiet=True, favicon_path="favicon.png")
+            lodestone.ui.queue().launch(server_name=f"{host}", server_port=port, show_api=False, auth=(f'{os.environ["LODESTONE_USERNAME"]}', f'{os.environ["LODESTONE_PASSWORD"]}'), share=False, quiet=True, favicon_path="favicon.png", auth_message="Please login with your set username and password. These are not your Minecraft credentials.")
         except OSError:
             raise OSError(f"Port {port} is already in use!")
 
