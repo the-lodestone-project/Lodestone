@@ -23,7 +23,7 @@ dependencies = [
     "requests",
     "python-dotenv",
     "aiofiles",
-    "gradio==3.*",
+    "gradio>=3,<5",
     "psutil",
 ]
 
