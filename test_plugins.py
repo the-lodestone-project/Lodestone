@@ -1,8 +1,5 @@
 import lodestone
 
-lodestone.get_plugins()
-
-from __init__ import plugins
 
 lodestone.createBot(
     host="2b2t.org",
