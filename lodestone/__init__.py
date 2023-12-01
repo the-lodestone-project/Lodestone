@@ -1,7 +1,7 @@
 try:
     from lodestone.bot import createBot, Bot
     from lodestone.utils import llm
-    from lodestone.plugins import plugins
+    from plugins import plugins
     from lodestone.api import fastapi
     from lodestone.server import createServer, Server
     from lodestone.logger import logger

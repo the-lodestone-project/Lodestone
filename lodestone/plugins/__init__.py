@@ -4,9 +4,8 @@ from .schematic_builder import schematic
 from .discordrp import discordrp
 
 class plugins:
-    def __init__(self):
-        self.cactus = cactus()
-        self.discordrp = discordrp()
-        self.discord = discord()
-        self.schematic = schematic()
-        super().__init__()
+    cactus = cactus()
+    discordrp = discordrp()
+    discord = discord()
+    schematic = schematic()
+
