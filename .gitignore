@@ -21,5 +21,3 @@ lodestone/test_plugins.py
 lodestone/cache/
 lodestone/.env
 lodestone/favicon.png
-lodestone/plugins
-plugins
