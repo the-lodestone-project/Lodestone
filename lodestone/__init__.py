@@ -8,7 +8,7 @@ if os.path.isdir('plugins'):
     except:
         from .plugins import Base as plugins
 else:
-    if os.path.isdir('plugins'):
+    if not os.path.isdir('plugins'):
         shutil.rmtree('plugins')
         git.Repo.clone_from("https://github.com/the-lodestone-project/Plugins", "plugins")
         try:
@@ -45,4 +45,27 @@ except:
     from javascript import On as Event
     from .logger import logger
     from .gradios import ui
+    
+
+def clear_plugins():
+    if os.path.isdir('plugins'):
+        shutil.rmtree('plugins')
+
+def download_plugins():
+    if os.path.isdir('plugins'):
+        shutil.rmtree('plugins')
+    git.Repo.clone_from("https://github.com/the-lodestone-project/Plugins", "plugins")
+    try:
+        source_dir = 'plugins/plugins'
+        target_dir = 'plugins'
+            
+        file_names = os.listdir(source_dir)
+            
+        for file_name in file_names:
+            shutil.move(os.path.join(source_dir, file_name), target_dir)
+        
+        shutil.rmtree('plugins/plugins')
+    except:
+        logger.warning("Plugins folder is empty!")
+        pass
     
