@@ -10,7 +10,6 @@ import time
 import fnmatch
 import re
 import subprocess
-import git
 from typing import Callable
 from importlib.metadata import version as version_checker
 import dataclasses
