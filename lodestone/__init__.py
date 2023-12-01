@@ -1,4 +1,6 @@
 import os
+import shutil
+import git
 
 if os.path.isdir('plugins'):
     try:
@@ -6,8 +8,22 @@ if os.path.isdir('plugins'):
     except:
         from .plugins import Base as plugins
 else:
-    import lodestone
-    lodestone.bot.get_plugins()
+    if os.path.isdir('plugins'):
+        shutil.rmtree('plugins')
+        git.Repo.clone_from("https://github.com/the-lodestone-project/Plugins", "plugins")
+        try:
+            source_dir = 'plugins/plugins'
+            target_dir = 'plugins'
+                
+            file_names = os.listdir(source_dir)
+                
+            for file_name in file_names:
+                shutil.move(os.path.join(source_dir, file_name), target_dir)
+            
+            shutil.rmtree('plugins/plugins')
+        except:
+            logger.warning("Plugins folder is empty!")
+            pass
     try:
         from lodestone.plugins import Base as plugins
     except:
