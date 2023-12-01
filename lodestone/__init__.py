@@ -4,17 +4,10 @@ if os.path.isdir('plugins'):
     try:
         from lodestone.plugins import Base as plugins
     except:
-        try:
-            from .plugins import Base as plugins
-        except:
-            try:
-                import lodestone
-                lodestone.get_plugins()
-            except:
-                pass
+        from .plugins import Base as plugins
 else:
     import lodestone
-    lodestone.get_plugins()
+    lodestone.bot.get_plugins()
     try:
         from lodestone.plugins import Base as plugins
     except:
