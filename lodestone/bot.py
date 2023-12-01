@@ -2,7 +2,7 @@ from javascript import require, On, Once, off, once
 from javascript.proxy import Proxy
 from rich.console import Console
 from tinydb import TinyDB, Query
-
+import shutil
 import requests
 import os
 import sys
@@ -10,6 +10,7 @@ import time
 import fnmatch
 import re
 import subprocess
+import git
 from typing import Callable
 from importlib.metadata import version as version_checker
 import dataclasses
@@ -303,7 +304,9 @@ class Bot(threading.Thread):
             ls_discord_webhook: str = None,
             ls_use_discord_forums: bool = False,
             ls_api_mode: bool = False,
-            ls_plugin_list: [] = None
+            ls_plugin_list: [] = None,
+            easyMcToken: str = None
+            
     ):
         """
         Create the bot. Parameters in camelCase are passed into mineflayer. Parameters starting with ls_ is Lodestone specific
@@ -341,6 +344,7 @@ class Bot(threading.Thread):
         self.api_mode = ls_api_mode
         self.plugin_list = ls_plugin_list if ls_plugin_list else []
         self.check_timeout_interval = checkTimeoutInterval
+        self.easy_mc_token = easyMcToken
 
         self.custom_command_prefix = "!"
         self.custom_commands = {}
@@ -508,31 +512,90 @@ class Bot(threading.Thread):
             self.local_version = False
         else:
             self.version = str(self.local_version)
-        try:
-            local_bot = self.mineflayer.createBot({
-                'host': self.local_host,
-                'port': self.local_port,
-                'username': self.local_username,
-                'password': self.local_password,
-                'auth': self.local_auth,
-                'version': self.local_version,
-                'onMsaCode': self.__msa,
-                'checkTimeoutInterval': self.check_timeout_interval,
-                'disableChatSigning': self.local_disable_chat_signing,
-                'profilesFolder': self.local_profiles_folder,
-                'logErrors': self.local_log_errors,
-                'hideErrors': self.local_hide_errors,
-                'keepAlive': self.local_keep_alive,
-                'loadInternalPlugins': self.local_load_internal_plugins,
-                'respawn': self.local_respawn,
-                'physicsEnabled': self.local_physics_enabled,
-                'defaultChatPatterns': self.local_default_chat_patterns
-            })
-        except Exception as e:
-            raise Exception(f"Error while creating bot: {e}")
-        self.bot = local_bot
-        return local_bot
+        
+        if self.local_auth.lower() == "easymc":
+            self.minecraft_protocol = require('minecraft-protocol')
+            import types
+            
+            
+            def easy_mc_auth(client, options):
+                try:
+                    res = requests.post('https://api.easymc.io/v1/token/redeem', headers={'Content-Type': 'application/json'}, json={"token":f"{options['easyMcToken']}"})
+                    res_json =  res.json()
+                    if res_json.get('error'):
+                        raise Exception(f'EasyMC: {res_json["error"]}')
+                        quit()
+                    if not res_json:
+                        raise Exception('Empty response from EasyMC.')
+                        quit()
+                    if len(res_json.get('session', '')) != 43 or len(res_json.get('mcName', '')) < 3 or len(res_json.get('uuid', '')) != 36:
+                        raise Exception('Invalid response from EasyMC.')
+                        quit()
+                    session = {
+                        'accessToken': res_json['session'],
+                        'selectedProfile': {
+                            'name': res_json['mcName'],
+                            'id': res_json['uuid']
+                        }
+                    }
+                    options.haveCredentials = True
+                    client.session = session
+                    options.username = client.username = session['selectedProfile']['name']
+                    options.accessToken = session['accessToken']
+                    client.emit('session', session)
+                    options['connect'](client)
+                except Exception as error:
+                    print(error)
+                    quit()
 
+
+            try:
+                local_bot = self.mineflayer.createBot({
+                    'host': self.local_host,
+                    'port': self.local_port,
+                    'auth': easy_mc_auth,
+                    'sessionServer': 'https://sessionserver.easymc.io',
+                    'username': bytes(),
+                    'version': self.local_version,
+                    'checkTimeoutInterval': self.check_timeout_interval,
+                    'logErrors': self.local_log_errors,
+                    'hideErrors': self.local_hide_errors,
+                    'keepAlive': self.local_keep_alive,
+                })
+                print(local_bot)
+                self.bot = local_bot
+                return local_bot
+            except Exception as e:
+                raise ValueError(f"Error while creating bot: {e}")
+        else:    
+            try:
+                local_bot = self.mineflayer.createBot({
+                    'host': self.local_host,
+                    'port': self.local_port,
+                    'username': self.local_username,
+                    'password': self.local_password,
+                    'auth': self.local_auth,
+                    'version': self.local_version,
+                    'onMsaCode': self.__msa,
+                    'checkTimeoutInterval': self.check_timeout_interval,
+                    'disableChatSigning': self.local_disable_chat_signing,
+                    'profilesFolder': self.local_profiles_folder,
+                    'logErrors': self.local_log_errors,
+                    'hideErrors': self.local_hide_errors,
+                    'keepAlive': self.local_keep_alive,
+                    'loadInternalPlugins': self.local_load_internal_plugins,
+                    'respawn': self.local_respawn,
+                    'physicsEnabled': self.local_physics_enabled,
+                    'defaultChatPatterns': self.local_default_chat_patterns
+                })
+                self.bot = local_bot
+                return local_bot
+            except Exception as e:
+                raise ValueError(f"Error while creating bot: {e}")
+            
+        
+
+    
 
     def __start(self):
         self.__setup_events()
@@ -1140,6 +1203,24 @@ class Bot(threading.Thread):
                 return False
         else:
             self.placeBlockWithOptions(referenceBlock, faceVector, { "swingArm": "right" })
+            
+def get_plugins():
+    if os.path.isdir('plugins'):
+        shutil.rmtree('plugins')
+    git.Repo.clone_from("https://github.com/the-lodestone-project/Plugins", "plugins")
+    try:
+        source_dir = 'plugins/plugins'
+        target_dir = 'plugins'
+            
+        file_names = os.listdir(source_dir)
+            
+        for file_name in file_names:
+            shutil.move(os.path.join(source_dir, file_name), target_dir)
+        
+        shutil.rmtree('plugins/plugins')
+    except:
+        logger.warning("Plugins folder is empty!")
+        pass
     
             
 
