@@ -9,7 +9,6 @@ if os.path.isdir('plugins'):
         from .plugins import Base as plugins
 else:
     if not os.path.isdir('plugins'):
-        shutil.rmtree('plugins')
         git.Repo.clone_from("https://github.com/the-lodestone-project/Plugins", "plugins")
         try:
             source_dir = 'plugins/plugins'
