@@ -603,6 +603,7 @@ class Bot(threading.Thread):
         self.log(
             f'Coordinates: {int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}',
             info=True)
+        self.emit("fixed_spawn", self.bot.entity.position)
         self.__load_plugins()
 
     def on(self, event: str):
