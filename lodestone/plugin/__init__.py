@@ -4,8 +4,8 @@ from .schematic_builder import schematic
 from .discordrp import discordrp
 
 class plugins:
-    cactus = cactus()
-    discordrp = discordrp()
-    discord = discord()
-    schematic = schematic()
+    cactus = cactus
+    discordrp = discordrp
+    discord = discord
+    schematic = schematic
 
