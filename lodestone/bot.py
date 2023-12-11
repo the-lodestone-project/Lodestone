@@ -2,12 +2,11 @@ from javascript import require, On, Once, off, once
 from javascript.proxy import Proxy
 from rich.console import Console
 from tinydb import TinyDB, Query
-import shutil
 import requests
 import os
 import sys
 import time
-import fnmatch
+from typing import Any, Literal
 import re
 import subprocess
 from typing import Callable
@@ -15,18 +14,13 @@ from importlib.metadata import version as version_checker
 import dataclasses
 import threading
 try:
-    from logger import logger
-    from utils import cprop
+    from lodestone.modules import logger
+    from lodestone.utils.utils import cprop
 except ImportError:
-    from .logger import logger
-    from .utils import cprop
+    from modules import logger
+    from utils import cprop
 
 User = Query()
-
-
-filestruc = "/"
-if os.name == 'nt':
-    filestruc = "\\"
 
 __all__ = ['Bot', 'createBot']
 
@@ -277,9 +271,9 @@ class Bot(threading.Thread):
             self,
             host: str,
             *,
-            auth: str = "microsoft",
+            auth: Literal['micosoft', 'offline'] = "microsoft",
             port: int = 25565,
-            version: str = "false",
+            version: Literal["1.8.8", "1.9" "15w40b", "1.9.1-pre2", "1.9.2", "1.9.4", "1.10", "16w20a", "1.10-pre1", "1.10", "1.10.1", "1.10.2", "1.11", "16w35a", "1.11", "1.11.2", "1.12", "17w15a", "17w18b", "1.12-pre4", "1.12", "1.12.1", "1.12.2", "1.13", "17w50a", "1.13", "1.13.1", "1.13.2-pre1", "1.13.2-pre2", "1.13.2", "1.14", "1.14", "1.14.1", "1.14.3", "1.14.4", "1.15", "1.15", "1.15.1", "1.15.2", "1.16", "20w13b", "20w14a", "1.16-rc1", "1.16", "1.16.1", "1.16.2", "1.16.3", "1.16.4", "1.17", "21w07a", "1.17", "1.17.1", "1.18", "1.18", "1.18.1", "1.18.2", "1.19", "1.19", "1.19.1", "1.19.2", "1.19.3", "1.19.4", "1.20", "1.20.1", "false"] = "false",
             password: str = "",
             respawn: bool = True,
             disableChatSigning: bool = False,
@@ -603,7 +597,6 @@ class Bot(threading.Thread):
         self.log(
             f'Coordinates: {int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}',
             info=True)
-        self.emit("fixed_spawn", self.bot.entity.position)
         self.__load_plugins()
 
     def on(self, event: str):

@@ -1,26 +1,16 @@
 from rich.console import Console
-try:
-    from discord import Embed
-except:
-    pass
 import structlog
 import datetime
 import sys
 import re
 import time
-from datetime import date
 import os
 import platform
 import urllib.request
 import json
 import subprocess
 
-
 logger = structlog.get_logger()
-
-filestruc = "/"
-if os.name == 'nt':
-    filestruc = "\\"
 
 __all__ = ['Server', 'createServer']
 
@@ -56,7 +46,7 @@ class Server:
             ls_use_discord_forums: bool = False,
     ):
         """
-        Create the bot. Parameters in camelCase are passed into mineflayer. Parameters starting with ls_ is Lodestone specific
+        Create the server.
         """
         if ls_debug_mode:
             os.environ["DEBUG"] = "minecraft-protocol"
