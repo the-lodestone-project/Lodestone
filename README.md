@@ -101,7 +101,7 @@ python -m opendeliverybot
 ## Contributors ❤️
 | Name                | Helped With                               | GitHub   | Discord   |
 | --------------------- | ----------------------------------------- | ----------- | ----------- |
-| Katzengott            | fishing bot and cactus bot | [@Katzengott](https://github.com/Katzengott) | edelkatze |
+| **Katzengott**            | fishing bot and cactus bot | [@Katzengott](https://github.com/Katzengott) | edelkatze |
 
 
 
