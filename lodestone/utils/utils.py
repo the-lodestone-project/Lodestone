@@ -1,5 +1,4 @@
-import discord
-import aiohttp
+import requests
 import structlog
 from rich.console import Console
 import asyncio
@@ -7,7 +6,10 @@ logger = structlog.get_logger()
 console = Console()
 
 def llm(input: str, data = ""):
-    import g4f
+    try:
+        import g4f
+    except:
+        pass
     _providers = [
         g4f.Provider.Bing,
         g4f.Provider.GptGo,
@@ -95,10 +97,3 @@ def cprop(cap = "camel", proxy_name = ""):
 
         return wrapped
     return decorator
-
-def send_webhook(webhook, *args, **kwargs):
-    async def send_webhook__(webhook, *args, **kwargs):
-        async with aiohttp.ClientSession() as session:
-            await discord.Webhook.from_url(webhook, session=session).send(*args, **kwargs)
-
-    return asyncio.run(send_webhook__(webhook, *args, **kwargs))

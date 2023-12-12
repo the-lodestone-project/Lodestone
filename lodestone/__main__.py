@@ -6,11 +6,16 @@ import subprocess
 import time
 from rich.console import Console
 import lodestone
+from dotenv import load_dotenv
+import requests
+
 @click.command(context_settings={"ignore_unknown_options": True})
 @click.option("--console", "-c", default=False, is_flag=True, help="Force the app to use the console")
 @click.option("--test", "-t", is_flag=True, help="Run version tests on Lodestone")
+@click.option("--host", "-h", help="Host to run Lodestone's gui on", default=None)
+@click.option("--port", "-p", help="Port to run Lodestone's gui on", default=8000)
 @click.argument('args', nargs=-1)
-def run(console, test, args):
+def run(console, test, host, port, args):
     
     if test:
         versions = ["auto", "1.20.1", "1.19", "1.18", "1.17", "1.16", "1.15", "1.14", "1.13", "1.11", "1.10", "1.9", "1.8"]
@@ -79,15 +84,37 @@ def run(console, test, args):
     if console:
         os.system(f"{python_command} {script_directory}/console.py {' '.join(args)}")
     else:
-        if is_linux or is_mac:
-            if os.environ.get('DISPLAY') == '':
-                os.system(f"{python_command} {script_directory}/console.py {' '.join(args)}")
-            else:
-                fastapi()
-        elif is_windows:
-            fastapi()
-        else:
-            os.system(f"{python_command} {script_directory}/console.py {' '.join(args)}")
+        if host is None:
+            import socket
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(("8.8.8.8", 80))
+            host = s.getsockname()[0]
+            s.close()
+            
+        load_dotenv()
+    
+        username = os.getenv("LODESTONE_USERNAME")
+        password = os.getenv("LODESTONE_PASSWORD")
+        if username is None:
+            print("For security reasons, you must set a username and password to protect your account.")
+            username = input("Username: ")
+            password = input("Password: ")
+            os.environ["LODESTONE_USERNAME"] = f"{username}"
+            os.environ["LODESTONE_PASSWORD"] = f"{password}"
+            with open(".env", "w") as f:
+                f.write(f"LODESTONE_USERNAME={username}\nLODESTONE_PASSWORD={password}")
+                print("Login details saved to .env file. You can change these at any time.")
+        
+        if not os.path.isfile("favicon.ico"):
+            img_data = requests.get("https://github.com/the-lodestone-project/Lodestone/raw/main/assets/favicon.png").content
+            with open('favicon.png', 'wb') as handler:
+                handler.write(img_data)
+        
+        
+        try:
+            lodestone.ui.queue().launch(server_name=f"{host}", server_port=port, show_api=False, auth=(f'{os.environ["LODESTONE_USERNAME"]}', f'{os.environ["LODESTONE_PASSWORD"]}'), share=False, quiet=True, favicon_path="favicon.png", auth_message="Please login with your set username and password. These are not your Minecraft credentials.")
+        except OSError:
+            raise OSError(f"Port {port} is already in use!")
 
 if __name__ == "__main__":
     run()

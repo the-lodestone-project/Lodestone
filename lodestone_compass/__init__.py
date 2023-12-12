@@ -1,8 +1,11 @@
-import discord
-from discord import ApplicationContext as Context
-from discord import Embed
-from discord.ui import Modal, InputText
-from discord import InputTextStyle, Interaction
+try: 
+    import discord
+    from discord import ApplicationContext as Context
+    from discord import Embed
+    from discord.ui import Modal, InputText
+    from discord import InputTextStyle, Interaction
+except:
+    pass
 from dotenv import load_dotenv
 from os import environ
 from javascript import eval_js as js_eval

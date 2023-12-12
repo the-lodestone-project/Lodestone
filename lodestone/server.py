@@ -1,27 +1,16 @@
 from rich.console import Console
-from discord import Embed
 import structlog
 import datetime
 import sys
 import re
 import time
-from datetime import date
 import os
 import platform
 import urllib.request
 import json
 import subprocess
 
-try:
-    from utils import send_webhook
-except ImportError:
-    from .utils import send_webhook
-
 logger = structlog.get_logger()
-
-filestruc = "/"
-if os.name == 'nt':
-    filestruc = "\\"
 
 __all__ = ['Server', 'createServer']
 
@@ -57,7 +46,7 @@ class Server:
             ls_use_discord_forums: bool = False,
     ):
         """
-        Create the bot. Parameters in camelCase are passed into mineflayer. Parameters starting with ls_ is Lodestone specific
+        Create the server.
         """
         if ls_debug_mode:
             os.environ["DEBUG"] = "minecraft-protocol"
@@ -98,36 +87,36 @@ class Server:
         else:
             self.node_version, self.pip_version, self.python_version = "unknown", "unknown", "unknown"
 
-        if self.discord_webhook is not None:
-            embed = Embed(
-                title="Successfully Connected to Webhook!",
-                description=f"""
-                **Great news!** The bot has successfully connected to this channel's webhook.
-                From now on, it will send all the logs and valuable data right here, keeping you informed about everything happening on the server.
+        # if self.discord_webhook is not None:
+        #     embed = Embed(
+        #         title="Successfully Connected to Webhook!",
+        #         description=f"""
+        #         **Great news!** The bot has successfully connected to this channel's webhook.
+        #         From now on, it will send all the logs and valuable data right here, keeping you informed about everything happening on the server.
                 
-                **Versions: **
-                * [**Node**](https://nodejs.org/): {self.node_version}
-                * [**Pip**](https://pypi.org/project/pip/): {self.pip_version}
-                * [**Python**](https://www.python.org/): {self.python_version}
+        #         **Versions: **
+        #         * [**Node**](https://nodejs.org/): {self.node_version}
+        #         * [**Pip**](https://pypi.org/project/pip/): {self.pip_version}
+        #         * [**Python**](https://www.python.org/): {self.python_version}
                 
-                **Links: **
-                * [**GitHub**](https://github.com/SilkePilon/Lodestone)
-                * [**Report Bugs**](https://github.com/SilkePilon/Lodestone/issues)
-                * [**Web Interface**](https://github.com/SilkePilon/Mineflayer.py-react)
-                """,
-                color=0x3498db
-            )
-            embed.timestamp = datetime.datetime.utcnow()
-            embed.set_footer(text='\u200b', icon_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true")
-            if ls_use_discord_forums:
-                today = date.today()
-                send_webhook(ls_discord_webhook, content=f"{today}", thread_name=f"{today}", username="Lodestone", avatar_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
-            else:
-                try:
-                    send_webhook(ls_discord_webhook, content="", username="Lodestone", avatar_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
-                except Exception as e:
-                    print(e)
-                    logger.error(f"Detected that you are using a Forums channel but 'useDiscordForums' is set to False. Please change 'useDiscordForums' to True or provide a webhook url for a text channel.")
+        #         **Links: **
+        #         * [**GitHub**](https://github.com/SilkePilon/Lodestone)
+        #         * [**Report Bugs**](https://github.com/SilkePilon/Lodestone/issues)
+        #         * [**Web Interface**](https://github.com/SilkePilon/Mineflayer.py-react)
+        #         """,
+        #         color=0x3498db
+        #     )
+        #     embed.timestamp = datetime.datetime.utcnow()
+        #     embed.set_footer(text='\u200b', icon_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true")
+        #     if ls_use_discord_forums:
+        #         today = date.today()
+        #         send_webhook(ls_discord_webhook, content=f"{today}", thread_name=f"{today}", username="Lodestone", avatar_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
+        #     else:
+        #         try:
+        #             send_webhook(ls_discord_webhook, content="", username="Lodestone", avatar_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
+        #         except Exception as e:
+        #             print(e)
+        #             logger.error(f"Detected that you are using a Forums channel but 'useDiscordForums' is set to False. Please change 'useDiscordForums' to True or provide a webhook url for a text channel.")
 
         self.python_command = self.__check_python_command()
         if not ls_skip_checks:
@@ -153,7 +142,10 @@ class Server:
     def __logging(self, message, icon="💾", error=False, info=False, warning=False, chat=False, image_url="", console=True, discord=True):
         if not self.disable_logs:
             if self.discord_webhook and discord:
-                from discord import Embed
+                try:
+                    from discord import Embed
+                except:
+                    pass
                 color = 0x3498db
                 if error:
                     color = 0x992d22
@@ -171,15 +163,15 @@ class Server:
                     embed.set_footer(text=f'{self.bot.username}', icon_url=f"https://mc-heads.net/avatar/{self.bot.username}/600.png")
                 except:
                     embed.set_footer(text='\u200b', icon_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true")
-                if self.use_discord_forums:
-                    today = date.today()
-                    send_webhook(self.discord_webhook, content=f"{today}", thread_name=f"{today}", username="Lodestone", avatar_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
-                else:
-                    try:
-                        send_webhook(self.discord_webhook, content=f"", username="Lodestone", avatar_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
-                    except Exception as e:
-                        print(e)
-                        logger.error(f"Detected that you are using a Forums channel but 'useDiscordForums' is set to False. Please change 'useDiscordForums' to True or provide a webhook url for a text channel.")
+                # if self.use_discord_forums:
+                #     today = date.today()
+                #     send_webhook(self.discord_webhook, content=f"{today}", thread_name=f"{today}", username="Lodestone", avatar_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
+                # else:
+                #     try:
+                #         send_webhook(self.discord_webhook, content=f"", username="Lodestone", avatar_url="https://github.com/SilkePilon/Lodestone/blob/main/chestlogo.png?raw=true", embed=embed)
+                #     except Exception as e:
+                #         print(e)
+                #         logger.error(f"Detected that you are using a Forums channel but 'useDiscordForums' is set to False. Please change 'useDiscordForums' to True or provide a webhook url for a text channel.")
             if console:
                 if error:
                     logger.error(f"[{icon}] {message}")

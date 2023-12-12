@@ -1,32 +1,26 @@
-from javascript import require, On, Once
+from javascript import require, On, Once, off, once
 from javascript.proxy import Proxy
 from rich.console import Console
 from tinydb import TinyDB, Query
-
 import requests
 import os
 import sys
 import time
-import fnmatch
+from typing import Any, Literal
 import re
 import subprocess
 from typing import Callable
 from importlib.metadata import version as version_checker
 import dataclasses
-
+import threading
 try:
-    from logger import logger
-    from utils import cprop, send_webhook
+    from lodestone.modules import logger
+    from lodestone.utils.utils import cprop
 except ImportError:
-    from .logger import logger
-    from .utils import cprop, send_webhook
+    from modules import logger
+    from utils import cprop
 
 User = Query()
-
-
-filestruc = "/"
-if os.name == 'nt':
-    filestruc = "\\"
 
 __all__ = ['Bot', 'createBot']
 
@@ -254,7 +248,7 @@ class CommandContext:
     full_message: Proxy
     bot: 'Bot'
 
-    def respond(self, *message, whisper = False, whisper_to: str = sender):
+    def respond(self, *message, whisper = False, whisper_to: str):
         """
         Respond to the command. Use whisper_to only if whisper is True
         """
@@ -263,14 +257,23 @@ class CommandContext:
         else:
             self.bot.chat(*message)
 
-class Bot:
+
+
+def threaded(fn):
+    def wrapper(*args, **kwargs):
+        thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
+        thread.start()
+        return thread
+    return wrapper
+
+class Bot(threading.Thread):
     def __init__(
             self,
             host: str,
             *,
-            auth: str = "microsoft",
+            auth: Literal['micosoft', 'offline'] = "microsoft",
             port: int = 25565,
-            version: str = "false",
+            version: Literal["1.8.8", "1.9" "15w40b", "1.9.1-pre2", "1.9.2", "1.9.4", "1.10", "16w20a", "1.10-pre1", "1.10", "1.10.1", "1.10.2", "1.11", "16w35a", "1.11", "1.11.2", "1.12", "17w15a", "17w18b", "1.12-pre4", "1.12", "1.12.1", "1.12.2", "1.13", "17w50a", "1.13", "1.13.1", "1.13.2-pre1", "1.13.2-pre2", "1.13.2", "1.14", "1.14", "1.14.1", "1.14.3", "1.14.4", "1.15", "1.15", "1.15.1", "1.15.2", "1.16", "20w13b", "20w14a", "1.16-rc1", "1.16", "1.16.1", "1.16.2", "1.16.3", "1.16.4", "1.17", "21w07a", "1.17", "1.17.1", "1.18", "1.18", "1.18.1", "1.18.2", "1.19", "1.19", "1.19.1", "1.19.2", "1.19.3", "1.19.4", "1.20", "1.20.1", "false"] = "false",
             password: str = "",
             respawn: bool = True,
             disableChatSigning: bool = False,
@@ -294,11 +297,14 @@ class Bot:
             ls_discord_webhook: str = None,
             ls_use_discord_forums: bool = False,
             ls_api_mode: bool = False,
-            ls_plugin_list: [] = None
+            ls_plugin_list: [] = None,
+            easyMcToken: str = None
+            
     ):
         """
         Create the bot. Parameters in camelCase are passed into mineflayer. Parameters starting with ls_ is Lodestone specific
         """
+        threading.Thread.__init__(self, daemon=True)
         if ls_debug_mode:
             os.environ["DEBUG"] = "minecraft-protocol"
         else:
@@ -331,6 +337,7 @@ class Bot:
         self.api_mode = ls_api_mode
         self.plugin_list = ls_plugin_list if ls_plugin_list else []
         self.check_timeout_interval = checkTimeoutInterval
+        self.easy_mc_token = easyMcToken
 
         self.custom_command_prefix = "!"
         self.custom_commands = {}
@@ -347,6 +354,14 @@ class Bot:
         self.extra_data = {}
         self.loaded_plugins = {}
         self.loaded_events = {}
+        
+        
+        
+        _ = require("mineflayer")
+        _ = require("prismarine-viewer")
+        _ = require("mineflayer-collectblock")
+        _ = require("minecraft-data")
+        _ = require("mineflayer-pathfinder")
 
         if not self.skip_checks:
             self.node_version, self.pip_version, self.python_version = self.__versions_check()
@@ -357,10 +372,9 @@ class Bot:
             pass # needs plugin
 
         self.mineflayer = require('mineflayer')
-        self.pathfinder = require('mineflayer-pathfinder')
-        self.goals = require('mineflayer-pathfinder').goals
+        self.once_with_cleanup = require('mineflayer').promise_utils
         if not self.disable_viewer:
-            self.mineflayer_viewer = require('prismarine-viewer').mineflayer
+            self.mineflayer_viewer = require('prismarine-viewer')
         self.python_command = self.__check_python_command()
         if not ls_skip_checks:
             with self.console.status("[bold]Checking for updates...\n") as status:
@@ -430,12 +444,27 @@ class Bot:
                     logger.info(f"[{icon}] {message}")
                 else:
                     logger.info(f"[{icon}] {message}")
+    
+    def __wait_for_msa(self):
+        @self.once('login')
+        def await_login(*args):
+            logger.info("Logged in successfully!")
+            
+
+    def __msa(self, *msa):
+        self.msa_data = msa[0]
+        self.msa_status = True
+        self.log(message="It seems you are not logged in! Open your terminal for more information.", error=True,
+                    console=False)
+        msg = str(self.msa_data['message']).replace("\n", "")
+        logger.error(f"It seems you are not logged in. {msg}")
         
-    @staticmethod
-    def __find_files(base, pattern):
-        """Return list of files matching pattern in base folder."""
-        return [n for n in fnmatch.filter(os.listdir(base), pattern) if
-            os.path.isfile(os.path.join(base, n))]
+        
+        self.__wait_for_msa()
+        if self.api_mode:
+            self.bot.end()
+            quit()
+        self.msa_status = False
 
     def __versions_check(self):
         with self.console.status("[bold]Checking versions...\n"):
@@ -470,43 +499,105 @@ class Bot:
                 pip_version = match.group(1)
                 python_version = match.group(2)
             return node_version, pip_version, python_version
-
+    
     def __create_bot(self):
         if self.local_version == "auto" or self.local_version == "false":
             self.local_version = False
         else:
             self.version = str(self.local_version)
-        local_bot = self.mineflayer.createBot({
-            'host': self.local_host,
-            'port': self.local_port,
-            'username': self.local_username,
-            'password': self.local_password,
-            'auth': self.local_auth,
-            'version': self.local_version,
-            'checkTimeoutInterval': self.check_timeout_interval,
-            'disableChatSigning': self.local_disable_chat_signing,
-            'profilesFolder': self.local_profiles_folder,
-            'logErrors': self.local_log_errors,
-            'hideErrors': self.local_hide_errors,
-            'keepAlive': self.local_keep_alive,
-            'loadInternalPlugins': self.local_load_internal_plugins,
-            'respawn': self.local_respawn,
-            'physicsEnabled': self.local_physics_enabled,
-            'defaultChatPatterns': self.local_default_chat_patterns
-        })
-        self.__setup_events()
-        self.bot = local_bot
+        
+        if self.local_auth.lower() == "easymc":
+            self.minecraft_protocol = require('minecraft-protocol')
+            import types
+            
+            
+            def easy_mc_auth(client, options):
+                try:
+                    res = requests.post('https://api.easymc.io/v1/token/redeem', headers={'Content-Type': 'application/json'}, json={"token":f"{options['easyMcToken']}"})
+                    res_json =  res.json()
+                    if res_json.get('error'):
+                        raise Exception(f'EasyMC: {res_json["error"]}')
+                        quit()
+                    if not res_json:
+                        raise Exception('Empty response from EasyMC.')
+                        quit()
+                    if len(res_json.get('session', '')) != 43 or len(res_json.get('mcName', '')) < 3 or len(res_json.get('uuid', '')) != 36:
+                        raise Exception('Invalid response from EasyMC.')
+                        quit()
+                    session = {
+                        'accessToken': res_json['session'],
+                        'selectedProfile': {
+                            'name': res_json['mcName'],
+                            'id': res_json['uuid']
+                        }
+                    }
+                    options.haveCredentials = True
+                    client.session = session
+                    options.username = client.username = session['selectedProfile']['name']
+                    options.accessToken = session['accessToken']
+                    client.emit('session', session)
+                    options['connect'](client)
+                except Exception as error:
+                    print(error)
+                    quit()
 
-        return local_bot
 
+            try:
+                local_bot = self.mineflayer.createBot({
+                    'host': self.local_host,
+                    'port': self.local_port,
+                    'auth': easy_mc_auth,
+                    'sessionServer': 'https://sessionserver.easymc.io',
+                    'username': bytes(),
+                    'version': self.local_version,
+                    'checkTimeoutInterval': self.check_timeout_interval,
+                    'logErrors': self.local_log_errors,
+                    'hideErrors': self.local_hide_errors,
+                    'keepAlive': self.local_keep_alive,
+                })
+                print(local_bot)
+                self.bot = local_bot
+                return local_bot
+            except Exception as e:
+                raise ValueError(f"Error while creating bot: {e}")
+        else:    
+            try:
+                local_bot = self.mineflayer.createBot({
+                    'host': self.local_host,
+                    'port': self.local_port,
+                    'username': self.local_username,
+                    'password': self.local_password,
+                    'auth': self.local_auth,
+                    'version': self.local_version,
+                    'onMsaCode': self.__msa,
+                    'checkTimeoutInterval': self.check_timeout_interval,
+                    'disableChatSigning': self.local_disable_chat_signing,
+                    'profilesFolder': self.local_profiles_folder,
+                    'logErrors': self.local_log_errors,
+                    'hideErrors': self.local_hide_errors,
+                    'keepAlive': self.local_keep_alive,
+                    'loadInternalPlugins': self.local_load_internal_plugins,
+                    'respawn': self.local_respawn,
+                    'physicsEnabled': self.local_physics_enabled,
+                    'defaultChatPatterns': self.local_default_chat_patterns
+                })
+                self.bot = local_bot
+                return local_bot
+            except Exception as e:
+                raise ValueError(f"Error while creating bot: {e}")
+            
+        
+
+    
 
     def __start(self):
+        self.__setup_events()
         while not self.logged_in:
             time.sleep(1)
         self.log(
             f'Coordinates: {int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}',
             info=True)
-        self.register_command("@!version", return_str=f"{version_checker('lodestone')}")
+        self.__load_plugins()
 
     def on(self, event: str):
         """
@@ -521,6 +612,21 @@ class Bot:
         def inner(function):
             On(self.proxy, event)(function)
         return inner
+    
+    def off(self, event: str, function):
+        """
+        Decorator for event unregistering
+
+        ```python
+        @bot.off('messagestr')
+        def chat(_, message, *args):
+            ...
+        ```
+        """
+        print(function)
+        off(emitter=self.proxy, event=f"{event}", handler=function)
+        return
+    
 
     def once(self, event: str):
         """
@@ -693,22 +799,25 @@ class Bot:
         
     def __load_plugins(self):
         self.mc_data = require('minecraft-data')(self.bot.version)
-        self.bot.loadPlugin(self.pathfinder.pathfinder)
-        self.movements = self.pathfinder.Movements(self.bot, self.mc_data)
-        self.movements.canDig = False
-
+        self.__pathfinder = require('mineflayer-pathfinder').pathfinder
+        self.movements = require('mineflayer-pathfinder').Movements
+        self.goals = require('mineflayer-pathfinder').goals
+        
+        self.bot.loadPlugin(self.__pathfinder)
+        self.pathfinder = self.bot.pathfinder
+        self.bot.loadPlugin(require('mineflayer-collectblock').plugin)
+        self.movements = self.movements(self.bot, self.mc_data)
         self.bot.pathfinder.setMovements(self.movements)
     
     def __setup_events(self):
         @self.once("login")
         def on_login(*_):
-            logger.info("Logged in successfully!")
             self.logged_in = True
             self.log(f"Connected to {self.local_host}", info=True)
             self.log(f'Logged in as {self.bot.username}', info=True)
             if not self.disable_viewer:
                 self.__start_viewer()
-            self.__load_plugins()
+            
 
         @self.on("path_update")
         def path_update(_, r):
@@ -736,6 +845,9 @@ class Bot:
         @self.on("error")
         def error(_, error):
             self.log(error, error=True)
+            if error == "Authentication failed, timed out":
+                self.stop()
+                quit()
 
         @self.on("chat")
         def handleMsg(_, sender: str, message: str, *args):
@@ -763,9 +875,14 @@ class Bot:
 
     def __start_viewer(self):
         try:
-            self.mineflayer_viewer(self.bot, {"port": self.viewer_port})
+            self.mineflayer_viewer.mineflayer(self.bot, {"port": self.viewer_port})
+            # _ = require("node-canvas-webgl")
+            # @self.once("spawn")
+            # def ___start_viewer(*args):
+            #     self.mineflayer_viewer.headless(self.bot, { "output": f"127.0.0.1:{self.viewer_port}", "frames": 200, "width": 512, "height": 512 })
             self.log(f"Viewer started on port {self.viewer_port}", info=True)
-        except:
+        except Exception as e:
+            print(e)
             self.log("There was an error while starting the viewer!", warning=True)
             
     
@@ -869,7 +986,7 @@ class Bot:
         self.extra_data[item] = value
         return value
 
-    def get_data(self, item, default: object = None, compare: object = type()):
+    def get_data(self, item, default: object = None, compare: object = "nothing to compare to"):
         """
         Gets custom data that is set prior. Also take in an optional compare parameter to do assertion with the obtained data.
         Default parameter for 'default' is None
@@ -883,7 +1000,7 @@ class Bot:
         ```
         """
         result = self.extra_data.get(item, default)
-        if not compare == type(): # there's a comparison
+        if not compare == "nothing to compare to": # there's a comparison
             if result != compare:
                 raise AssertionError(
                     f"Incorrect value in custom data! Queried {repr(item)}={repr(result)}, instead expected {repr(item)}={repr(compare)}"
@@ -897,58 +1014,190 @@ class Bot:
         self.custom_command_prefix = new_prefix
 
     def register_command(self, command_name: str, sender = None, returns: str | Callable[[CommandContext], None] = None, whisper: bool = True):
-        """
-        Registers a custom command that the bot listen to. You can only register one callback to a command. Subsequent registers will overwrite the previous ones
-        If you set the `sender` parameter the bot will only respond if the senders match.
-        You can pass an function with the `returns` parameter. DO NOT CALL.
-        Your custom function needs to accept a context argument of type CommandContext.
+            """
+            Registers a custom command that the bot listens to.
 
-        Alternatively, you can use this as a decorator too!
+            Args:
+                command_name (str): The name of the command to register.
+                sender (Optional[str]): The sender of the command. If set, the bot will only respond if the senders match.
+                returns (Optional[Union[str, Callable[[CommandContext], None]]]): The return value or callback function for the command.
+                    - If a string is provided, the bot will respond with that string.
+                    - If a callable function is provided, the bot will execute that function.
+                whisper (bool): Indicates whether the bot should respond with a whisper. Default is True.
 
-        ```python
-        ... # previous code
-        bot.register_command("hello", returns="Hello there!")
-        ```
+            Returns:
+                None
 
-        ```python
-        ... # previous code
-        @bot.register_command("time")
-        def get_time(ctx):
-            current_time = datatime.datetime.now()
-            ctx.respond(f"It is now {current_time}", whisper=True)
-        ```
+            Examples:
+                You can register a command with a return value using the following syntax:
 
-        """
-        command_sender = sender
-        if isinstance(returns, str):
-            self.custom_commands[command_name] = {
-                "sender": command_sender,
-                "callback": lambda ctx: ctx.respond(returns, whisper=whisper)
-            }
-        elif callable(returns):
-            self.custom_commands[command_name] = {
-                "sender": command_sender,
-                "callback": returns
-            }
-        elif returns is None:
-            def inner(func):
-                def wrapper(ctx):
-                    func(ctx)
+                ```python
+                bot.register_command("hello", returns="Hello there!")
+                ```
 
-                wrapper.__name__ = func.__name__
-                wrapper.__doc__ = func.__doc__
-                wrapper.__dict__ = func.__dict__
+                You can register a command with a callback function using the following syntax:
 
+                ```python
+                @bot.register_command("time")
+                def get_time(ctx):
+                    current_time = datetime.datetime.now()
+                    ctx.respond(f"It is now {current_time}", whisper=True)
+                ```
+
+                Alternatively, you can use the `register_command` method as a decorator.
+
+            Raises:
+                TypeError: If the callback parameter is of an unsupported type.
+
+            """
+            command_sender = sender
+            if isinstance(returns, str):
                 self.custom_commands[command_name] = {
                     "sender": command_sender,
-                    "callback": func
+                    "callback": lambda ctx: ctx.respond(returns, whisper=whisper, whisper_to=command_sender)
                 }
-                return wrapper
-            return inner
+            elif callable(returns):
+                self.custom_commands[command_name] = {
+                    "sender": command_sender,
+                    "callback": returns
+                }
+            elif returns is None:
+                def inner(func):
+                    def wrapper(ctx):
+                        func(ctx)
+
+                    wrapper.__name__ = func.__name__
+                    wrapper.__doc__ = func.__doc__
+                    wrapper.__dict__ = func.__dict__
+
+                    self.custom_commands[command_name] = {
+                        "sender": command_sender,
+                        "callback": func
+                    }
+                    return wrapper
+                return inner
+            else:
+                raise TypeError(
+                    f"Cannot add custom command with callback of type {returns.__class__.__name__}!"
+                )
+            
+    def collect_block(self, block:str, amount:int=1, max_distance:int=64):
+        """
+        Collect a block by name.
+
+        Args:
+            block (str): The name of the block to collect.
+            amount (int, optional): The number of blocks to collect. Defaults to 1.
+            max_distance (int, optional): The maximum distance to search for the block. Defaults to 64.
+
+        Returns:
+            None
+
+        Raises:
+            None
+
+        Example:
+            bot.collect_block("oak_log", amount=20)
+        """
+        # Get the correct block type
+        self.collected = 0
+        def collect():
+            try:
+                self.collected = 0 
+                blockType = self.bot.registry.blocksByName[block]
+                if not blockType:
+                    return
+                blocks = self.bot.findBlocks({
+                    'matching': blockType.id,
+                    'maxDistance': 64,
+                    'count': amount
+                })
+                if len(blocks.valueOf()) == 0:
+                    self.chat("I don't see that block nearby.")
+                    return
+                targets = []
+                for i in range(min(len(blocks.valueOf()), amount)):
+                    targets.append(self.bot.blockAt(blocks[i]))
+                self.chat(f"Found {len(targets)}")
+                try:
+                    self.bot.collectBlock.collect(targets, timeout=10000)
+                    # All blocks have been collected.
+                    self.chat('Done')
+                except Exception as err:
+                    # An error occurred, report it.
+                    print(err)
+            except Exception as err:
+                print(err)
+        task = threading.Thread(target=collect)
+        task.start()
+        task.join()
+        
+        
+    
+    def goto(self, x: int, y: int, z: int, timeout: int = 600000000):
+        """
+        Go to the specified coordinates (x, y, z).
+
+        Args:
+            x (int): The x-coordinate.
+            z (int): The z-coordinate.
+            y (int, optional): The y-coordinate. Defaults to 0.
+            timeout (int, optional): The timeout in milliseconds. Defaults to 600000000.
+
+        Returns:
+            None
+
+        Examples:
+            To move to the coordinates (10, 0, 20) with a timeout of 10 seconds:
+            >>> bot.goto(10, 20, timeout=10000)
+        """
+        # Get the correct block type
+        with self.console.status(f"[bold]Moving to ({x}, {y}, {z})...") as status:
+            if y == None:
+                self.bot.pathfinder.goto(self.goals.GoalNearXZ(int(x), int(z), 1), timeout=timeout)
+            else:
+                self.bot.pathfinder.goto(self.goals.GoalNear(int(x), int(y), int(z), 1), timeout=timeout)
+            return
+        
+    def placeBlockWithOptions(self, referenceBlock, faceVector, options):
+        dest = referenceBlock.position.plus(faceVector)
+        oldBlock = self.bot.blockAt(dest)
+        self.bot._genericPlace(referenceBlock, faceVector, options)
+        newBlock = self.bot.blockAt(dest)
+        if oldBlock.type == newBlock.type:
+            @On(self.bot.world, f"blockUpdate:{dest}")
+            def block_update(oldBlock, newBlock):
+                print(newBlock)
+                print(oldBlock)
+                if not oldBlock or not newBlock or oldBlock.type != newBlock.type:
+                    return
+                else: 
+                    raise Exception(f"No block has been placed: the block is still {oldBlock.name}")
+        if not oldBlock and not newBlock:
+            return
+        if oldBlock and oldBlock.type == newBlock.type:
+            raise Exception(f"No block has been placed: the block is still {oldBlock.name}")
         else:
-            raise TypeError(
-                f"Cannot add custom command with callback of type {returns.__class__.__name__}!"
-            )
+            self.emit("blockPlaced", oldBlock, newBlock)
+
+    def placeBlock(self, referenceBlock, faceVector, no_checks=False):
+        if no_checks:
+            try:
+                dest = referenceBlock.position.plus(faceVector)
+                # self.bot.lookAt(referenceBlock)
+                oldBlock = self.bot.blockAt(dest)
+                self.bot._genericPlace(referenceBlock, faceVector, { "swingArm": "right" })
+                # self.bot.waitForTicks(ticks)
+                
+                newBlock = self.bot.blockAt(dest)
+                self.emit("blockPlaced", oldBlock, newBlock)
+                return True
+            except:
+                return False
+        else:
+            self.placeBlockWithOptions(referenceBlock, faceVector, { "swingArm": "right" })
+            
+    
             
 
 createBot = Bot

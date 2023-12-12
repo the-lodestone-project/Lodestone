@@ -2,7 +2,7 @@
 
 <h1 align="center">
   <br>
-  <a href="https://github.com/SilkePilon/lodestone/"><img src="logo.png" alt="Lodestone" width="560"></a>
+  <a href="https://github.com/SilkePilon/lodestone/"><img src="assets/logo.png" alt="Lodestone" width="560"></a>
   <br>
 </h1>
 
@@ -113,7 +113,7 @@ Mineflayer is a complex library that allows you to control Minecraft accounts th
 
 ## Discord
 
-https://discord.gg/z8yRexNc3U
+https://discord.gg/Fa7HZgkczz
 
 ## Credits
 
