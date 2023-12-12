@@ -98,6 +98,11 @@ python -m opendeliverybot
 
 ---
 
+## Contributors ❤️
+* Katzengott [@Katzengott On GitHub](https://github.com/Katzengott) edelkatze On Discord
+
+
+
 ## Roadmap
 
 - [X] Add config.json file
