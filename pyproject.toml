@@ -1,6 +1,6 @@
 [project]
 name = "lodestone"
-version = "0.1.0"
+version = "0.1.1"
 description = "🤖 Create Minecraft bots with a powerful, stable, and high level Python API."
 authors = [
     { name = "Silke Pilon", email = "silkepilon2009@gmail.com" },
