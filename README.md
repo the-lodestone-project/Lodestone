@@ -15,15 +15,6 @@
   <a href="soon!"><img src="https://img.shields.io/badge/Discord-5865F2?logo=discord&logoColor=white" alt="Hungarian"></a>
 </p>
 
-<p align="center">
-  <a href="#about">About</a> •
-  <a href="#key-features">Key Features</a> •
-  <a href="#how-to-use">How To Use</a> •
-  <a href="#how-to-install">Install</a> •
-  <a href="#credits">Credits</a> •
-  <a href="#license">License</a>
-</p>
-
 <!-- ![screenshot](https://raw.githubusercontent.com/SilkePilon/youdotcom/main/assets/images/YouDotCom.jpg) -->
 
 ## About 📬
@@ -45,6 +36,7 @@ Let’s dive into how to get up and running with Lodestone.
 * Miscellaneous stuff such as knowing your health and whether it is raining.
 * Activating blocks and using items.
 * Chat.
+* Plugins for many servers.
 
 ## Getting Started 🏁
 
@@ -107,23 +99,6 @@ The command line arguments available are:
 
 </details>
 
-### 🚀 GitHub Codespaces (run the bot in the cloud)
-
-> [!IMPORTANT]
-> If the console gets spammed with random data, try changing the version from false to a version you know is supported by the server.
-
-1. Copy this code to you clipboard and run it once the terminal is available
-
-```bash
-python -m opendeliverybot
-```
-
-2. Open GitHub CodeSpaces below
-
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/SilkePilon/OpenDeliveryBot)
-
----
-
 ## Contributors ❤️
 | Name                | Helped With                               | GitHub   | Discord   |
 | --------------------- | ----------------------------------------- | ----------- | ----------- |
@@ -133,11 +108,10 @@ python -m opendeliverybot
 
 ## Roadmap
 
-- [X] Add config.json file
+- [ ] Add config.json file
 - [X] Add [click](https://github.com/pallets/click)
 - [X] Change to use as Pip package for better use
 - [X] Add Discord integration
-- [ ] Add Lava Caster (request by @givenbakerad on Discord)
 - [ ] Add Custom code runner (a way for users to test their own bot code in a nice and simple way)
 
 ## MineFlayer 🚀
