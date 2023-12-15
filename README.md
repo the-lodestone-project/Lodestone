@@ -82,31 +82,28 @@ Lodestone provides multiple authentication options including Microsoft and Offli
 
 
 
-### Arguments & Options 📄
+### Uisng the Lodestone CLI
+
+Lodestone also offers an easy to use command line intercace (CLI). This allows you to use the basic functions of lodestone.
+the CLI offers auto tab complete and has real time chat logs.
 
 > [!IMPORTANT]
-> Not changing some of these settings will result in the bot not working. 🛑
+> `username` and `host` are requierd options. 🛑
 
 > [!WARNING]
 > Do not share your Minecraft info to anyone. 🔒
 
 <details open>
-<summary>How to use the arguments</summary>
+<summary>Command line arguments</summary>
 <br>
 
 The command line arguments available are:
 
-* `--email`: The Minecraft Email the bot will log into (use a name and no password for a cracked account). 📧
-* `--password`: The password for your account (if not using cracked). 🔑
-* `--host`: The IP address or hostname of the Minecraft server. 🖥
-* `--port`: The port number the Minecraft server is listening on. Default is 25565. ⚡
+* `--username` or `-u`: The Minecraft username the bot will log into. 📧
+* `--host` or `-h`: The IP address or hostname of the Minecraft server. 🖥
+* `--port` or `-p`: The port number the Minecraft server is listening on. Default is 25565. ⚡
 * `--auth`: The authentication method your account requires (mojang/microsoft/cracked). Default is "microsoft". 🔐
-* `--version`: Minecraft version to use when connecting to a server. Default is auto. 🕹
-* `--check_timeout`: How often in milliseconds the bot checks if it is still logged into the server. Default is 600000 (10 minutes). ⏱
-* `--viewer_port`: The local port to run the viewer server on so you can visually see what the bot is doing. Default is 8000. 👀
-* `--quit_on_low_health`: Disconect the bot if the bot is on low health. Default is "True". 👤
-* `--low_health_threashold`: How low the health must be for the bot to quit. Default is "10". 👤
-* `--armor_equip`: If the bot needs to equip all available armor. Default is "True". 👤
+* `--version` or `-v` : Minecraft version to use when connecting to a server. Default is auto. 🕹
 
 </details>
 
