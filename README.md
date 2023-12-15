@@ -65,7 +65,7 @@ With Lodestone installed, create a bot.py file to initialize your bot. This is w
 import lodestone
 bot = lodestone.createBot(
   host='localhost',
-  port=0000,  # set this to your own LAN port
+  port=25565,  # set this to your own LAN port
   username='MyAwesomeBot',
   auth='microsoft' 
 )
