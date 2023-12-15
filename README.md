@@ -53,35 +53,32 @@ Let’s dive into how to get up and running with Lodestone.
 
 All instalation instructons and documentation can be found [here](https://lodestone-documentation.vercel.app/ "docs") but here is the general idea.
 
-Install
-To start building a Lodestone based bot, you first have to install the lodestone, package. run the following command to install the package:
-'''pip install lodestone'''
-
-💡
-If you already have the lodestone package installed you can skip this step, you only need to install lodestone for the bot to work.
-Create a bot.py
-Create the following bot.py file in your project’s root directory:
-'''import lodestone
- 
+#### Installation and Setup
+The first step is to install the Lodestone package using pip. It’s recommended to create a virtual environment first before installing:
+```bash
+python3 -m venv env
+source env/bin/activate
+pip install lodestone
+```
+With Lodestone installed, create a bot.py file to initialize your bot. This is where you’ll configure your bot’s username, authentication method, and other options:
+import lodestone
+```python
 bot = lodestone.createBot(
   host='localhost',
-  username='Bot',
-)'''
-
-With the above configuration, Lodestone will create a bot with the name bot that joins the java server localhost (localy run server). Other Lodestone bot creation configurations can be found Here.
-Run your bot
-After coding your very own Minecraft bot you can simply run the following command to start the bot!:
-Terminal
-# can be python3 on some systems
+  port=0000,  # set this to your own LAN port
+  username='MyAwesomeBot',
+  auth='microsoft' 
+)
+```
+In this example, we’re connecting to a local Minecraft server on localhost and using Microsoft authentication.
+Running and Logging In
+With your bot created, run it using:
+```bash
 python bot.py
+```
+The first time you run your bot, Lodestone will prompt you to log in using the authentication method you configured. Follow the login prompts to authenticate your bot and connect it to the Minecraft server.
+Lodestone provides multiple authentication options including Microsoft and Offline modes. See the docs for details.
 
-And run the next or next dev command specified in package.jsonto start developing the project! 🎉
-Sign in
-Lastly, if your not already signed in bot will ask you to sign in using Microsoft by default. The message will look something like this:
-'''It seems you are not logged in, please go to https://microsoft.com/link and enter the following code: ********'''
-
-after you sucsessfully sign in in to your account account the bot will be created.
-Full auth configurations can be found here.
 
 
 ### Arguments & Options 📄
