@@ -61,8 +61,8 @@ source env/bin/activate
 pip install lodestone
 ```
 With Lodestone installed, create a bot.py file to initialize your bot. This is where you’ll configure your bot’s username, authentication method, and other options:
-import lodestone
 ```python
+import lodestone
 bot = lodestone.createBot(
   host='localhost',
   port=0000,  # set this to your own LAN port
