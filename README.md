@@ -2,7 +2,7 @@
 
 <h1 align="center">
   <br>
-  <a href="https://github.com/SilkePilon/lodestone/"><img src="assets/logo.png" alt="Lodestone" width="560"></a>
+  <a href="https://github.com/SilkePilon/lodestone/"><img src="assets/22D4654A-6CA1-4D8F-8C8E-482F4EF19559.png" alt="Lodestone" width="560"></a>
   <br>
 </h1>
 
@@ -51,7 +51,38 @@ Let’s dive into how to get up and running with Lodestone.
 > [!IMPORTANT]
 > Some parts of the code are still in development and do not work!
 
-All instalation instructons and documentation can be found [here](https://lodestone-documentation.vercel.app/ "docs")
+All instalation instructons and documentation can be found [here](https://lodestone-documentation.vercel.app/ "docs") but here is the general idea.
+
+Install
+To start building a Lodestone based bot, you first have to install the lodestone, package. run the following command to install the package:
+'''pip install lodestone'''
+
+💡
+If you already have the lodestone package installed you can skip this step, you only need to install lodestone for the bot to work.
+Create a bot.py
+Create the following bot.py file in your project’s root directory:
+'''import lodestone
+ 
+bot = lodestone.createBot(
+  host='localhost',
+  username='Bot',
+)'''
+
+With the above configuration, Lodestone will create a bot with the name bot that joins the java server localhost (localy run server). Other Lodestone bot creation configurations can be found Here.
+Run your bot
+After coding your very own Minecraft bot you can simply run the following command to start the bot!:
+Terminal
+# can be python3 on some systems
+python bot.py
+
+And run the next or next dev command specified in package.jsonto start developing the project! 🎉
+Sign in
+Lastly, if your not already signed in bot will ask you to sign in using Microsoft by default. The message will look something like this:
+'''It seems you are not logged in, please go to https://microsoft.com/link and enter the following code: ********'''
+
+after you sucsessfully sign in in to your account account the bot will be created.
+Full auth configurations can be found here.
+
 
 ### Arguments & Options 📄
 
@@ -97,6 +128,13 @@ python -m opendeliverybot
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/SilkePilon/OpenDeliveryBot)
 
 ---
+
+## Contributors ❤️
+| Name                | Helped With                               | GitHub   | Discord   |
+| --------------------- | ----------------------------------------- | ----------- | ----------- |
+| **Katzengott**            | fishing bot and cactus bot | [@Katzengott](https://github.com/Katzengott) | edelkatze |
+
+
 
 ## Roadmap
 
