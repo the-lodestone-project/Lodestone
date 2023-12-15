@@ -71,7 +71,8 @@ bot = lodestone.createBot(
 )
 ```
 In this example, we’re connecting to a local Minecraft server on localhost and using Microsoft authentication.
-Running and Logging In
+
+##### Running and Logging In
 With your bot created, run it using:
 ```bash
 python bot.py
