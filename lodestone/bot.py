@@ -1,4 +1,4 @@
-from javascript import require, On, Once, off, once
+from javascript import require, On, Once, off
 from javascript.proxy import Proxy
 from rich.console import Console
 from tinydb import TinyDB, Query
@@ -6,18 +6,20 @@ import requests
 import os
 import sys
 import time
-from typing import Any, Literal
+from typing import Literal
 import re
 import subprocess
 from typing import Callable
-from importlib.metadata import version as version_checker
 import dataclasses
 import threading
+
 try:
     from lodestone.modules import logger
+    from lodestone.modules.lstream import LStream, LSFile
     from lodestone.utils.utils import cprop
 except ImportError:
     from modules import logger
+    from modules.lstream import LStream, LSFile
     from utils import cprop
 
 User = Query()
@@ -258,12 +260,13 @@ class CommandContext:
             self.bot.chat(*message)
 
 
-
 def threaded(fn):
+
     def wrapper(*args, **kwargs):
         thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
         thread.start()
         return thread
+
     return wrapper
 
 class Bot(threading.Thread):
@@ -273,7 +276,7 @@ class Bot(threading.Thread):
             *,
             auth: Literal['micosoft', 'offline'] = "microsoft",
             port: int = 25565,
-            version: Literal["1.8.8", "1.9" "15w40b", "1.9.1-pre2", "1.9.2", "1.9.4", "1.10", "16w20a", "1.10-pre1", "1.10", "1.10.1", "1.10.2", "1.11", "16w35a", "1.11", "1.11.2", "1.12", "17w15a", "17w18b", "1.12-pre4", "1.12", "1.12.1", "1.12.2", "1.13", "17w50a", "1.13", "1.13.1", "1.13.2-pre1", "1.13.2-pre2", "1.13.2", "1.14", "1.14", "1.14.1", "1.14.3", "1.14.4", "1.15", "1.15", "1.15.1", "1.15.2", "1.16", "20w13b", "20w14a", "1.16-rc1", "1.16", "1.16.1", "1.16.2", "1.16.3", "1.16.4", "1.17", "21w07a", "1.17", "1.17.1", "1.18", "1.18", "1.18.1", "1.18.2", "1.19", "1.19", "1.19.1", "1.19.2", "1.19.3", "1.19.4", "1.20", "1.20.1", "false"] = "false",
+            version: str = "false",
             password: str = "",
             respawn: bool = True,
             disableChatSigning: bool = False,
@@ -286,6 +289,7 @@ class Bot(threading.Thread):
             physicsEnabled: bool = True,
             defaultChatPatterns: bool = True,
             checkTimeoutInterval: int = 60 * 10000,
+
             ls_disable_logs: bool = False,
             ls_enable_chat_logging: bool = False,
             ls_skip_checks: bool = False,
@@ -298,6 +302,7 @@ class Bot(threading.Thread):
             ls_use_discord_forums: bool = False,
             ls_api_mode: bool = False,
             ls_plugin_list: [] = None,
+
             easyMcToken: str = None
             
     ):
@@ -429,7 +434,7 @@ class Bot(threading.Thread):
                 self.log(message='Python command not found, make sure python is installed!', error=True, discord=False)
                 sys.exit(1)
 
-    def log(self, message, icon="🤖", error=False, info=False, warning=False, chat=False, image_url="", console=True, discord=True):
+    def log(self, message, icon="🤖", error=False, info=False, warning=False, chat=False, console=True):
         if not self.disable_logs:
             if self.use_return:
                 logger.info(f"[{icon}] {message}")
@@ -447,7 +452,7 @@ class Bot(threading.Thread):
     
     def __wait_for_msa(self):
         @self.once('login')
-        def await_login(*args):
+        def await_login(*_):
             logger.info("Logged in successfully!")
             
 
@@ -508,8 +513,6 @@ class Bot(threading.Thread):
         
         if self.local_auth.lower() == "easymc":
             self.minecraft_protocol = require('minecraft-protocol')
-            import types
-            
             
             def easy_mc_auth(client, options):
                 try:
@@ -517,13 +520,10 @@ class Bot(threading.Thread):
                     res_json =  res.json()
                     if res_json.get('error'):
                         raise Exception(f'EasyMC: {res_json["error"]}')
-                        quit()
                     if not res_json:
                         raise Exception('Empty response from EasyMC.')
-                        quit()
                     if len(res_json.get('session', '')) != 43 or len(res_json.get('mcName', '')) < 3 or len(res_json.get('uuid', '')) != 36:
                         raise Exception('Invalid response from EasyMC.')
-                        quit()
                     session = {
                         'accessToken': res_json['session'],
                         'selectedProfile': {
@@ -586,9 +586,19 @@ class Bot(threading.Thread):
             except Exception as e:
                 raise ValueError(f"Error while creating bot: {e}")
             
-        
+    def lstream_log(self, lstream: LStream, message: str):
+        """
+        Make the LStream enum usable lel
+        """
+        if lstream == LStream.LOGGER:
+           logger.info(message)
+        elif lstream == LStream.CHAT:
+            self.chat(message)
+        elif isinstance(lstream, open):
+            lstream: LSFile = lstream
 
-    
+            lstream.write(message)
+            lstream.flush()
 
     def __start(self):
         self.__setup_events()
@@ -876,10 +886,6 @@ class Bot(threading.Thread):
     def __start_viewer(self):
         try:
             self.mineflayer_viewer.mineflayer(self.bot, {"port": self.viewer_port})
-            # _ = require("node-canvas-webgl")
-            # @self.once("spawn")
-            # def ___start_viewer(*args):
-            #     self.mineflayer_viewer.headless(self.bot, { "output": f"127.0.0.1:{self.viewer_port}", "frames": 200, "width": 512, "height": 512 })
             self.log(f"Viewer started on port {self.viewer_port}", info=True)
         except Exception as e:
             print(e)
@@ -942,7 +948,7 @@ class Bot(threading.Thread):
             self.log(f"{server} has no database", warning=True)
             return []
         
-    def clear_logs(self):
+    def clear_chatlogs(self):
         """
         Clear all the chat logs from the database
         """
@@ -1003,7 +1009,7 @@ class Bot(threading.Thread):
         if not compare == "nothing to compare to": # there's a comparison
             if result != compare:
                 raise AssertionError(
-                    f"Incorrect value in custom data! Queried {repr(item)}={repr(result)}, instead expected {repr(item)}={repr(compare)}"
+                    f"Incorrect value in custom data! Got {repr(item)}={repr(result)}, instead expected {repr(item)}={repr(compare)}"
                 )
         return result
 
@@ -1078,82 +1084,76 @@ class Bot(threading.Thread):
                 return inner
             else:
                 raise TypeError(
-                    f"Cannot add custom command with callback of type {returns.__class__.__name__}!"
+                    f"Cannot add custom command with callback of type {type(returns)}!"
                 )
             
-    def collect_block(self, block:str, amount:int=1, max_distance:int=64):
+    def collect_block(self, block: str, amount: int = 1, max_distance: int = 64, *, file: LStream = LStream.LOGGER):
         """
         Collect a block by name.
 
         Args:
             block (str): The name of the block to collect.
             amount (int, optional): The number of blocks to collect. Defaults to 1.
-            max_distance (int, optional): The maximum distance to search for the block. Defaults to 64.
-
-        Returns:
-            None
+            max_distance (int, optional): The radius to search for.
+            file (LStream, optional): The file to log to. Defaults to LStream.LOGGER.
 
         Raises:
-            None
+            KeyError: If the block ID cannot be found in the registry
+            Exception: JavaScript error.
 
         Example:
-            bot.collect_block("oak_log", amount=20)
+            bot.collect_block("oak_log", amount=20, file=LStream.CHAT)
         """
-        # Get the correct block type
-        self.collected = 0
         def collect():
-            try:
-                self.collected = 0 
-                blockType = self.bot.registry.blocksByName[block]
-                if not blockType:
-                    return
-                blocks = self.bot.findBlocks({
-                    'matching': blockType.id,
-                    'maxDistance': 64,
-                    'count': amount
-                })
-                if len(blocks.valueOf()) == 0:
-                    self.chat("I don't see that block nearby.")
-                    return
-                targets = []
-                for i in range(min(len(blocks.valueOf()), amount)):
-                    targets.append(self.bot.blockAt(blocks[i]))
-                self.chat(f"Found {len(targets)}")
-                try:
-                    self.bot.collectBlock.collect(targets, timeout=10000)
-                    # All blocks have been collected.
-                    self.chat('Done')
-                except Exception as err:
-                    # An error occurred, report it.
-                    print(err)
-            except Exception as err:
-                print(err)
+            blockType = self.bot.registry.blocksByName[block]
+
+            if not blockType:
+                raise KeyError(
+                    f"Cannot find {block} in registry"
+                )
+
+            blocks = self.bot.findBlocks({
+                'matching': blockType.id,
+                'maxDistance': max_distance,
+                'count': amount
+            })
+
+            if len(blocks.valueOf()) == 0:
+                self.lstream_log(file, f"No blocks found of type {block} in radius of {max_distance}")
+                return
+
+            targets = []
+            for i in range(min(len(blocks.valueOf()), amount)):
+                targets.append(self.bot.blockAt(blocks[i]))
+
+            self.lstream_log(file, f"Found {len(targets)} blocks of type {block}")
+            self.bot.collectBlock.collect(targets, timeout=10000)
+
+            self.lstream_log(file, 'Done')
+
         task = threading.Thread(target=collect)
         task.start()
-        task.join()
-        
-        
-    
-    def goto(self, x: int, y: int, z: int, timeout: int = 600000000):
+
+    def goto(self, x: int, y: int, z: int, timeout: int = 600_000_000):
         """
         Go to the specified coordinates (x, y, z).
 
         Args:
             x (int): The x-coordinate.
+            y (int): The y-coordinate.
             z (int): The z-coordinate.
-            y (int, optional): The y-coordinate. Defaults to 0.
-            timeout (int, optional): The timeout in milliseconds. Defaults to 600000000.
+            timeout (int, optional): The timeout in milliseconds. Defaults to 600 million or 6.9 days.
 
         Returns:
             None
 
         Examples:
-            To move to the coordinates (10, 0, 20) with a timeout of 10 seconds:
-            >>> bot.goto(10, 20, timeout=10000)
+            # Move to the coordinates (10, 0, 20) with a timeout of 10 seconds
+            bot.goto(10, 20, timeout=10_000)
         """
         # Get the correct block type
-        with self.console.status(f"[bold]Moving to ({x}, {y}, {z})...") as status:
-            if y == None:
+        with self.console.status(f"[bold]Moving to ({x}, {y}, {z})..."):
+            if y is None:
                 self.bot.pathfinder.goto(self.goals.GoalNearXZ(int(x), int(z), 1), timeout=timeout)
             else:
                 self.bot.pathfinder.goto(self.goals.GoalNear(int(x), int(y), int(z), 1), timeout=timeout)
@@ -1196,8 +1196,5 @@ class Bot(threading.Thread):
                 return False
         else:
             self.placeBlockWithOptions(referenceBlock, faceVector, { "swingArm": "right" })
-            
-    
-            
 
 createBot = Bot

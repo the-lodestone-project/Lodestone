@@ -8,4 +8,4 @@ structlog.configure(
     ]
 )
 
-logger = structlog.getLogger(__name__)
+logger = structlog.get_logger(__name__)
