@@ -80,10 +80,10 @@ Lodestone also offers an easy to use command line intercace (CLI). This allows y
 the CLI offers auto tab complete and has real time chat logs.
 
 > [!IMPORTANT]
-> `username` and `host` are requierd options. 🛑
+> `username` and `host` are requierd options. <img src="https://minecraft.wiki/images/EffectSprite_particle-speed.png?0ed64">
 
 > [!WARNING]
-> Do not share your Minecraft info to anyone. 🔒
+> Do not share your Minecraft info to anyone. <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27">
 
 <details open>
 <summary>Command line arguments</summary>
@@ -91,11 +91,11 @@ the CLI offers auto tab complete and has real time chat logs.
 
 The command line arguments available are:
 
-* `--username` or `-u`: The Minecraft username the bot will log into. 📧
-* `--host` or `-h`: The IP address or hostname of the Minecraft server. 🖥
-* `--port` or `-p`: The port number the Minecraft server is listening on. Default is 25565. ⚡
-* `--auth`: The authentication method your account requires (mojang/microsoft/cracked). Default is "microsoft". 🔐
-* `--version` or `-v` : Minecraft version to use when connecting to a server. Default is auto. 🕹
+* `--username` or `-u`: The Minecraft username the bot will log into. <img src="https://minecraft.wiki/images/EnvSprite_emote.png?37574">
+* `--host` or `-h`: The IP address or hostname of the Minecraft server. <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27">
+* `--port` or `-p`: The port number the Minecraft server is listening on. Default is 25565. <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27">
+* `--auth`: The authentication method your account requires (mojang/microsoft/cracked). Default is "microsoft". <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27">
+* `--version` or `-v` : Minecraft version to use when connecting to a server. Default is auto. <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27">
 
 </details>
 
