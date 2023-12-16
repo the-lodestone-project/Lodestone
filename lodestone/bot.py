@@ -269,7 +269,8 @@ def threaded(fn):
 
     return wrapper
 
-class Bot(threading.Thread):
+class Bot:
+
     def __init__(
             self,
             host: str,
@@ -875,7 +876,7 @@ class Bot(threading.Thread):
 
             if message.startswith(self.custom_command_prefix):
                 command = message.removeprefix(self.custom_command_prefix)
-                commanded = self.custom_commands.get(command, None)
+                commanded = self.custom_commands.get(command, {})
                 if commanded:
                     if sender == commanded["sender"]:
                         cmd, *params = command.split()

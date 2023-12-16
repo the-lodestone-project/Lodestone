@@ -10,4 +10,3 @@ except:
     from .modules.api import fastapi
     from .server import createServer, Server
     from .modules.logger import logger
-    

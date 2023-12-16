@@ -2,22 +2,24 @@ import lodestone
 import time
 import asyncio
 from queue import PriorityQueue
-class Idkwhattocallthis:
+
+# plugin huh
+
+class TaskPlugin:
+    bot: lodestone.Bot = None
+
     def __init__(self, bot: lodestone.bot):
-        self.bot = bot
+        TaskPlugin.bot = bot
         self.__create_tree()
         self.__create_priority_queues()
         self.__add_tasks()
         self.__start()
-        
-    
-    
     
     class create_task:
         def __init__(self, item_or_block, amount=1, obtain=None,craft=None):
             self.obtain = obtain
             self.craft = craft
-            self.bot = Idkwhattocallthis.bot
+            self.bot = TaskPlugin.bot
             self.amount = amount
             self.item_or_block = item_or_block
             self.dependencies = []

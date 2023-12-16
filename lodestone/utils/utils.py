@@ -1,15 +1,19 @@
-import requests
-import structlog
 from rich.console import Console
 import asyncio
-logger = structlog.get_logger()
+
+try:
+    from ..modules.logger import logger
+except ImportError:
+    from lodestone.modules.logger import logger
+
 console = Console()
 
 def llm(input: str, data = ""):
     try:
         import g4f
     except:
-        pass
+        return
+
     _providers = [
         g4f.Provider.Bing,
         g4f.Provider.GptGo,
@@ -18,11 +22,10 @@ def llm(input: str, data = ""):
 
     output = []
 
+    async def run_provider(provider):
 
-    async def run_provider(provider: g4f.Provider.AsyncProvider):
-    
         try:
-            response = await provider.create_async(
+            response = provider.create_async(
                 model=g4f.models.default.name,
                 messages=[{"role": "user", "content": f"question about provided data: {input} data: {data} USE THIS DATA TO AWNSER THE QUESTION, KEEP IT SHORT"}],
             )
@@ -35,22 +38,27 @@ def llm(input: str, data = ""):
             run_provider(provider) for provider in _providers
         ]
         await asyncio.gather(*calls)
+
     with console.status(f"[bold green][LLM] Please wait...\n"):
         asyncio.run(run_all())
-        
+
+    prompt = f"question about provided data: {input} data: {data} USE THIS DATA TO AWNSER THE QUESTION, KEEP IT SHORT"
+
     default = g4f.ChatCompletion.create(
         model=g4f.models.gpt_4,
-        messages=[{"role": "user", "content": f"question about provided data: {input} data: {data} USE THIS DATA TO AWNSER THE QUESTION, KEEP IT SHORT"}],
+        messages=[{"role": "user", "content": prompt}],
     )  # alterative model setting
+
     if "<!DOCTYPE html>" in default:
         logger.warning(f"[LLM] default is not available. Trying another...")
-        defualtnew = g4f.ChatCompletion.create(
+        defaultnew = g4f.ChatCompletion.create(
             model=g4f.models.gpt_35_turbo,
-            messages=[{"role": "user", "content": f"question about provided data: {input} data: {data} USE THIS DATA TO AWNSER THE QUESTION, KEEP IT SHORT"}],
+            messages=[{"role": "user", "content": prompt}]
         )  # alterative model setting
-        output.append({"base": defualtnew})
+        output.append({"base": defaultnew})
     else:
         output.append({"base": default})
+
     return output
 
 
@@ -85,15 +93,15 @@ def cprop(cap = "camel", proxy_name = ""):
             if not name:
                 name = convert_case(func.__name__, cap)
             return getattr(self.proxy, name)
-        try:
-            wrapped.__name__ = func.__name__ 
-        except AttributeError:
-            pass # ignore if func is a property
+
+        wrapped.__name__ = func.__name__
         wrapped.__doc__ = func.__doc__
+
         try:
             wrapped.__annotations__ = func.__annotations__
         except AttributeError:
             pass # ignore if setting annotations fails
 
         return wrapped
+
     return decorator
