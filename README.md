@@ -29,7 +29,7 @@ Let’s dive into how to get up and running with Lodestone.
 * Entity knowledge and tracking.
 * Block knowledge. You can query the world around you. Milliseconds to find any block.
 * Physics and movement - handle all bounding boxes
-* Attacking entities and using vehicles.
+* <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27">Attacking entities and using vehicles.
 * Inventory management.
 * Crafting, chests, dispensers, enchantment tables.
 * Digging and building.
