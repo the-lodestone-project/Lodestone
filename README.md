@@ -38,7 +38,7 @@ Let’s dive into how to get up and running with Lodestone.
 * <img src="https://minecraft.wiki/images/ItemSprite_oak-sign.png?e1d26"> Chat.
 * <img src="https://minecraft.wiki/images/EffectSprite_particle-speed.png?0ed64"> Plugins for many servers.
 
-## Getting Started 🏁
+## Getting Started <img src="https://minecraft.wiki/images/EnvSprite_item.png?89d23">
 
 > [!IMPORTANT]
 > Some parts of the code are still in development and do not work!
