@@ -43,7 +43,7 @@ Let’s dive into how to get up and running with Lodestone.
 > [!IMPORTANT]
 > Some parts of the code are still in development and do not work!
 
-All instalation instructons and documentation can be found [here](https://lodestone-documentation.vercel.app/ "docs") but here is the general idea.
+All instalation instructons and documentation can be found [here](https://lodestone-documentation.vercel.app/ "docs")<img src="https://minecraft.wiki/images/Invicon_Arrow.png?243fa"> but here is the general idea.
 
 #### Installation and Setup
 The first step is to install the Lodestone package using pip. It’s recommended to create a virtual environment first before installing:
