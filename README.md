@@ -6,7 +6,7 @@
   <br>
 </h1>
 
-<h4 align="center">🤖 Create Minecraft bots with a powerful, stable, and high level Python API <img src="https://minecraft.wiki/images/Invicon_Recovery_Compass.gif?c2f29" width="20" height="20"></h4>
+<h4 align="center">🤖 Create Minecraft bots with a powerful, stable, and high level Python API <img src="https://minecraft.wiki/images/Invicon_Recovery_Compass.gif?c2f29" width="50" height="50"></h4>
 
 <p align="center">
     <img alt="Node version" src="https://img.shields.io/static/v1?label=node&message=%20%3E=18.0.0&logo=node.js&color=2334D058" />
