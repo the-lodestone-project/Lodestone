@@ -99,7 +99,7 @@ The command line arguments available are:
 
 </details>
 
-## Contributors ❤️
+## Contributors <img src="https://minecraft.wiki/images/EnvSprite_heart.png?8a428">
 | Name                | Helped With                               | GitHub   | Discord   |
 | --------------------- | ----------------------------------------- | ----------- | ----------- |
 | **Katzengott**            | fishing bot and cactus bot | [@Katzengott](https://github.com/Katzengott) | edelkatze |
