@@ -363,13 +363,14 @@ class Bot:
         
         
         
-        _ = require("mineflayer")
-        _ = require("prismarine-viewer")
-        _ = require("mineflayer-collectblock")
-        _ = require("minecraft-data")
-        _ = require("mineflayer-pathfinder")
+        
 
         if not self.skip_checks:
+            os.system(f"{sys.executable} -m javascript --install mineflayer")
+            os.system(f"{sys.executable} -m javascript --install prismarine-viewer")
+            os.system(f"{sys.executable} -m javascript --install mineflayer-collectblock")
+            os.system(f"{sys.executable} -m javascript --install minecraft-data")
+            os.system(f"{sys.executable} -m javascript --install mineflayer-pathfinder")
             self.node_version, self.pip_version, self.python_version = self.__versions_check()
         else:
             self.node_version, self.pip_version, self.python_version = "unknown", "unknown", "unknown"
@@ -384,9 +385,9 @@ class Bot:
         self.python_command = self.__check_python_command()
         if not ls_skip_checks:
             with self.console.status("[bold]Checking for updates...\n") as status:
-                status.update("[bold]Updating javascript libraries...\n")
+                status.update("[bold]Checking if backend is up-to-date...\n")
                 subprocess.run(f'{self.python_command} -m javascript --update', stdout=subprocess.DEVNULL, shell=True, input=b"\n")
-                status.update("[bold]Updating pip package...\n")
+                status.update("[bold]Checking if lodestone itself is up-to-date...\n")
                 subprocess.run(f'{self.python_command} -m pip install -U lodestone', stdout=subprocess.DEVNULL, shell=True, input=b"\n")
         self.logged_in = False
         self.use_return = ls_use_return
@@ -507,85 +508,40 @@ class Bot:
             return node_version, pip_version, python_version
     
     def __create_bot(self):
+        
+        if not self.local_version in ["1.8.8", "1.9" "15w40b", "1.9.1-pre2", "1.9.2", "1.9.4", "1.10", "16w20a", "1.10-pre1", "1.10", "1.10.1", "1.10.2", "1.11", "16w35a", "1.11", "1.11.2", "1.12", "17w15a", "17w18b", "1.12-pre4", "1.12", "1.12.1", "1.12.2", "1.13", "17w50a", "1.13", "1.13.1", "1.13.2-pre1", "1.13.2-pre2", "1.13.2", "1.14", "1.14", "1.14.1", "1.14.3", "1.14.4", "1.15", "1.15", "1.15.1", "1.15.2", "1.16", "20w13b", "20w14a", "1.16-rc1", "1.16", "1.16.1", "1.16.2", "1.16.3", "1.16.4", "1.17", "21w07a", "1.17", "1.17.1", "1.18", "1.18", "1.18.1", "1.18.2", "1.19", "1.19", "1.19.1", "1.19.2", "1.19.3", "1.19.4", "1.20", "1.20.1", "false"]:
+            raise ValueError(f"Invalid version: {self.local_version}")
+        
         if self.local_version == "auto" or self.local_version == "false":
             self.local_version = False
         else:
             self.version = str(self.local_version)
-        
-        if self.local_auth.lower() == "easymc":
-            self.minecraft_protocol = require('minecraft-protocol')
             
-            def easy_mc_auth(client, options):
-                try:
-                    res = requests.post('https://api.easymc.io/v1/token/redeem', headers={'Content-Type': 'application/json'}, json={"token":f"{options['easyMcToken']}"})
-                    res_json =  res.json()
-                    if res_json.get('error'):
-                        raise Exception(f'EasyMC: {res_json["error"]}')
-                    if not res_json:
-                        raise Exception('Empty response from EasyMC.')
-                    if len(res_json.get('session', '')) != 43 or len(res_json.get('mcName', '')) < 3 or len(res_json.get('uuid', '')) != 36:
-                        raise Exception('Invalid response from EasyMC.')
-                    session = {
-                        'accessToken': res_json['session'],
-                        'selectedProfile': {
-                            'name': res_json['mcName'],
-                            'id': res_json['uuid']
-                        }
-                    }
-                    options.haveCredentials = True
-                    client.session = session
-                    options.username = client.username = session['selectedProfile']['name']
-                    options.accessToken = session['accessToken']
-                    client.emit('session', session)
-                    options['connect'](client)
-                except Exception as error:
-                    print(error)
-                    quit()
-
-
-            try:
-                local_bot = self.mineflayer.createBot({
-                    'host': self.local_host,
-                    'port': self.local_port,
-                    'auth': easy_mc_auth,
-                    'sessionServer': 'https://sessionserver.easymc.io',
-                    'username': bytes(),
-                    'version': self.local_version,
-                    'checkTimeoutInterval': self.check_timeout_interval,
-                    'logErrors': self.local_log_errors,
-                    'hideErrors': self.local_hide_errors,
-                    'keepAlive': self.local_keep_alive,
-                })
-                print(local_bot)
-                self.bot = local_bot
-                return local_bot
-            except Exception as e:
-                raise ValueError(f"Error while creating bot: {e}")
-        else:    
-            try:
-                local_bot = self.mineflayer.createBot({
-                    'host': self.local_host,
-                    'port': self.local_port,
-                    'username': self.local_username,
-                    'password': self.local_password,
-                    'auth': self.local_auth,
-                    'version': self.local_version,
-                    'onMsaCode': self.__msa,
-                    'checkTimeoutInterval': self.check_timeout_interval,
-                    'disableChatSigning': self.local_disable_chat_signing,
-                    'profilesFolder': self.local_profiles_folder,
-                    'logErrors': self.local_log_errors,
-                    'hideErrors': self.local_hide_errors,
-                    'keepAlive': self.local_keep_alive,
-                    'loadInternalPlugins': self.local_load_internal_plugins,
-                    'respawn': self.local_respawn,
-                    'physicsEnabled': self.local_physics_enabled,
-                    'defaultChatPatterns': self.local_default_chat_patterns
-                })
-                self.bot = local_bot
-                return local_bot
-            except Exception as e:
-                raise ValueError(f"Error while creating bot: {e}")
+            
+        try:
+            local_bot = self.mineflayer.createBot({
+                'host': self.local_host,
+                'port': self.local_port,
+                'username': self.local_username,
+                'password': self.local_password,
+                'auth': self.local_auth,
+                'version': self.local_version,
+                'onMsaCode': self.__msa,
+                'checkTimeoutInterval': self.check_timeout_interval,
+                'disableChatSigning': self.local_disable_chat_signing,
+                'profilesFolder': self.local_profiles_folder,
+                'logErrors': self.local_log_errors,
+                'hideErrors': self.local_hide_errors,
+                'keepAlive': self.local_keep_alive,
+                'loadInternalPlugins': self.local_load_internal_plugins,
+                'respawn': self.local_respawn,
+                'physicsEnabled': self.local_physics_enabled,
+                'defaultChatPatterns': self.local_default_chat_patterns
+            })
+            self.bot = local_bot
+            return local_bot
+        except Exception as e:
+            raise ValueError(f"Error while creating bot: {e}")
             
     def lstream_log(self, lstream: LStream, message: str):
         """
@@ -605,9 +561,6 @@ class Bot:
         self.__setup_events()
         while not self.logged_in:
             time.sleep(1)
-        self.log(
-            f'Coordinates: {int(self.bot.entity.position.x)}, {int(self.bot.entity.position.y)}, {int(self.bot.entity.position.z)}',
-            info=True)
         self.__load_plugins()
 
     def on(self, event: str):

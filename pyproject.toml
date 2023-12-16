@@ -24,7 +24,8 @@ dependencies = [
     "python-dotenv",
     "aiofiles",
     "gradio==3.*",
-    "psutil"
+    "psutil",
+    "prompt_toolkit",
 ]
 
 [project.urls]
