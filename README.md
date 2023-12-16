@@ -25,18 +25,18 @@ Let’s dive into how to get up and running with Lodestone.
 
 ## Features
 
-* Supports Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19 and 1.20.1.
-* Entity knowledge and tracking.
-* Block knowledge. You can query the world around you. Milliseconds to find any block.
-* Physics and movement - handle all bounding boxes
+* <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27"> Supports Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19 and 1.20.1.
+* <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27"> Entity knowledge and tracking.
+* <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27"> Block knowledge. You can query the world around you. Milliseconds to find any block.
+* <img src="https://minecraft.wiki/images/EnvSprite_sprint.png?e9341"> Physics and movement - handle all bounding boxes
 * <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27"> Attacking entities and using vehicles.
-* Inventory management.
-* Crafting, chests, dispensers, enchantment tables.
-* Digging and building.
-* Miscellaneous stuff such as knowing your health and whether it is raining.
-* Activating blocks and using items.
-* Chat.
-* Plugins for many servers.
+* <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27"> Inventory management.
+* <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27"> Crafting, chests, dispensers, enchantment tables.
+* <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27"> Digging and building.
+* <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27"> Miscellaneous stuff such as knowing your health and whether it is raining.
+* <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27"> Activating blocks and using items.
+* <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27"> Chat.
+* <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27"> Plugins for many servers.
 
 ## Getting Started 🏁
 
