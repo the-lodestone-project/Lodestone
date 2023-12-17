@@ -79,6 +79,11 @@ Lodestone provides multiple authentication options including Microsoft and Offli
 Lodestone also offers an easy to use command line intercace (CLI). This allows you to use the basic functions of lodestone.
 the CLI offers auto tab complete and has real time chat logs.
 
+To use the CLI run the following command:
+```bash
+python -m lodestone -u USERNAME -h HOST -p PORT -v VERSION
+```
+
 > [!IMPORTANT]
 > `username` and `host` are requierd options. <img src="https://minecraft.wiki/images/EffectSprite_particle-speed.png?0ed64">
 
