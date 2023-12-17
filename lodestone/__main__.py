@@ -79,7 +79,7 @@ def run(username, host, port, version, debug, viewer):
                             print(username, host, port, version, debug, viewer)
                         if commad == "exit":
                             bot.stop()
-                            time.sleep(3)
+                            time.sleep(0.5)
                             os._exit(0)
                     else:
                         bot.chat(commad)
