@@ -23,6 +23,7 @@ Lodestone is an incredibly powerful and flexible framework for building Minecraf
 Whether you’re new to Minecraft bot development or a seasoned pro, Lodestone provides all the tools you need to bring your bot ideas to life.
 Let’s dive into how to get up and running with Lodestone.
 
+
 ## Features
 
 * <img src="https://minecraft.wiki/images/ItemSprite_compass.png?2364d"> Supports Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19 and 1.20.1.
