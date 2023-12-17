@@ -6,7 +6,7 @@
   <br>
 </h1>
 
-<h4 align="center">🤖 Create Minecraft bots with a powerful, stable, and high level Python API.</h4>
+<h4 align="center">🤖 Create Minecraft bots with a powerful, stable, and high level Python API <img src="https://minecraft.wiki/images/Invicon_Recovery_Compass.gif?c2f29"></h4>
 
 <p align="center">
     <img alt="Node version" src="https://img.shields.io/static/v1?label=node&message=%20%3E=18.0.0&logo=node.js&color=2334D058" />
@@ -17,7 +17,7 @@
 
 <!-- ![screenshot](https://raw.githubusercontent.com/SilkePilon/youdotcom/main/assets/images/YouDotCom.jpg) -->
 
-## About 📬
+## About <img src="https://minecraft.wiki/images/ItemSprite_book.png?791a5">
 
 Lodestone is an incredibly powerful and flexible framework for building Minecraft bots of all kinds.
 Whether you’re new to Minecraft bot development or a seasoned pro, Lodestone provides all the tools you need to bring your bot ideas to life.
@@ -25,25 +25,25 @@ Let’s dive into how to get up and running with Lodestone.
 
 ## Features
 
-* Supports Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19 and 1.20.1.
-* Entity knowledge and tracking.
-* Block knowledge. You can query the world around you. Milliseconds to find any block.
-* Physics and movement - handle all bounding boxes
-* Attacking entities and using vehicles.
-* Inventory management.
-* Crafting, chests, dispensers, enchantment tables.
-* Digging and building.
-* Miscellaneous stuff such as knowing your health and whether it is raining.
-* Activating blocks and using items.
-* Chat.
-* Plugins for many servers.
+* <img src="https://minecraft.wiki/images/ItemSprite_compass.png?2364d"> Supports Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19 and 1.20.1.
+* <img src="https://minecraft.wiki/images/EntitySprite_tamed-wolf.png?e90cb"> Entity knowledge and tracking.
+* <img src="https://minecraft.wiki/images/EnvSprite_non-renewable-resource.png?44294"> Block knowledge. You can query the world around you. Milliseconds to find any block.
+* <img src="https://minecraft.wiki/images/EnvSprite_sprint.png?e9341"> Physics and movement - handle all bounding boxes
+* <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27"> Attacking entities and using vehicles.
+* <img src="https://minecraft.wiki/images/EnvSprite_two-by-two.png?56fdc"> Inventory management.
+* <img src="https://minecraft.wiki/images/BlockSprite_crafting-table.png?1ea45"> Crafting, chests, dispensers, enchantment tables.
+* <img src="https://minecraft.wiki/images/EnvSprite_item.png?89d23"> Digging and building.
+* <img src="https://minecraft.wiki/images/BlockSprite_brewing-stand.png?918de"> Miscellaneous stuff such as knowing your health and whether it is raining.
+* <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27"> Activating blocks and using items.
+* <img src="https://minecraft.wiki/images/ItemSprite_oak-sign.png?e1d26"> Chat.
+* <img src="https://minecraft.wiki/images/EffectSprite_particle-speed.png?0ed64"> Plugins for many servers.
 
-## Getting Started 🏁
+## Getting Started <img src="https://minecraft.wiki/images/EnvSprite_item.png?89d23">
 
 > [!IMPORTANT]
 > Some parts of the code are still in development and do not work!
 
-All instalation instructons and documentation can be found [here](https://lodestone-documentation.vercel.app/ "docs") but here is the general idea.
+All instalation instructons and documentation can be found [here](https://lodestone-documentation.vercel.app/ "docs") <img src="https://minecraft.wiki/images/Invicon_Arrow.png?243fa" style="margin-top: 100px; "> but here is the general idea.
 
 #### Installation and Setup
 The first step is to install the Lodestone package using pip. It’s recommended to create a virtual environment first before installing:
@@ -79,11 +79,16 @@ Lodestone provides multiple authentication options including Microsoft and Offli
 Lodestone also offers an easy to use command line intercace (CLI). This allows you to use the basic functions of lodestone.
 the CLI offers auto tab complete and has real time chat logs.
 
+To use the CLI run the following command:
+```bash
+python -m lodestone -u USERNAME -h HOST -p PORT -v VERSION
+```
+
 > [!IMPORTANT]
-> `username` and `host` are requierd options. 🛑
+> `username` and `host` are requierd options. <img src="https://minecraft.wiki/images/EffectSprite_particle-speed.png?0ed64">
 
 > [!WARNING]
-> Do not share your Minecraft info to anyone. 🔒
+> Do not share your Minecraft info to anyone. <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27">
 
 <details open>
 <summary>Command line arguments</summary>
@@ -91,15 +96,15 @@ the CLI offers auto tab complete and has real time chat logs.
 
 The command line arguments available are:
 
-* `--username` or `-u`: The Minecraft username the bot will log into. 📧
-* `--host` or `-h`: The IP address or hostname of the Minecraft server. 🖥
-* `--port` or `-p`: The port number the Minecraft server is listening on. Default is 25565. ⚡
-* `--auth`: The authentication method your account requires (mojang/microsoft/cracked). Default is "microsoft". 🔐
-* `--version` or `-v` : Minecraft version to use when connecting to a server. Default is auto. 🕹
+* `--username` or `-u`: The Minecraft username the bot will log into. <img src="https://minecraft.wiki/images/EnvSprite_emote.png?37574">
+* `--host` or `-h`: The IP address or hostname of the Minecraft server. <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27">
+* `--port` or `-p`: The port number the Minecraft server is listening on. Default is 25565. <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27">
+* `--auth`: The authentication method your account requires (mojang/microsoft/cracked). Default is "microsoft". <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27">
+* `--version` or `-v` : Minecraft version to use when connecting to a server. Default is auto. <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27">
 
 </details>
 
-## Contributors ❤️
+## Contributors <img src="https://minecraft.wiki/images/EnvSprite_heart.png?8a428">
 | Name                | Helped With                               | GitHub   | Discord   |
 | --------------------- | ----------------------------------------- | ----------- | ----------- |
 | **Katzengott**            | fishing bot and cactus bot | [@Katzengott](https://github.com/Katzengott) | edelkatze |
