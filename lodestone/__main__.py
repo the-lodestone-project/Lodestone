@@ -1,10 +1,9 @@
 
 import click
 from rich.console import Console
-import bot as lodestone
+import lodestone
 from dotenv import load_dotenv
 import threading
-import lodestone
 from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import Completer, Completion
