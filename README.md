@@ -17,7 +17,7 @@
 
 <!-- ![screenshot](https://raw.githubusercontent.com/SilkePilon/youdotcom/main/assets/images/YouDotCom.jpg) -->
 
-## About <img src="https://minecraft.wiki/images/ItemSprite_book.png?791a5">
+## About <img src="/assets/items/upscaled/writable_book.png" width="25" height="25">
 
 Lodestone is an incredibly powerful and flexible framework for building Minecraft bots of all kinds.
 Whether you’re new to Minecraft bot development or a seasoned pro, Lodestone provides all the tools you need to bring your bot ideas to life.
@@ -39,7 +39,7 @@ Let’s dive into how to get up and running with Lodestone.
 * <img src="https://minecraft.wiki/images/ItemSprite_oak-sign.png?e1d26"> Chat.
 * <img src="https://minecraft.wiki/images/EffectSprite_particle-speed.png?0ed64"> Plugins for many servers.
 
-## Getting Started <img src="https://minecraft.wiki/images/EnvSprite_item.png?89d23">
+## Getting Started <img src="/assets/items/upscaled/iron_sword.png" width="20" height="20">
 
 > [!IMPORTANT]
 > Some parts of the code are still in development and do not work!
