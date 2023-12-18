@@ -2,7 +2,7 @@
 
 <h1 align="center">
   <br>
-  <a href="https://github.com/SilkePilon/lodestone/"><img src="assets/E9B3B2BE-93B4-45CA-A818-2D35C1279D1D.webp" alt="Lodestone" width="560"></a>
+  <a href="https://github.com/SilkePilon/lodestone/"><img src="assets/165C35D6-E412-4173-A37E-22EAB9108EAC.png" alt="Lodestone" width="250"></a>
   <br>
 </h1>
 
