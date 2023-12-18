@@ -75,7 +75,7 @@ Lodestone provides multiple authentication options including Microsoft and Offli
 
 
 
-### Uisng the Lodestone CLI
+### Using the Lodestone CLI
 
 Lodestone also offers an easy to use command line intercace (CLI). This allows you to use the basic functions of lodestone.
 the CLI offers auto tab complete and has real time chat logs.
