@@ -42,7 +42,7 @@ Let’s dive into how to get up and running with Lodestone.
 ## Getting Started <img src="/assets/items/upscaled/iron_sword.png" width="20" height="20">
 
 > [!IMPORTANT]
-> Some parts of the code are still in development and do not work!
+> project lodestone is still in development and has some bugs.
 
 All instalation instructons and documentation can be found [here](https://lodestone-documentation.vercel.app/ "docs") <img src="/assets/items/upscaled/arrow.png" width="25" height="25"> but here is the general idea.
 
@@ -86,7 +86,7 @@ python -m lodestone -u USERNAME -h HOST -p PORT -v VERSION
 ```
 
 > [!IMPORTANT]
-> `username` and `host` are requierd options. <img src="https://minecraft.wiki/images/EffectSprite_particle-speed.png?0ed64">
+> `username` and `host` are required options. <img src="https://minecraft.wiki/images/EffectSprite_particle-speed.png?0ed64">
 
 > [!WARNING]
 > Do not share your Minecraft info to anyone. <img src="https://minecraft.wiki/images/EffectSprite_strength-revision-1.png?8da27">
