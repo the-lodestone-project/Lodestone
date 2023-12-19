@@ -385,6 +385,11 @@ class Bot:
         if not self.disable_viewer:
             self.mineflayer_viewer = require('prismarine-viewer', '1.25.0')
         self.python_command = self.__check_python_command()
+        
+        
+        # TODO: Add fix prismarine-viewer to reanable auto update
+        ls_skip_checks = True
+        
         if not ls_skip_checks:
             with self.console.status("[bold]Checking for updates...\n") as status:
                 status.update("[bold]Checking if backend is up-to-date...\n")
