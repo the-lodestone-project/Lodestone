@@ -1,7 +1,7 @@
 
 import click
 from rich.console import Console
-import lodestone
+import bot as lodestone
 from dotenv import load_dotenv
 import threading
 from prompt_toolkit.patch_stdout import patch_stdout
@@ -32,6 +32,7 @@ def run(username, host, port, version, debug, viewer):
             username=username,
             version=version,
             ls_enable_chat_logging=False,
+            ls_skip_checks=True,
         )
         
         @bot.on('messagestr')

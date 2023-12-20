@@ -383,7 +383,7 @@ class Bot:
         self.mineflayer = require('mineflayer')
         self.once_with_cleanup = require('mineflayer').promise_utils
         if not self.disable_viewer:
-            self.mineflayer_viewer = require('prismarine-viewer', '1.25.0')
+            self.mineflayer_viewer = require('prismarine-viewer')
         self.python_command = self.__check_python_command()
         
         
