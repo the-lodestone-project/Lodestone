@@ -1,7 +1,7 @@
 
 import click
 from rich.console import Console
-import bot as lodestone
+import lodestone
 from dotenv import load_dotenv
 import threading
 from prompt_toolkit.patch_stdout import patch_stdout
